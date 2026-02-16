@@ -47,6 +47,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ switchToSignup }) => {
       <div className="absolute w-96 h-96 bg-purple-500/20 rounded-full blur-3xl bottom-10 right-0 pointer-events-none" />
       
       <Card className="w-full max-w-md shadow-2xl border border-slate-200/50 relative z-10 bg-white/95 backdrop-blur-sm">
+
+        <div className="relative">
+          <div className="absolute left-1/2 -top-16 transform -translate-x-1/2">
+            <div className="w-20 h-20 rounded-full bg-white p-4 shadow-md border border-slate-100">
+              <img src="/estimation-logo.svg" alt="Estima Logo" className="w-full h-full object-contain" />
+            </div>
+          </div>
+        </div>
+
       <CardHeader className="space-y-1 pb-4">
         <CardTitle className="text-3xl font-bold text-center text-slate-900">
           Welcome Back

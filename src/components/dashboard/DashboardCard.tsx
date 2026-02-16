@@ -1,5 +1,6 @@
 import React from "react";
 import { TrendingUp } from "lucide-react";
+import Skeleton from "@/components/ui/Skeleton";
 
 interface DashboardCardProps {
   title: string;
@@ -8,6 +9,7 @@ interface DashboardCardProps {
   color: string;
   iconColor: string;
   change?: string;
+  loading?: boolean;
 }
 
 const DashboardCard: React.FC<DashboardCardProps> = ({
@@ -17,7 +19,21 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
   color,
   iconColor,
   change,
+  loading = false,
 }) => {
+  if (loading) {
+    return (
+      <div className={`${color} rounded-2xl shadow-sm border border-slate-100 p-4 transition-all hover:shadow-md`}>
+        <div className="flex items-start justify-between mb-3">
+          <Skeleton className="w-10 h-10 rounded-xl bg-slate-200" />
+          <Skeleton className="w-12 h-4 rounded" />
+        </div>
+        <Skeleton className="w-3/4 h-3 rounded mb-2" />
+        <Skeleton className="w-1/2 h-8 rounded" />
+      </div>
+    );
+  }
+
   return (
     <div className={`${color} rounded-2xl shadow-sm border border-slate-100 p-6 transition-all hover:shadow-md`}>
       <div className="flex items-start justify-between mb-4">

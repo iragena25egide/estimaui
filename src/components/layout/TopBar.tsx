@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Search, Bell, ChevronDown, LogOut, User, Settings as IconSettings } from "lucide-react";
+import { Search, Bell, ChevronDown, LogOut, User, Settings as IconSettings, Menu } from "lucide-react";
 
 type Notification = {
 	id: string;
@@ -9,7 +9,7 @@ type Notification = {
 	timestamp?: string;
 };
 
-const TopBar: React.FC<{ projectName?: string }> = ({ projectName = "Your Project" }) => {
+const TopBar: React.FC<{ projectName?: string; onOpenSidebar?: () => void }> = ({ projectName = "Your Project", onOpenSidebar }) => {
 	const [profileOpen, setProfileOpen] = useState(false);
 	const [notifOpen, setNotifOpen] = useState(false);
 	const [notifications, setNotifications] = useState<Notification[]>([
@@ -44,7 +44,13 @@ const TopBar: React.FC<{ projectName?: string }> = ({ projectName = "Your Projec
 	const fmt = (iso?: string) => (iso ? new Date(iso).toLocaleString() : "");
 
 	return (
-		<header className="fixed top-0 left-64 right-0 h-16 bg-white/95 backdrop-blur-sm shadow-sm border-b border-slate-100 px-6 flex items-center justify-between z-30">
+		<header className="fixed top-0 md:left-64 left-0 right-0 h-16 bg-white/95 backdrop-blur-sm shadow-sm border-b border-slate-100 px-4 md:px-6 flex items-center justify-between z-30">
+			{/* Mobile menu button */}
+			<div className="flex items-center gap-3 md:hidden">
+				<button onClick={onOpenSidebar} aria-label="Open menu" className="p-2 rounded hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-200">
+					<Menu className="w-5 h-5 text-slate-700" />
+				</button>
+			</div>
 			{/* <div className="flex items-center gap-4">
 				<div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white font-semibold">E</div>
 				<div className="flex flex-col">

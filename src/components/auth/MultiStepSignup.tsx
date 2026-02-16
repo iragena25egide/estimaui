@@ -8,7 +8,7 @@ interface MultiStepSignupProps {
   switchToLogin: () => void
 }
 
-type Role = "ESTIMATOR" | "ADMIN" | "VIEWER" | null
+type Role = "ESTIMATOR" |  "VIEWER" | null
 type Step = 1 | 2 | 3 | 4
 
 interface FormData {
@@ -615,7 +615,7 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
           {/* STEP 1 — ROLE SELECTION */}
           {currentStep === 1 && (
             <div className="space-y-5">
-              {["ESTIMATOR", "ADMIN", "VIEWER"].map((r) => (
+              {["ESTIMATOR", "VIEWER"].map((r) => (
                 <div
                   key={r}
                   onClick={() => setRole(r as Role)}
@@ -633,7 +633,7 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
                       }`}
                     >
                       {r === "ESTIMATOR" && "Create and manage project estimates"}
-                      {r === "ADMIN" && "Manage team and system settings"}
+        
                       {r === "VIEWER" && "View projects and reports only"}
                     </p>
                   </div>
@@ -675,7 +675,7 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
                     id="firstName"
                     name="firstName"
                     required
-                    placeholder="John"
+                    placeholder="Ntabashwa"
                     value={formData.firstName}
                     onChange={handleInputChange}
                     className={`h-10 rounded-lg border ${
@@ -696,7 +696,7 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
                     id="lastName"
                     name="lastName"
                     required
-                    placeholder="Doe"
+                    placeholder="Egide"
                     value={formData.lastName}
                     onChange={handleInputChange}
                     className={`h-10 rounded-lg border ${
@@ -721,7 +721,7 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
                   name="email"
                   type="email"
                   required
-                  placeholder="john@example.com"
+                  placeholder="Ntabashwa@example.com"
                   value={formData.email}
                   onChange={handleInputChange}
                   className={`h-10 rounded-lg border ${
