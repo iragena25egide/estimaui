@@ -292,8 +292,8 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
       if (formData.phone && !/^[0-9\s\-\+\(\)]+$/.test(formData.phone)) {
         newErrors.phone = "Please enter a valid phone number"
       }
-    } else if (step === 3) {
-      // Validate Step 3: Password
+    } else if (step === 4) {
+      // Validate Step 4: Password
       if (!formData.password) {
         newErrors.password = "Password is required"
       } else if (formData.password.length < 8) {
@@ -310,38 +310,41 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
     return Object.keys(newErrors).length === 0
   }
 
-  const generateAndSendOTP = () => {
-    // Generate a 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString()
-    setSentCode(otp)
-    setVerificationCode("")
+  const handleOTPChange = (index: number, value: string) => {
+    if (!/^[0-9]?$/.test(value)) return // Only allow digits
+
+    const otpArray = verificationCode.split("")
+    otpArray[index] = value
+    const newOTP = otpArray.join("")
+    setVerificationCode(newOTP)
     setCodeError("")
-    
-    // In a real app, you would call your backend API here
-    console.log(`OTP sent to ${formData.email}: ${otp}`)
-    alert(`OTP sent to ${formData.email}\n\nTest OTP: ${otp}`)
+
+    // Auto-focus next input
+    if (value && index < 5) {
+      const nextInput = document.getElementById(`otp-${index + 1}`) as HTMLInputElement
+      nextInput?.focus()
+    }
   }
 
-  const verifyOTP = () => {
-    if (!verificationCode.trim()) {
-      setCodeError("Please enter the verification code")
-      return
-    }
-    
-    if (verificationCode === sentCode) {
-      setIsEmailVerified(true)
-      setCodeError("")
-      setTimeout(() => {
-        setCurrentStep(4)
-      }, 500)
-    } else {
-      setCodeError("Invalid verification code. Please try again.")
+  const handleOTPKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Backspace" && !verificationCode[index] && index > 0) {
+      const prevInput = document.getElementById(`otp-${index - 1}`) as HTMLInputElement
+      prevInput?.focus()
     }
   }
 
   const handleNextStep = () => {
     if (validateStep(currentStep)) {
-      if (currentStep < 3) {
+      if (currentStep < 4) {
+        if (currentStep === 2) {
+          // Auto-send OTP when moving to step 3
+          const otp = Math.floor(100000 + Math.random() * 900000).toString()
+          setSentCode(otp)
+          setVerificationCode("")
+          setCodeError("")
+          console.log(`OTP sent to ${formData.email}: ${otp}`)
+          alert(`OTP sent to ${formData.email}\n\nTest OTP: ${otp}`)
+        }
         setCurrentStep((currentStep + 1) as Step)
       }
     }
@@ -420,7 +423,7 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
   }
 
   const handleSubmit = () => {
-    if (validateStep(3)) {
+    if (validateStep(4)) {
       setLoading(true)
 
       // TODO: Send data + role to backend
@@ -436,6 +439,21 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
       }, 1000)
     }
   }
+
+  // Auto-verify OTP when all 6 digits are entered
+  React.useEffect(() => {
+    if (verificationCode.length === 6 && sentCode) {
+      if (verificationCode === sentCode) {
+        setIsEmailVerified(true)
+        setCodeError("")
+        setTimeout(() => {
+          setCurrentStep(4)
+        }, 500)
+      } else {
+        setCodeError("Invalid verification code. Please try again.")
+      }
+    }
+  }, [verificationCode, sentCode])
 
 
   return (
@@ -582,12 +600,14 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
           <CardTitle className="text-3xl font-bold text-slate-900">
             {currentStep === 1 && "Select Your Role"}
             {currentStep === 2 && "Your Information"}
-            {currentStep === 3 && "Create Password"}
+            {currentStep === 3 && "Verify Your Email"}
+            {currentStep === 4 && "Create Password"}
           </CardTitle>
           <p className="text-sm text-slate-500">
             {currentStep === 1 && "Choose the role that best describes you"}
             {currentStep === 2 && "Tell us about yourself"}
-            {currentStep === 3 && "Secure your account with a password"}
+            {currentStep === 3 && "Enter the verification code sent to your email"}
+            {currentStep === 4 && "Secure your account with a password"}
           </p>
         </CardHeader>
 
@@ -781,8 +801,84 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
             </form>
           )}
 
-          {/* STEP 3 — PASSWORD */}
+          {/* STEP 3 — EMAIL VERIFICATION */}
           {currentStep === 3 && (
+            <form className="space-y-5">
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <p className="text-sm text-blue-900">
+                  A verification code has been sent to <br />
+                  <span className="font-semibold">{formData.email}</span>
+                </p>
+              </div>
+
+              {/* OTP 6-Digit Input */}
+              <div className="space-y-3">
+                <Label className="text-slate-700 font-medium">
+                  Verification Code *
+                </Label>
+                <div className="flex gap-2 justify-between">
+                  {[0, 1, 2, 3, 4, 5].map((index) => (
+                    <input
+                      key={index}
+                      id={`otp-${index}`}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      value={verificationCode[index] || ""}
+                      onChange={(e) => handleOTPChange(index, e.target.value)}
+                      onKeyDown={(e) => handleOTPKeyDown(index, e)}
+                      className={`w-12 h-12 rounded-lg border-2 text-center text-xl font-bold transition-all focus:outline-none ${
+                        verificationCode[index]
+                          ? "border-slate-900 bg-slate-50"
+                          : codeError
+                          ? "border-red-500"
+                          : "border-slate-200 hover:border-slate-300"
+                      } focus:border-slate-900 focus:ring-2 focus:ring-slate-900/20`}
+                    />
+                  ))}
+                </div>
+                {codeError && (
+                  <p className="text-xs text-red-600 text-center">{codeError}</p>
+                )}
+              </div>
+
+              {/* Auto-verify message */}
+              {verificationCode.length === 6 && !isEmailVerified && (
+                <p className="text-xs text-blue-600 text-center">Verifying code...</p>
+              )}
+
+              {/* Resend Code Button */}
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  const otp = Math.floor(100000 + Math.random() * 900000).toString()
+                  setSentCode(otp)
+                  setVerificationCode("")
+                  setCodeError("")
+                  alert(`New OTP sent to ${formData.email}\\n\\nTest OTP: ${otp}`)
+                }}
+                className="w-full border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg transition-all text-sm"
+              >
+                Resend Code
+              </Button>
+
+              {/* Navigation for Step 3 */}
+              <div className="flex gap-3 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handlePrevStep}
+                  className="w-full border-slate-200 text-slate-700 hover:bg-slate-100 rounded-lg transition-all"
+                >
+                  Back
+                </Button>
+              </div>
+            </form>
+          )}
+
+          {/* STEP 4 — PASSWORD */}
+          {currentStep === 4 && (
             <form className="space-y-5">
               {/* Password */}
               <div className="space-y-2">
@@ -884,7 +980,7 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
                 )}
               </div>
 
-              {/* Navigation for Step 3 */}
+              {/* Navigation for Step 4 */}
               <div className="flex gap-3 pt-4">
                 <Button
                   type="button"
