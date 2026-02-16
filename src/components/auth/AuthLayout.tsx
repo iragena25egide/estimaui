@@ -1,5 +1,4 @@
 import React from "react"
-import estimationImg from "@/assets/estimation-logo.jpg"
 
 interface AuthLayoutProps {
   children: React.ReactNode
@@ -7,37 +6,74 @@ interface AuthLayoutProps {
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
   return (
-    <div className="min-h-screen grid md:grid-cols-2 bg-gray-50">
+    <div className="min-h-screen grid md:grid-cols-2 bg-white">
       
-      {/* LEFT SIDE */}
-      <div className="hidden md:flex flex-col justify-center p-16 bg-white border-r">
-        <div className="mb-8 flex items-center gap-3">
-          <div className="w-10 h-10 bg-black text-white flex items-center justify-center rounded-lg font-bold">
-            EX
+      {/* LEFT SIDE - BRAND PANEL */}
+      <div className="hidden md:flex relative flex-col justify-between p-16 bg-gradient-to-br from-slate-900 via-black to-slate-800 text-white overflow-hidden">
+        
+        {/* Background Blur Effect */}
+        <div className="absolute w-96 h-96 bg-white/10 rounded-full blur-3xl top-10 -left-20" />
+        <div className="absolute w-96 h-96 bg-purple-500/20 rounded-full blur-3xl bottom-10 right-0" />
+
+        {/* Content */}
+        <div className="relative z-10">
+          {/* Logo */}
+          <div className="mb-12 flex items-center gap-3">
+            <div className="w-12 h-12 bg-white text-black flex items-center justify-center rounded-xl font-bold text-lg shadow-lg">
+              EP
+            </div>
+            <h1 className="text-3xl font-bold tracking-tight">
+              EstimaPro
+            </h1>
           </div>
-          <h1 className="text-2xl font-semibold text-slate-900">
-            EstimationX
-          </h1>
+
+          {/* Headline */}
+          <h2 className="text-4xl font-bold leading-tight mb-6">
+            Smart Construction
+            <br />
+            Estimation Platform
+          </h2>
+
+          <p className="text-slate-300 text-lg max-w-md">
+            Create BOQs, manage material takeoffs, handle projects,
+            and generate reports — all in one intelligent system.
+          </p>
         </div>
 
-        <h2 className="text-3xl font-bold text-slate-900 mb-4">
-          Smart Construction Estimation
-        </h2>
-
-        <p className="text-slate-600 mb-8">
-          Manage BOQs, Material Takeoffs, Projects and Reports in one powerful platform.
-        </p>
-
-        <img
-          src={estimationImg}
-          alt="Estimation preview"
-          className="rounded-xl shadow-md"
-        />
+        {/* Bottom Stats */}
+        <div className="relative z-10 grid grid-cols-3 gap-6 text-center mt-16">
+          <div>
+            <p className="text-2xl font-bold">120+</p>
+            <p className="text-sm text-slate-400">Projects</p>
+          </div>
+          <div>
+            <p className="text-2xl font-bold">50+</p>
+            <p className="text-sm text-slate-400">Companies</p>
+          </div>
+          <div>
+            <p className="text-2xl font-bold">99%</p>
+            <p className="text-sm text-slate-400">Accuracy</p>
+          </div>
+        </div>
       </div>
 
-      {/* RIGHT SIDE */}
-      <div className="flex items-center justify-center p-8">
-        {children}
+      {/* RIGHT SIDE - FORM AREA */}
+      <div className="flex items-center justify-center p-8 bg-slate-50">
+        <div className="w-full max-w-md">
+          
+          {/* Mobile Logo */}
+          <div className="md:hidden mb-8 text-center">
+            <div className="w-12 h-12 bg-black text-white flex items-center justify-center rounded-xl font-bold text-lg mx-auto mb-3">
+              EP
+            </div>
+            <h1 className="text-2xl font-bold">EstimaPro</h1>
+          </div>
+
+          {/* Form Card */}
+          <div className="">
+            {children}
+          </div>
+        </div>
       </div>
     </div>
   )

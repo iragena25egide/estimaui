@@ -6,18 +6,20 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
-    /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
 
-    /* React */
     "jsx": "react-jsx",
+    "strict": true,
 
-    /* Strict */
-    "strict": true
+    // 👇 ADD THIS
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "include": ["src"]
 }
