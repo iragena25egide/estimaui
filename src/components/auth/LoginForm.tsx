@@ -15,7 +15,7 @@ type LoginStep = "credentials" | "otp"
 const LoginForm: React.FC<LoginFormProps> = ({ switchToSignup }) => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const { login: authLogin, verifyOtp: authVerifyOtp, loading: authLoading, error: authError } = useAuth()
+  const { login: authLogin, loginWithGoogle:loginWithGoogle, verifyOtp: authVerifyOtp, loading: authLoading, error: authError } = useAuth()
   
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -26,35 +26,36 @@ const LoginForm: React.FC<LoginFormProps> = ({ switchToSignup }) => {
   const [currentStep, setCurrentStep] = useState<LoginStep>("credentials")
 
   
-  useEffect(() => {
-    const token = searchParams.get("token")
-    const user = searchParams.get("user")
-    const errorParam = searchParams.get("error")
-    
-    if (errorParam) {
-      setError(decodeURIComponent(errorParam))
-      return
-    }
-    
-    if (token) {
-      localStorage.setItem("authToken", token)
-      
-     
-      if (user) {
-        try {
-          const userData = JSON.parse(decodeURIComponent(user))
-          localStorage.setItem("user", JSON.stringify(userData))
-        } catch (e) {
-          console.error("Failed to parse user data")
-        }
+useEffect(() => {
+  const token = searchParams.get("token")
+  const user = searchParams.get("user")
+  const errorParam = searchParams.get("error")
+
+  if (errorParam) {
+    setError(decodeURIComponent(errorParam))
+    return
+  }
+
+  const handleGoogleCallback = async () => {
+    if (token && user) {
+      try {
+        const parsedUser = JSON.parse(decodeURIComponent(user))
+
+        await loginWithGoogle(parsedUser, token)
+
+       
+        window.history.replaceState({}, document.title, "/auth")
+
+        navigate("/dashboard", { replace: true })
+      } catch (err: any) {
+        setError(err.message || "Google login failed")
       }
-      
-      
-      setTimeout(() => {
-        navigate("/dashboard")
-      }, 500)
     }
-  }, [searchParams, navigate])
+  }
+
+  handleGoogleCallback()
+}, [searchParams, navigate])
+
 
   const handleSendOTP = async () => {
     setError(null)
@@ -118,7 +119,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ switchToSignup }) => {
   }
 
   const handleGoogleLogin = () => {
-   
+    
     window.location.href = "http://localhost:3000/api/estimaApp/auth/google"
   }
 

@@ -13,7 +13,7 @@ interface AuthContextType {
   token: string | null
   loading: boolean
   error: string | null
-  
+  loginWithGoogle: (userData: User, tokenString: string) => Promise<void>
   login: (email: string, password: string) => Promise<void>
   sendOtp: (email: string) => Promise<void>
   verifyOtp: (email: string, otp: string) => Promise<void>
@@ -41,7 +41,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Load token from localStorage on mount
+ 
   useEffect(() => {
     const savedToken = localStorage.getItem("authToken")
     const savedUser = localStorage.getItem("user")
@@ -64,7 +64,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       if (!res.ok) throw new Error(data.message || "Login failed")
 
-      // Backend returns { access_token, user }
+      
       setToken(data.access_token)
       setUser(data.user)
       localStorage.setItem("authToken", data.access_token)
@@ -77,6 +77,35 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setLoading(false)
     }
   }
+
+
+  const loginWithGoogle = async (
+  userData: User,
+  tokenString: string
+): Promise<void> => {
+  setError(null)
+
+  if (!tokenString || !userData) {
+    const errMsg = "Invalid Google authentication response"
+    setError(errMsg)
+    throw new Error(errMsg)
+  }
+
+  try {
+    setToken(tokenString)
+    setUser(userData)
+
+    localStorage.setItem("authToken", tokenString)
+    localStorage.setItem("user", JSON.stringify(userData))
+  } catch (err) {
+    const errorMsg =
+      err instanceof Error ? err.message : "Google login error"
+
+    setError(errorMsg)
+    throw new Error(errorMsg)
+  }
+}
+
 
   const sendOtp = async (email: string) => {
     setLoading(true)
@@ -91,7 +120,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       if (!res.ok) throw new Error(data.message || "Failed to send OTP")
       
-      // OTP sent successfully
+      
       localStorage.setItem("pendingEmail", email)
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : "Send OTP error"
@@ -115,7 +144,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       if (!res.ok) throw new Error(data.message || "OTP verification failed")
 
-      // Backend returns { access_token, user }
+      
       setToken(data.access_token)
       setUser(data.user)
       localStorage.setItem("authToken", data.access_token)
@@ -142,8 +171,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       if (!res.ok) throw new Error(resData.message || "Signup failed")
 
-      // After signup, user should still login or verify OTP
-      // For now, just store the email for OTP verification
+      
       localStorage.setItem("pendingEmail", data.email)
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : "Signup error"
@@ -169,10 +197,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     loading,
     error,
     login,
-    sendOtp,
     verifyOtp,
     signup,
+    sendOtp,
     logout,
+    loginWithGoogle,
     isAuthenticated: !!token && !!user,
   }
 
