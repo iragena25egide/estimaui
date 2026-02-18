@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState,useContext } from "react"
 import { useNavigate } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -6,9 +6,15 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { useAuth } from "../../context/AuthContext"
 
+
+
+
+
 interface MultiStepSignupProps {
   switchToLogin: () => void
 }
+
+
 
 type Role = "ESTIMATOR" |  "VIEWER" | null
 type Step = 1 | 2 | 3 | 4
@@ -257,7 +263,9 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
   switchToLogin,
 }) => {
   const navigate = useNavigate()
-  const { signup: authSignup, verifyOtp: authVerifyOtp, loading: authLoading, error: authError } = useAuth()
+  const {startSignup,verifyOtp,completeSignup}=useAuth();
+  
+
   
   const [currentStep, setCurrentStep] = useState<Step>(1)
   const [role, setRole] = useState<Role>(null)
@@ -282,7 +290,7 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
     const newErrors: FormErrors = {}
 
     if (step === 2) {
-      // Validate Step 2: User Info
+      // validating user info
       if (!formData.firstName.trim()) {
         newErrors.firstName = "First name is required"
       }
@@ -298,7 +306,7 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
         newErrors.phone = "Please enter a valid phone number"
       }
     } else if (step === 4) {
-      // Validate Step 4: Password
+      // password validation
       if (!formData.password) {
         newErrors.password = "Password is required"
       } else if (formData.password.length < 8) {
@@ -315,8 +323,18 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
     return Object.keys(newErrors).length === 0
   }
 
+  const handleStartUp=async()=>{
+
+    try {
+      
+    } catch (error) {
+      
+    }
+  
+  }
+
   const handleOTPChange = (index: number, value: string) => {
-    if (!/^[0-9]?$/.test(value)) return // Only allow digits
+    if (!/^[0-9]?$/.test(value)) return 
 
     const otpArray = verificationCode.split("")
     otpArray[index] = value
@@ -324,7 +342,7 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
     setVerificationCode(newOTP)
     setCodeError("")
 
-    // Auto-focus next input
+    
     if (value && index < 5) {
       const nextInput = document.getElementById(`otp-${index + 1}`) as HTMLInputElement
       nextInput?.focus()
@@ -339,30 +357,25 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
   }
 
   const handleNextStep = async () => {
-    if (validateStep(currentStep)) {
-      if (currentStep < 4) {
-        if (currentStep === 2) {
-          // Call signup endpoint when moving to step 3 (OTP verification)
-          try {
-            setLoading(true)
-            await authSignup({
-              firstName: formData.firstName,
-              lastName: formData.lastName,
-              email: formData.email,
-              phone: formData.phone,
-              role: role || "ESTIMATOR",
-            })
-            setLoading(false)
-          } catch (err: any) {
-            console.error("Signup error:", err)
-            setLoading(false)
-            // Let user see error and try again
-          }
+  if (validateStep(currentStep)) {
+    if (currentStep < 4) {
+      if (currentStep === 2) {
+        try {
+          await startSignup({
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            email: formData.email,
+            phone: formData.phone,
+            role: role || "ESTIMATOR",
+          })
+        } catch (err) {
+          console.error(err)
         }
-        setCurrentStep((currentStep + 1) as Step)
       }
+      setCurrentStep((currentStep + 1) as Step)
     }
   }
+}
 
   const handlePrevStep = () => {
     if (currentStep > 1) {
@@ -430,56 +443,44 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
         [name]: undefined,
       }))
     }
-    // Check password strength on change
+    
     if (name === "password") {
       setPasswordStrength(checkPasswordStrength(value))
     }
   }
 
   const handleSubmit = async () => {
-    if (validateStep(4)) {
-      try {
-        setLoading(true)
-        
-        // In a real scenario, the password would be sent to the backend 
-        // This is a simplified version - the user is already verified via OTP
-        // The actual password verification/update happens in the backend
-        console.log("Account creation with password:", {
-          email: formData.email,
-          password: formData.password,
-        })
-        
-        // Navigate to dashboard on success
-        navigate("/dashboard")
-        handleResetForm()
-      } catch (err: any) {
-        console.error("Error creating account:", err)
-      } finally {
-        setLoading(false)
-      }
-    }
+  if (!validateStep(4)) return
+
+  try {
+    await completeSignup(formData.email, formData.password)
+    console.log("Account created successfully!");
+    handleResetForm() 
+  } catch (err: any) {
+    console.error("Error creating account:", err)
   }
+}
 
-  // Auto-verify OTP when all 6 digits are entered
-  React.useEffect(() => {
-    if (verificationCode.length === 6) {
-      const verifyOTPAsync = async () => {
-        try {
-          await authVerifyOtp(formData.email, verificationCode)
-          setIsEmailVerified(true)
-          setCodeError("")
-          setTimeout(() => {
-            setCurrentStep(4)
-          }, 500)
-        } catch (err: any) {
-          setCodeError(err.message || "Invalid verification code. Please try again.")
-          setIsEmailVerified(false)
-        }
+
+ 
+
+
+React.useEffect(() => {
+  if (verificationCode.length === 6) {
+    const verifyOTPAsync = async () => {
+      try {
+        await verifyOtp(formData.email, verificationCode)
+        setIsEmailVerified(true)
+        setCodeError("")
+        setTimeout(() => setCurrentStep(4), 500)
+      } catch (err: any) {
+        setCodeError(err.message || "Invalid verification code. Please try again.")
+        setIsEmailVerified(false)
       }
-      verifyOTPAsync()
     }
-  }, [verificationCode, authVerifyOtp, formData.email])
-
+    verifyOTPAsync()
+  }
+}, [verificationCode, formData.email, verifyOtp])
 
   return (
     <div className="relative">
@@ -872,21 +873,7 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
                 <p className="text-xs text-blue-600 text-center">Verifying code...</p>
               )}
 
-              {/* Resend Code Button */}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  const otp = Math.floor(100000 + Math.random() * 900000).toString()
-                  setSentCode(otp)
-                  setVerificationCode("")
-                  setCodeError("")
-                  alert(`New OTP sent to ${formData.email}\\n\\nTest OTP: ${otp}`)
-                }}
-                className="w-full border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg transition-all text-sm"
-              >
-                Resend Code
-              </Button>
+              
 
               {/* Navigation for Step 3 */}
               <div className="flex gap-3 pt-2">
