@@ -368,6 +368,8 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
             phone: formData.phone,
             role: role || "ESTIMATOR",
           })
+
+          console.log(formData)
         } catch (err) {
           console.error(err)
         }
