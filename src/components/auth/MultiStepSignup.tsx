@@ -273,7 +273,7 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
   const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>("")
   const [verificationCode, setVerificationCode] = useState("")
   const [sentCode, setSentCode] = useState("")
-  const [isEmailVerified, setIsEmailVerified] = useState(false)
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [codeError, setCodeError] = useState("")
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
@@ -369,7 +369,7 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
             role: role || "ESTIMATOR",
           })
 
-          console.log(formData)
+          
         } catch (err) {
           console.error(err)
         }
