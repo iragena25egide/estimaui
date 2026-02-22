@@ -29,8 +29,10 @@ interface AuthContextType {
   error: string | null
   login: (email: string, password: string) => Promise<void>
   startSignup: (data: SignupStep1Data) => Promise<void>
+  loginWithGoogle: (googleToken: string) => Promise<void>
   verifyOtp: (email: string, otp: string) => Promise<void>
   completeSignup: (email: string, password: string) => Promise<void>
+  verifyLoginOtp: (email: string, otp: string) => Promise<void>
   logout: () => void
   isAuthenticated: boolean
 }
@@ -48,16 +50,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const savedToken = localStorage.getItem("authToken")
-    const savedUser = localStorage.getItem("user")
+  const savedToken = localStorage.getItem("authToken")
+  const savedUser = localStorage.getItem("user")
 
-    if (savedToken && savedUser) {
+  if (savedToken && savedUser) {
+    try {
+      const parsedUser = JSON.parse(savedUser)
       setToken(savedToken)
-      setUser(JSON.parse(savedUser))
+      setUser(parsedUser)
+    } catch {
+      localStorage.removeItem("user")
+      localStorage.removeItem("authToken")
     }
-  }, [])
+  }
+}, [])
 
-  // ================= LOGIN =================
+  
   const login = async (email: string, password: string) => {
     setLoading(true)
     setError(null)
@@ -72,11 +80,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       const data = await res.json()
       if (!res.ok) throw new Error(data.message)
 
-      setToken(data.access_token)
-      setUser(data.user)
+      // setToken(data.access_token)
+      // setUser(data.user)
 
-      localStorage.setItem("authToken", data.access_token)
-      localStorage.setItem("user", JSON.stringify(data.user))
+      // localStorage.setItem("authToken", data.access_token)
+      // localStorage.setItem("user", JSON.stringify(data.user))
     } catch (err: any) {
       setError(err.message)
       throw err
@@ -85,7 +93,38 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   }
 
-  // ================= STEP 1: START SIGNUP =================
+
+  const verifyLoginOtp = async (email: string, otp: string) => {
+  setLoading(true)
+  setError(null)
+
+  try {
+    const res = await fetch(`${API_BASE}/auth/verify-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, otp }),
+    })
+
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.message)
+
+    
+    setToken(data.access_token)
+    setUser(data.user)
+
+    localStorage.setItem("authToken", data.token)
+    localStorage.setItem("user", JSON.stringify(data.user))
+
+  } catch (err: any) {``
+    setError(err.message)
+    throw err
+  } finally {
+    setLoading(false)
+  }
+}
+
+
+  
   const startSignup = async (data: SignupStep1Data) => {
     setLoading(true)
     setError(null)
@@ -109,7 +148,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   }
 
-  // ================= STEP 2: VERIFY OTP =================
+  
   const verifyOtp = async (email: string, otp: string) => {
     setLoading(true)
     setError(null)
@@ -183,6 +222,33 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   }
 }
 
+
+const loginWithGoogle = async (googleToken: string) => {
+  setLoading(true)
+  setError(null)
+
+  try {
+    const res = await fetch(`${API_BASE}/auth/google`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: googleToken }),
+    })
+
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.message)
+
+    setToken(data.token)
+    
+
+    localStorage.setItem("authToken", data.token)
+    
+  } catch (err: any) {
+    setError(err.message || "Google login failed")
+    throw err
+  } finally {
+    setLoading(false)
+  }
+}
   const logout = () => {
     setUser(null)
     setToken(null)
@@ -201,7 +267,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         startSignup,
         verifyOtp,
         completeSignup,
+        verifyLoginOtp,
         logout,
+        loginWithGoogle,
         isAuthenticated: !!token,
       }}
     >

@@ -15,7 +15,7 @@ type LoginStep = "credentials" | "otp"
 const LoginForm: React.FC<LoginFormProps> = ({ switchToSignup }) => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const { login: authLogin, loginWithGoogle:loginWithGoogle, verifyOtp: authVerifyOtp, loading: authLoading, error: authError } = useAuth()
+  const { login: login,  loading: authLoading, error: authError,verifyLoginOtp,loginWithGoogle } = useAuth()
   
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -26,103 +26,105 @@ const LoginForm: React.FC<LoginFormProps> = ({ switchToSignup }) => {
   const [currentStep, setCurrentStep] = useState<LoginStep>("credentials")
 
   
+
+
 useEffect(() => {
   const token = searchParams.get("token")
   const user = searchParams.get("user")
-  const errorParam = searchParams.get("error")
 
-  if (errorParam) {
-    setError(decodeURIComponent(errorParam))
-    return
-  }
-
-  const handleGoogleCallback = async () => {
-    if (token && user) {
-      try {
-        const parsedUser = JSON.parse(decodeURIComponent(user))
-
-        await loginWithGoogle(parsedUser, token)
-
-       
-        window.history.replaceState({}, document.title, "/auth")
-
-        navigate("/dashboard", { replace: true })
-      } catch (err: any) {
-        setError(err.message || "Google login failed")
-      }
-    }
-  }
-
-  handleGoogleCallback()
-}, [searchParams, navigate])
-
-
-  const handleSendOTP = async () => {
-    setError(null)
+  if (token && user) {
     try {
-      if (!email || !password) {
-        throw new Error("Please fill in email and password")
-      }
+      const parsedUser = JSON.parse(decodeURIComponent(user))
 
       
-      const res = await fetch("http://localhost:3000/api/estimaApp/auth/send-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      })
-      const data = await res.json()
+      setToken(token)
+      setUser(parsedUser)
 
-      if (!res.ok) throw new Error(data.message || "Failed to send OTP")
+      localStorage.setItem("authToken", token)
+      localStorage.setItem("user", JSON.stringify(parsedUser))
 
-      setCurrentStep("otp")
-      setVerificationCode("")
+      
+      window.history.replaceState({}, document.title, "/auth")
+
+      navigate("/dashboard", { replace: true })
     } catch (err: any) {
-      setError(err.message || "Failed to send OTP")
+      setError("Google login failed")
     }
   }
+}, [searchParams, navigate])
+  // const handleSendOTP = async () => {
+  //   setError(null)
+  //   try {
+  //     if (!email || !password) {
+  //       throw new Error("Please fill in email and password")
+  //     }
+
+      
+  //     const res = await fetch("http://localhost:3000/api/estimaApp/auth/send-otp", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ email }),
+  //     })
+  //     const data = await res.json()
+
+  //     if (!res.ok) throw new Error(data.message || "Failed to send OTP")
+
+  //     setCurrentStep("otp")
+  //     setVerificationCode("")
+  //   } catch (err: any) {
+  //     setError(err.message || "Failed to send OTP")
+  //   }
+  // }
 
   const handleVerifyOTP = async () => {
-    setError(null)
-    try {
-      if (!verificationCode || verificationCode.length !== 6) {
-        throw new Error("Please enter a valid 6-digit code")
-      }
+  setError(null)
 
-      
-      await authVerifyOtp(email, verificationCode)
-      navigate("/dashboard")
-    } catch (err: any) {
-      setError(err.message || "OTP verification failed")
+  try {
+    if (!verificationCode || verificationCode.length !== 6) {
+      throw new Error("Please enter a valid 6-digit code")
     }
+
+    await verifyLoginOtp(email, verificationCode)
+
+   
+    navigate("/dashboard")
+
+  } catch (err: any) {
+    setError(err.message || "OTP verification failed")
   }
+}
 
-  const handleCredentialsSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setError(null)
 
-    try {
-      if (!email || !password) {
-        throw new Error("Please fill in all fields")
-      }
+  const handleCredentialsSubmit = async (
+  e: React.FormEvent<HTMLFormElement>
+) => {
+  e.preventDefault()
+  setError(null)
 
-      
-      await authLogin(email, password)
-      navigate("/dashboard")
-    } catch (err: any) {
-      
-      if (err.message?.includes("OTP") || err.message?.includes("verification")) {
-        await handleSendOTP()
-      } else {
-        setError(err.message || "Login failed. Please try again.")
-      }
+  try {
+    if (!email || !password) {
+      throw new Error("Please fill in all fields")
     }
+    await login(email, password)
+    
+    setCurrentStep("otp")
+  } catch (err: any) {
+    setError(err.message || "Login failed. Please try again.")
   }
+}
+
 
   const handleGoogleLogin = () => {
     
     window.location.href = "http://localhost:3000/api/estimaApp/auth/google"
   }
 
+useEffect(() => {
+  if (verificationCode.length === 6 && !authLoading) {
+    handleVerifyOTP()
+  }
+}, [verificationCode])
+  
   return (
     <div className="relative">
       
@@ -300,7 +302,7 @@ useEffect(() => {
               </p>
             </div>
 
-            {/* OTP 6-Digit Input */}
+            
             <div className="space-y-3">
               <Label className="text-slate-700 font-medium">
                 Verification Code *
@@ -319,7 +321,7 @@ useEffect(() => {
                       const code = newCode.join("").slice(0, 6)
                       setVerificationCode(code)
                       
-                      // Auto-focus next input
+                     
                       if (e.target.value && index < 5) {
                         const nextInput = document.getElementById(`otp-${index + 1}`) as HTMLInputElement
                         nextInput?.focus()
@@ -347,31 +349,14 @@ useEffect(() => {
               )}
             </div>
 
-            {/* Navigation for OTP */}
-            <div className="flex gap-3 pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setCurrentStep("credentials")}
-                className="w-1/3 border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg transition-all"
-              >
-                Back
-              </Button>
-              <Button
-                type="button"
-                onClick={handleVerifyOTP}
-                disabled={authLoading || verificationCode.length !== 6}
-                className="flex-1 bg-gradient-to-br from-slate-900 to-black hover:from-black hover:to-slate-900 text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
-              >
-                {authLoading ? "Verifying..." : "Verify OTP"}
-              </Button>
-            </div>
+            
+            
 
             {/* Resend OTP Button */}
             <Button
               type="button"
               variant="outline"
-              onClick={handleSendOTP}
+              
               className="w-full border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg transition-all text-sm"
             >
               Resend Code
@@ -397,3 +382,11 @@ useEffect(() => {
 }
 
 export default LoginForm
+function setToken(token: string) {
+  throw new Error("Function not implemented.")
+}
+
+function setUser(parsedUser: any) {
+  throw new Error("Function not implemented.")
+}
+

@@ -1,11 +1,5 @@
 /// <reference types="vite/client" />
 
-/**
- * Dashboard API Service
- * 
- * Handles all API calls for the dashboard
- * Replace BASE_URL with your actual backend URL
- */
 
 const BASE_URL = (import.meta.env.VITE_API_URL as string) || "http://localhost:3000/api";
 
