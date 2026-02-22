@@ -156,7 +156,7 @@ const TopHeader: React.FC<{
 
             <div className="hidden md:flex flex-col text-left">
               <span className="text-sm font-medium">
-                {user?.firstName} {user?.lastName}
+                {user?.firstName} {user?.lastName} 
               </span>
               <span className="text-xs text-gray-500">
                 {user?.role}

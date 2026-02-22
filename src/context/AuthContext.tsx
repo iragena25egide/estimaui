@@ -110,10 +110,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
     
     setToken(data.access_token)
-    setUser(data.user)
+    
 
     localStorage.setItem("authToken", data.token)
-    localStorage.setItem("user", JSON.stringify(data.user))
+    
 
   } catch (err: any) {``
     setError(err.message)
