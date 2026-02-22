@@ -20,8 +20,7 @@ type Notification = {
 
 type UserType = {
   id: string;
-  firstName: string;
-  lastName: string;
+  name: String;
   email: string;
   role: string;
   lastLogin?: string;
@@ -160,7 +159,7 @@ const TopHeader: React.FC<{
 
             <div className="hidden md:flex flex-col text-left">
               <span className="text-sm font-medium">
-                {user?.firstName} {user?.lastName} 
+                {user?.name} 
               </span>
               <span className="text-xs text-gray-500">
                 {user?.role}
@@ -174,7 +173,7 @@ const TopHeader: React.FC<{
             <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg border">
               <div className="p-4 border-b">
                 <div className="text-sm font-medium">
-                  {user?.firstName} {user?.lastName}
+                  {user?.name} 
                 </div>
                 <div className="text-xs text-gray-500">
                   {user?.email}
