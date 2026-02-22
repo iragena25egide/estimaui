@@ -1,4 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ProjectService from "../../services/projectService";
+import { DollarSign, FileText, Users, Briefcase } from "lucide-react";
 
 interface Project {
   id: string;
@@ -9,100 +12,157 @@ interface Project {
   completion: number;
 }
 
-interface RecentProjectsProps {
-  projects: Project[];
-  loading?: boolean;
-}
+const RecentProjects: React.FC = () => {
+  const navigate = useNavigate();
 
-const RecentProjects: React.FC<RecentProjectsProps> = ({ projects, loading = false }) => {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "In Progress":
-        return "text-blue-600";
-      case "Completed":
-        return "text-green-600";
-      case "Planning":
-        return "text-yellow-600";
-      default:
-        return "text-gray-600";
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadRecentProjects();
+  }, []);
+
+  const loadRecentProjects = async () => {
+    try {
+      setLoading(true);
+
+      const res = await ProjectService.getRecentProjects(5);
+
+      setProjects(res || []);
+    } catch (error) {
+      console.error("Recent projects fetch error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getStatusBg = (status: string) => {
+  const getStatusStyle = (status: string) => {
     switch (status) {
       case "In Progress":
-        return "bg-blue-50";
+        return "text-blue-600 bg-blue-50";
       case "Completed":
-        return "bg-green-50";
+        return "text-green-600 bg-green-50";
       case "Planning":
-        return "bg-yellow-50";
+        return "text-yellow-600 bg-yellow-50";
       default:
-        return "bg-gray-50";
+        return "text-gray-600 bg-gray-50";
     }
+  };
+
+  const formatCurrency = (value: number) => {
+    return value.toLocaleString(undefined, {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0,
+    });
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mb-6">
-      <h2 className="text-lg font-semibold text-slate-900 mb-4">Recent Projects</h2>
+    <div className="bg-white rounded-2xl border shadow-sm p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-semibold">Recent Projects</h2>
+
+        <button
+          onClick={() => navigate("/projects")}
+          className="text-sm text-blue-600 hover:underline"
+        >
+          View All
+        </button>
+      </div>
+
       <div className="overflow-x-auto">
-        <table className="w-full">
+        <table className="w-full min-w-[600px]">
           <thead>
-            <tr className="border-b border-slate-200">
-              <th className="text-left py-3 px-4 font-semibold text-slate-700">Project Name</th>
-              <th className="text-left py-3 px-4 font-semibold text-slate-700">Client</th>
-              <th className="text-left py-3 px-4 font-semibold text-slate-700">Amount</th>
-              <th className="text-left py-3 px-4 font-semibold text-slate-700">Status</th>
-              <th className="text-left py-3 px-4 font-semibold text-slate-700">Completion</th>
+            <tr className="border-b">
+              <th className="text-left p-3 text-sm text-slate-600">
+                Project
+              </th>
+              <th className="text-left p-3 text-sm text-slate-600">
+                Client
+              </th>
+              <th className="text-left p-3 text-sm text-slate-600">
+                Amount
+              </th>
+              <th className="text-left p-3 text-sm text-slate-600">
+                Status
+              </th>
+              <th className="text-left p-3 text-sm text-slate-600">
+                Progress
+              </th>
             </tr>
           </thead>
+
           <tbody>
-            {loading
-              ? Array.from({ length: 5 }).map((_, i) => (
-                  <tr key={`s-${i}`} className="border-b border-slate-100">
-                    <td className="py-3 px-4">
-                      <div className="h-4 bg-slate-200 rounded w-48 animate-pulse" />
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="h-4 bg-slate-200 rounded w-32 animate-pulse" />
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="h-4 bg-slate-200 rounded w-20 animate-pulse" />
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="h-4 bg-slate-200 rounded w-20 animate-pulse" />
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="h-4 bg-slate-200 rounded w-16 animate-pulse" />
-                    </td>
-                  </tr>
-                ))
-              : projects.map((project) => (
-                  <tr key={project.id} className="border-b border-slate-100 hover:bg-slate-50 transition">
-                    <td className="py-3 px-4 text-slate-900 font-medium">{project.name}</td>
-                    <td className="py-3 px-4 text-slate-600">{project.client}</td>
-                    <td className="py-3 px-4 text-slate-900 font-semibold">${(project.amount / 1000).toFixed(0)}K</td>
-                    <td className="py-3 px-4">
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusBg(
-                          project.status
-                        )} ${getStatusColor(project.status)}`}
-                      >
-                        {project.status}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-28 bg-slate-100 rounded-full h-1.5">
-                          <div
-                            className="h-1.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-400 transition-all"
-                            style={{ width: `${project.completion}%` }}
-                          />
-                        </div>
-                        <span className="text-xs font-medium text-slate-700 w-10">{project.completion}%</span>
+            {loading &&
+              Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i} className="border-b">
+                  <td className="p-3">
+                    <div className="h-4 w-40 bg-slate-200 animate-pulse rounded" />
+                  </td>
+                  <td className="p-3">
+                    <div className="h-4 w-32 bg-slate-200 animate-pulse rounded" />
+                  </td>
+                  <td className="p-3">
+                    <div className="h-4 w-24 bg-slate-200 animate-pulse rounded" />
+                  </td>
+                  <td className="p-3">
+                    <div className="h-4 w-20 bg-slate-200 animate-pulse rounded" />
+                  </td>
+                  <td className="p-3">
+                    <div className="h-4 w-28 bg-slate-200 animate-pulse rounded" />
+                  </td>
+                </tr>
+              ))}
+
+            {!loading &&
+              projects.map((project) => (
+                <tr
+                  key={project.id}
+                  className="border-b hover:bg-slate-50 cursor-pointer"
+                  onClick={() => navigate(`/projects/${project.id}`)}
+                >
+                  <td className="p-3 font-medium">{project.name}</td>
+
+                  <td className="p-3 text-slate-600">{project.client}</td>
+
+                  <td className="p-3 font-semibold">
+                    {formatCurrency(project.amount)}
+                  </td>
+
+                  <td className="p-3">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyle(
+                        project.status
+                      )}`}
+                    >
+                      {project.status}
+                    </span>
+                  </td>
+
+                  <td className="p-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-28 bg-slate-100 h-2 rounded-full">
+                        <div
+                          className="h-2 bg-blue-500 rounded-full"
+                          style={{ width: `${project.completion}%` }}
+                        />
                       </div>
-                    </td>
-                  </tr>
-                ))}
+
+                      <span className="text-xs font-semibold w-10">
+                        {project.completion}%
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+
+            {!loading && projects.length === 0 && (
+              <tr>
+                <td colSpan={5} className="text-center p-6 text-slate-500">
+                  No recent projects found
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

@@ -138,8 +138,6 @@ const Dashboard: React.FC = () => {
 
       {/* RECENT PROJECTS */}
       <RecentProjects
-        projects={stats.recentProjects}
-        loading={loading}
       />
 
       {/* SIDE INFO */}
