@@ -148,7 +148,7 @@ const TopHeader: React.FC<{
           )}
         </div>
 
-        {/* Profile */}
+       
         <div className="relative" ref={profileRef}>
           <button
             onClick={() => setProfileOpen(!profileOpen)}

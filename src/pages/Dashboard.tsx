@@ -63,15 +63,7 @@ const Dashboard: React.FC = () => {
         amount: 21000000,
         status: "Planning",
         completion: 20,
-      },
-      {
-        id: "5",
-        name: "Bridge Infrastructure AT MUSANZE",
-        client: "MUSANZE DISTRICT",
-        amount: 35000000,
-        status: "In Progress",
-        completion: 72,
-      },
+      }
     ],
   });
 
