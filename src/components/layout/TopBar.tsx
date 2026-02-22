@@ -20,7 +20,8 @@ type Notification = {
 
 type UserType = {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   role: string;
   lastLogin?: string;
@@ -42,7 +43,7 @@ const TopHeader: React.FC<{
 
   const unreadCount = notifications.filter((n) => n.unread).length;
 
-  // Fetch Logged User
+  
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -59,7 +60,7 @@ const TopHeader: React.FC<{
     fetchUser();
   }, []);
 
-  // Close dropdowns when clicking outside
+  
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -77,7 +78,7 @@ const TopHeader: React.FC<{
 
   const logout = () => {
     localStorage.removeItem("token");
-    window.location.href = "/login";
+    window.location.href = "/auth";
   };
 
   const fmt = (iso?: string) =>
@@ -155,7 +156,7 @@ const TopHeader: React.FC<{
 
             <div className="hidden md:flex flex-col text-left">
               <span className="text-sm font-medium">
-                {user?.name}
+                {user?.firstName} {user?.lastName}
               </span>
               <span className="text-xs text-gray-500">
                 {user?.role}
@@ -169,7 +170,7 @@ const TopHeader: React.FC<{
             <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg border">
               <div className="p-4 border-b">
                 <div className="text-sm font-medium">
-                  {user?.name}
+                  {user?.firstName} {user?.lastName}
                 </div>
                 <div className="text-xs text-gray-500">
                   {user?.email}
