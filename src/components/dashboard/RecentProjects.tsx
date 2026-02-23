@@ -7,9 +7,10 @@ interface Project {
   id: string;
   name: string;
   client: string;
-  amount: number;
+  location: string;
   status: string;
   completion: number;
+  startDate: String;
 }
 
 const RecentProjects: React.FC = () => {
@@ -27,6 +28,7 @@ const RecentProjects: React.FC = () => {
       setLoading(true);
 
       const res = await ProjectService.getRecentProjects(5);
+      
 
       setProjects(res || []);
     } catch (error) {
@@ -49,13 +51,13 @@ const RecentProjects: React.FC = () => {
     }
   };
 
-  const formatCurrency = (value: number) => {
-    return value.toLocaleString(undefined, {
-      style: "currency",
-      currency: "USD",
-      maximumFractionDigits: 0,
-    });
-  };
+  // const formatCurrency = (value: number) => {
+  //   return value.toLocaleString(undefined, {
+  //     style: "currency",
+  //     currency: "USD",
+  //     maximumFractionDigits: 0,
+  //   });
+  // };
 
   return (
     <div className="bg-white rounded-2xl border shadow-sm p-4">
@@ -63,7 +65,7 @@ const RecentProjects: React.FC = () => {
         <h2 className="text-lg font-semibold">Recent Projects</h2>
 
         <button
-          onClick={() => navigate("/projects")}
+          onClick={() => navigate("dashboard/projects")}
           className="text-sm text-blue-600 hover:underline"
         >
           View All
@@ -80,14 +82,12 @@ const RecentProjects: React.FC = () => {
               <th className="text-left p-3 text-sm text-slate-600">
                 Client
               </th>
+              
               <th className="text-left p-3 text-sm text-slate-600">
-                Amount
+                Location
               </th>
               <th className="text-left p-3 text-sm text-slate-600">
-                Status
-              </th>
-              <th className="text-left p-3 text-sm text-slate-600">
-                Progress
+                Start Date
               </th>
             </tr>
           </thead>
@@ -124,10 +124,10 @@ const RecentProjects: React.FC = () => {
                   <td className="p-3 font-medium">{project.name}</td>
 
                   <td className="p-3 text-slate-600">{project.client}</td>
+                  
+                 <td className="p-3 text-slate-600">{project.location}</td>
 
-                  <td className="p-3 font-semibold">
-                    {formatCurrency(project.amount)}
-                  </td>
+                 <td className="p-3 text-slate-600">{'13/3/2026'}</td>
 
                   <td className="p-3">
                     <span

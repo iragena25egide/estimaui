@@ -136,7 +136,7 @@ const Dashboard: React.FC = () => {
           loading={loading} color={""} iconColor={""}        />
       </div>
 
-      {/* RECENT PROJECTS */}
+      
       <RecentProjects
       />
 

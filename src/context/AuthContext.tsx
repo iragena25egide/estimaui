@@ -109,7 +109,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     if (!res.ok) throw new Error(data.message)
 
     
-    setToken(data.access_token)
+    setToken(data.token)
     
 
     localStorage.setItem("authToken", data.token)

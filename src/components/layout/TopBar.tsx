@@ -47,10 +47,6 @@ const TopHeader: React.FC<{
     const fetchUser = async () => {
       try {
         const res = await API.get("/auth/me");
-		const tok=localStorage.getItem("authToken");
-		console.log("Token:", tok);
-		console.log("User data:", res.data);
-		console.log(res);
         setUser(res.data);
       } catch (error) {
         console.error("Auth error:", error);

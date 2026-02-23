@@ -10,9 +10,6 @@ export interface Project {
 }
 
 class ProjectService {
-  // =============================
-  // CREATE PROJECT
-  // =============================
   static async createProject(data: any) {
     try {
       const res = await API.post("/projects/create", data);
@@ -23,12 +20,11 @@ class ProjectService {
     }
   }
 
-  // =============================
-  // GET MY PROJECTS
-  // =============================
+  
   static async getMyProjects() {
     try {
       const res = await API.get("/projects/my");
+      
       return res.data;
     } catch (error: any) {
       console.error("Get projects error:", error);
@@ -36,22 +32,20 @@ class ProjectService {
     }
   }
 
-  // =============================
-  // GET RECENT PROJECTS
-  // =============================
+  
   static async getRecentProjects(limit: number = 5) {
     try {
       const res = await API.get(`/projects/recent?limit=${limit}`);
+      
       return res.data;
+      
     } catch (error: any) {
       console.error("Recent projects error:", error);
       throw error;
     }
   }
 
-  // =============================
-  // COUNT PROJECTS
-  // =============================
+  
   static async countProjects() {
     try {
       const res = await API.get("/projects/count");
@@ -62,9 +56,6 @@ class ProjectService {
     }
   }
 
-  // =============================
-  // GET SINGLE PROJECT
-  // =============================
   static async getProjectById(id: string) {
     try {
       const res = await API.get(`/projects/${id}`);
@@ -75,9 +66,7 @@ class ProjectService {
     }
   }
 
-  // =============================
-  // UPDATE PROJECT
-  // =============================
+  
   static async updateProject(id: string, data: any) {
     try {
       const res = await API.put(`/projects/${id}`, data);
@@ -88,9 +77,7 @@ class ProjectService {
     }
   }
 
-  // =============================
-  // DELETE PROJECT
-  // =============================
+  
   static async deleteProject(id: string) {
     try {
       const res = await API.delete(`/projects/${id}`);
