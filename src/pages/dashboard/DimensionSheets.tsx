@@ -32,9 +32,9 @@ const DimensionSheets = () => {
 
   const handleSubmit = async () => {
     if(editingId){
-      // update
+      
     } else {
-      // create
+      
     }
     setOpen(false);
     setEditingId(null);
