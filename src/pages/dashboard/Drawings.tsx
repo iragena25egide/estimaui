@@ -20,13 +20,11 @@ const Drawings: React.FC = () => {
     fileType: "IMAGE"
   });
 
-  // ===============================
-  // LOAD DATA (Replace with API)
-  // ===============================
+  
   const loadDrawings = async () => {
     setLoading(true);
     try {
-      // const res = await DrawingService.getAll(projectId)
+      
       const res:any[] = [];
       setDrawings(res);
     } finally {
@@ -38,9 +36,7 @@ const Drawings: React.FC = () => {
     loadDrawings();
   }, []);
 
-  // ===============================
-  // CREATE / UPDATE
-  // ===============================
+ 
   const handleSubmit = async () => {
 
     if (editingId) {
