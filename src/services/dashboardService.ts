@@ -64,9 +64,7 @@ class DashboardService {
     }
   }
 
-  /**
-   * Get cost breakdown data for the selected time period
-   */
+  
   static async getCostBreakdown(projectId?: string) {
     try {
       const url = projectId
@@ -84,9 +82,7 @@ class DashboardService {
     }
   }
 
-  /**
-   * Get recent projects
-   */
+  
   static async getRecentProjects(limit: number = 5) {
     try {
       const response = await fetch(`${BASE_URL}/projects/recent?limit=${limit}`, {
@@ -100,9 +96,7 @@ class DashboardService {
     }
   }
 
-  /**
-   * Get all projects (paginated)
-   */
+  
   static async getProjects(page: number = 1, limit: number = 10) {
     try {
       const response = await fetch(
@@ -117,9 +111,7 @@ class DashboardService {
     }
   }
 
-  /**
-   * Get reports statistics
-   */
+  
   static async getReportsStats() {
     try {
       const response = await fetch(`${BASE_URL}/reports/stats`, {
