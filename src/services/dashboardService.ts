@@ -125,9 +125,7 @@ class DashboardService {
     }
   }
 
-  /**
-   * Get BOQ items statistics
-   */
+  
   static async getBoqStats() {
     try {
       const response = await fetch(`${BASE_URL}/boq-items/stats`, {
@@ -141,9 +139,7 @@ class DashboardService {
     }
   }
 
-  /**
-   * Get team members count
-   */
+  
   static async getTeamMembersCount() {
     try {
       const response = await fetch(`${BASE_URL}/teams/members/count`, {
@@ -157,10 +153,7 @@ class DashboardService {
     }
   }
 
-  /**
-   * Get all dashboard data (composite endpoint - optional)
-   * This is useful if you want to fetch all data in a single request
-   */
+  
   static async getAllDashboardData(): Promise<DashboardStats> {
     try {
       const [
