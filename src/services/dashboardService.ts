@@ -36,9 +36,7 @@ class DashboardService {
     "Content-Type": "application/json",
   };
 
-  /**
-   * Get total project statistics
-   */
+  
   static async getProjectStats() {
     try {
       const response = await fetch(`${BASE_URL}/projects/stats`, {
@@ -52,9 +50,7 @@ class DashboardService {
     }
   }
 
-  /**
-   * Get monthly project creation data
-   */
+ 
   static async getMonthlyProjects() {
     try {
       const response = await fetch(`${BASE_URL}/projects/monthly`, {

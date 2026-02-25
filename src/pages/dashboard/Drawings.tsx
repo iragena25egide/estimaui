@@ -40,7 +40,7 @@ const Drawings: React.FC = () => {
   const handleSubmit = async () => {
 
     if (editingId) {
-      // await DrawingService.update(editingId, form)
+      
     } else {
       // await DrawingService.create(projectId, form)
     }

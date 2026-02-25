@@ -31,7 +31,7 @@ const EquipmentCosts = () => {
 
   const handleSubmit = async ()=>{
     if(editingId){
-      // update
+      
     } else {
       // create
     }
