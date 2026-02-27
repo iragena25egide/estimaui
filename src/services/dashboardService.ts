@@ -223,9 +223,7 @@ class DashboardService {
     }
   }
 
-  /**
-   * Get project material takeoffs
-   */
+  
   static async getProjectMaterials(projectId: string) {
     try {
       const response = await fetch(
@@ -240,9 +238,7 @@ class DashboardService {
     }
   }
 
-  /**
-   * Get project labor costs
-   */
+  
   static async getProjectLabor(projectId: string) {
     try {
       const response = await fetch(
@@ -257,9 +253,7 @@ class DashboardService {
     }
   }
 
-  /**
-   * Get project equipment costs
-   */
+  
   static async getProjectEquipment(projectId: string) {
     try {
       const response = await fetch(
