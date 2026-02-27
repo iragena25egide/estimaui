@@ -28,9 +28,7 @@ class ReportService {
     }
   }
 
-  // ===============================
-  // GENERATE REPORT
-  // ===============================
+  
   static async generateReport(projectId: string) {
     try {
       const res = await API.post(`/reports/generate/${projectId}`);
@@ -41,9 +39,7 @@ class ReportService {
     }
   }
 
-  // ===============================
-  // SEND REPORT TO CLIENT EMAIL
-  // ===============================
+  
   static async sendReportEmail(reportId: string) {
     try {
       const res = await API.post(`/reports/send-email/${reportId}`);
@@ -54,9 +50,7 @@ class ReportService {
     }
   }
 
-  // ===============================
-  // DOWNLOAD REPORT PDF
-  // ===============================
+  
   static async downloadReport(reportId: string) {
     try {
       const res = await API.get(
@@ -80,9 +74,7 @@ class ReportService {
     }
   }
 
-  // ===============================
-  // DELETE REPORT
-  // ===============================
+  
   static async deleteReport(reportId: string) {
     try {
       const res = await API.delete(`/reports/${reportId}`);
