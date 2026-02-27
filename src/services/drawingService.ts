@@ -35,9 +35,7 @@ class DrawingService {
   }
 
 
-  // ==========================
-  // GET PROJECT DRAWINGS
-  // ==========================
+ 
   static async getDrawings(projectId: string) {
     try {
       const res = await API.get(
@@ -53,9 +51,7 @@ class DrawingService {
   }
 
 
-  // ==========================
-  // GET SINGLE DRAWING
-  // ==========================
+  
   static async getDrawingById(projectId: string, id: string) {
     try {
       const res = await API.get(
@@ -71,9 +67,7 @@ class DrawingService {
   }
 
 
-  // ==========================
-  // UPDATE DRAWING
-  // ==========================
+  
   static async updateDrawing(
     projectId: string,
     id: string,
@@ -109,9 +103,7 @@ class DrawingService {
   }
 
 
-  // ==========================
-  // DELETE DRAWING
-  // ==========================
+  
   static async deleteDrawing(projectId: string, id: string) {
     try {
 
