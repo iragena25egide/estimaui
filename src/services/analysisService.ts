@@ -68,9 +68,7 @@ class RateAnalysisService {
     }
   }
 
-  // ============================
-  // UPDATE RATE ANALYSIS
-  // ============================
+ 
   static async updateRateAnalysis(id: string, data: any) {
     try {
 
@@ -104,9 +102,7 @@ class RateAnalysisService {
     }
   }
 
-  // ============================
-  // DELETE RATE ANALYSIS
-  // ============================
+  
   static async deleteRateAnalysis(id: string) {
     try {
       const res = await API.delete(`/rate-analysis/${id}`);
