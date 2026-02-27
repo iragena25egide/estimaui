@@ -2,9 +2,7 @@ import API from "../context/axios";
 
 class TeamService {
 
-  // =========================
-  // TEAMS
-  // =========================
+  
 
   static async getTeams() {
     const res = await API.get("/teams");
@@ -21,9 +19,7 @@ class TeamService {
     return res.data;
   }
 
-  // =========================
-  // MEMBERS
-  // =========================
+  
 
   static async inviteMember(
     teamId: string,
