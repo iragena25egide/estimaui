@@ -11,7 +11,7 @@ const TopLoader = () => {
 
     const timer = setTimeout(() => {
       NProgress.done()
-    }, 300)
+    }, 400)
 
     return () => {
       clearTimeout(timer)
