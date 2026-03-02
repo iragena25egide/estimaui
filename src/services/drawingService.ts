@@ -148,7 +148,7 @@ class DrawingService {
 
 
   static async getByProject(projectId: string) {
-  const res = await API.get(`/drawings/project/${projectId}`);
+  const res = await API.get(`/drawing/project/${projectId}`);
   return res.data;
 }
 
