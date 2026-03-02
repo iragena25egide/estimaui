@@ -16,6 +16,7 @@ import Teams from "@/pages/dashboard/Teams"
 import SpecificationRegister from "@/pages/dashboard/SpecificationRegister"
 import Settings from "@/pages/dashboard/Settings"
 import DrawingProjects from "@/pages/dashboard/drawingProjects"
+import PageNotFound from "@/notFound"
 
 const App: React.FC = () => {
   return (
@@ -47,7 +48,7 @@ const App: React.FC = () => {
 
       </Route>
 
-      <Route path="*" element={<div>Page Not Found</div>} />
+      <Route path="*" element={<PageNotFound />} />
 
     </Routes>
   )
