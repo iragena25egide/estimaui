@@ -2,11 +2,21 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+
+#nprogress .bar {
+  background: #2563eb; 
+  height: 3px;
+}
+
+#nprogress .spinner {
+  display: none;
+}
+
 @custom-variant dark (&:is(.dark *));
 
-/* compact base for dashboard density */
+
 html {
-  font-size: 14px;
+  font-size: 15px;
 }
 
 body {

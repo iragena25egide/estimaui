@@ -1,56 +1,70 @@
-import React from "react"
+import React, { Suspense, lazy } from "react"
 import { Routes, Route, Navigate } from "react-router-dom"
-import AuthPage from "@/pages/AuthPage"
-import Dashboard from "@/pages/Dashboard"
-import DashboardLayout from "@/components/layout/DashboardLayout"
-import Projects from "@/pages/dashboard/Projects"
-import Drawings from "@/pages/dashboard/Drawings"
-import BillOfQuantity from "@/pages/dashboard/BillOfQuantity"
-import DimensionSheets from "@/pages/dashboard/DimensionSheets"
-import EquipmentCosts from "@/pages/dashboard/EquipmentCosts"
-import LaborProductivity from "@/pages/dashboard/LaborProductivity"
-import MaterialTakeOff from "@/pages/dashboard/MaterialTakeOff"
-import RateAnalysis from "@/pages/dashboard/RateAnalysis"
-import Reports from "@/pages/dashboard/Reports"
-import Teams from "@/pages/dashboard/Teams"
-import SpecificationRegister from "@/pages/dashboard/SpecificationRegister"
-import Settings from "@/pages/dashboard/Settings"
-import DrawingProjects from "@/pages/dashboard/drawingProjects"
+import TopLoader from "@/loader"
 import PageNotFound from "@/notFound"
+
+
+const AuthPage = lazy(() => import("@/pages/AuthPage"))
+const Dashboard = lazy(() => import("@/pages/Dashboard"))
+const DashboardLayout = lazy(() => import("@/components/layout/DashboardLayout"))
+
+const Projects = lazy(() => import("@/pages/dashboard/Projects"))
+const DrawingProjects = lazy(() => import("@/pages/dashboard/drawingProjects"))
+const Drawings = lazy(() => import("@/pages/dashboard/Drawings"))
+const BillOfQuantity = lazy(() => import("@/pages/dashboard/BillOfQuantity"))
+const DimensionSheets = lazy(() => import("@/pages/dashboard/DimensionSheets"))
+const EquipmentCosts = lazy(() => import("@/pages/dashboard/EquipmentCosts"))
+const LaborProductivity = lazy(() => import("@/pages/dashboard/LaborProductivity"))
+const MaterialTakeOff = lazy(() => import("@/pages/dashboard/MaterialTakeOff"))
+const RateAnalysis = lazy(() => import("@/pages/dashboard/RateAnalysis"))
+const Reports = lazy(() => import("@/pages/dashboard/Reports"))
+const Teams = lazy(() => import("@/pages/dashboard/Teams"))
+const SpecificationRegister = lazy(() => import("@/pages/dashboard/SpecificationRegister"))
+const Settings = lazy(() => import("@/pages/dashboard/Settings"))
 
 const App: React.FC = () => {
   return (
-    <Routes>
+    <Suspense fallback={null}>
+      {/* Top Progress Bar */}
+      <TopLoader />
 
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Routes>
 
-      <Route path="/auth" element={<AuthPage />} />
+        {/* Redirect root */}
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-      <Route path="/dashboard" element={<DashboardLayout />}>
+        {/* Auth */}
+        <Route path="/auth" element={<AuthPage />} />
 
-        <Route index element={<Dashboard />} />
-        <Route path="projects" element={<Projects />} />
+        {/* Dashboard Layout */}
+        <Route path="/dashboard" element={<DashboardLayout />}>
 
-        
-        <Route path="drawings" element={<DrawingProjects />} />
-        <Route path="drawings/:projectId" element={<Drawings />} />
+          <Route index element={<Dashboard />} />
+          <Route path="projects" element={<Projects />} />
 
-        <Route path="boq" element={<BillOfQuantity />} />
-        <Route path="dimension-sheets" element={<DimensionSheets />} />
-        <Route path="equipment-costs" element={<EquipmentCosts />} />
-        <Route path="labor-productivity" element={<LaborProductivity />} />
-        <Route path="material-takeoff" element={<MaterialTakeOff />} />
-        <Route path="rate-analysis" element={<RateAnalysis />} />
-        <Route path="reports" element={<Reports />} />
-        <Route path="teams" element={<Teams />} />
-        <Route path="specification-register" element={<SpecificationRegister />} />
-        <Route path="settings" element={<Settings />} />
+          {/* Drawings Module */}
+          <Route path="drawings" element={<DrawingProjects />} />
+          <Route path="drawings/:projectId" element={<Drawings />} />
 
-      </Route>
+          {/* Other Modules */}
+          <Route path="boq" element={<BillOfQuantity />} />
+          <Route path="dimension-sheets" element={<DimensionSheets />} />
+          <Route path="equipment-costs" element={<EquipmentCosts />} />
+          <Route path="labor-productivity" element={<LaborProductivity />} />
+          <Route path="material-takeoff" element={<MaterialTakeOff />} />
+          <Route path="rate-analysis" element={<RateAnalysis />} />
+          <Route path="reports" element={<Reports />} />
+          <Route path="teams" element={<Teams />} />
+          <Route path="specification-register" element={<SpecificationRegister />} />
+          <Route path="settings" element={<Settings />} />
 
-      <Route path="*" element={<PageNotFound />} />
+        </Route>
 
-    </Routes>
+        {/* 404 */}
+        <Route path="*" element={<PageNotFound />} />
+
+      </Routes>
+    </Suspense>
   )
 }
 
