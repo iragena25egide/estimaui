@@ -24,7 +24,7 @@ const DrawingProjects = () => {
         {projects.map(p => (
           <div
             key={p.projectId}
-            onClick={() => navigate(`/drawings/${p.projectId}`)}
+            onClick={() => navigate(`/dashboard/drawings/${p.projectId}`)}
             className="border p-4 rounded-xl hover:bg-slate-50 cursor-pointer"
           >
             <div className="flex justify-between">
