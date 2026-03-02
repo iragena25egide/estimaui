@@ -30,14 +30,12 @@ const Drawings: React.FC = () => {
     fileType: "IFC"
   });
 
-  // ===============================
-  // Load Drawings
-  // ===============================
+ 
   const loadDrawings = async () => {
     setLoading(true);
 
     try {
-      // Replace with API call
+      
       const res: any[] = [];
 
       setDrawings(res);
@@ -51,9 +49,7 @@ const Drawings: React.FC = () => {
     loadDrawings();
   }, []);
 
-  // ===============================
-  // Submit
-  // ===============================
+  
   const handleSubmit = async () => {
 
     const formData = new FormData();
@@ -65,9 +61,9 @@ const Drawings: React.FC = () => {
     });
 
     if (editingId) {
-      // await DrawingService.update(editingId, formData);
+     
     } else {
-      // await DrawingService.create(formData);
+     
     }
 
     setOpen(false);
@@ -88,19 +84,15 @@ const Drawings: React.FC = () => {
     loadDrawings();
   };
 
-  // ===============================
-  // Delete
-  // ===============================
+  
   const handleDelete = async (id: string) => {
     if (!confirm("Delete drawing?")) return;
 
-    // await DrawingService.delete(id);
+    
     loadDrawings();
   };
 
-  // ===============================
-  // Edit
-  // ===============================
+  
   const handleEdit = (d: any) => {
     setEditingId(d.id);
     setForm(d);
@@ -110,7 +102,7 @@ const Drawings: React.FC = () => {
   return (
     <div className="space-y-6">
 
-      {/* HEADER */}
+     
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">Drawing Register</h2>

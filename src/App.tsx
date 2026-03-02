@@ -15,22 +15,25 @@ import Reports from "@/pages/dashboard/Reports"
 import Teams from "@/pages/dashboard/Teams"
 import SpecificationRegister from "@/pages/dashboard/SpecificationRegister"
 import Settings from "@/pages/dashboard/Settings"
-
+import DrawingProjects from "@/pages/dashboard/drawingProjects"
 
 const App: React.FC = () => {
   return (
     <Routes>
-      {/* Default Redirect */}
+
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-      {/* Auth */}
       <Route path="/auth" element={<AuthPage />} />
 
-      {/* Dashboard */}
       <Route path="/dashboard" element={<DashboardLayout />}>
+
         <Route index element={<Dashboard />} />
         <Route path="projects" element={<Projects />} />
-        <Route path="drawings" element={<Drawings />} />
+
+        
+        <Route path="drawings" element={<DrawingProjects />} />
+        <Route path="drawings/:projectId" element={<Drawings />} />
+
         <Route path="boq" element={<BillOfQuantity />} />
         <Route path="dimension-sheets" element={<DimensionSheets />} />
         <Route path="equipment-costs" element={<EquipmentCosts />} />
@@ -41,10 +44,11 @@ const App: React.FC = () => {
         <Route path="teams" element={<Teams />} />
         <Route path="specification-register" element={<SpecificationRegister />} />
         <Route path="settings" element={<Settings />} />
+
       </Route>
 
-      {/* 404 */}
       <Route path="*" element={<div>Page Not Found</div>} />
+
     </Routes>
   )
 }

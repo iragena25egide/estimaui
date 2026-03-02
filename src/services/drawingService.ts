@@ -2,9 +2,7 @@ import API from "../context/axios";
 
 class DrawingService {
 
-  // ==========================
-  // CREATE DRAWING (WITH FILE)
-  // ==========================
+  
   static async createDrawing(projectId: string, data: any) {
 
     const formData = new FormData();
@@ -118,6 +116,21 @@ class DrawingService {
       throw error;
     }
   }
+
+  static async getDrawingSummary() {
+    try {
+
+      const res = await API.get(`/projects/drawing-summary`);
+
+      return res.data;
+
+    } catch (error) {
+      console.error("Get drawing summary error", error);
+      throw error;
+    }
+  }
+
+
 
 }
 
