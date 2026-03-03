@@ -25,28 +25,28 @@ const Settings = lazy(() => import("@/pages/dashboard/Settings"))
 const App: React.FC = () => {
   return (
     <Suspense fallback={null}>
-      {/* Top Progress Bar */}
+      
       <TopLoader />
 
       <Routes>
 
-        {/* Redirect root */}
+        
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-        {/* Auth */}
+        
         <Route path="/auth" element={<AuthPage />} />
 
-        {/* Dashboard Layout */}
+        
         <Route path="/dashboard" element={<DashboardLayout />}>
 
           <Route index element={<Dashboard />} />
           <Route path="projects" element={<Projects />} />
 
-          {/* Drawings Module */}
+          
           <Route path="drawings" element={<DrawingProjects />} />
           <Route path="drawings/:projectId" element={<Drawings />} />
 
-          {/* Other Modules */}
+          
           <Route path="boq" element={<BillOfQuantity />} />
           <Route path="dimension-sheets" element={<DimensionSheets />} />
           <Route path="equipment-costs" element={<EquipmentCosts />} />
@@ -60,7 +60,7 @@ const App: React.FC = () => {
 
         </Route>
 
-        {/* 404 */}
+        
         <Route path="*" element={<PageNotFound />} />
 
       </Routes>
