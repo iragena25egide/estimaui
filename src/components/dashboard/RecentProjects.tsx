@@ -51,13 +51,7 @@ const RecentProjects: React.FC = () => {
     }
   };
 
-  // const formatCurrency = (value: number) => {
-  //   return value.toLocaleString(undefined, {
-  //     style: "currency",
-  //     currency: "USD",
-  //     maximumFractionDigits: 0,
-  //   });
-  // };
+
 
   return (
     <div className="bg-white rounded-2xl border shadow-sm p-4">
