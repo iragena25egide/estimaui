@@ -21,7 +21,7 @@ const NavItem: React.FC<{ to: string; icon: React.ReactNode; label: string }> = 
 const Sidebar: React.FC<{ mobileOpen?: boolean; onClose?: () => void }> = ({ mobileOpen = false, onClose }) => {
   return (
     <>
-      {/* Desktop sidebar */}
+     
       <aside className="hidden md:block fixed top-0 left-0 w-64 h-screen bg-white border-r border-slate-100 p-6 overflow-y-auto z-30">
       <div className="flex items-center gap-3 mb-8">
         <div className="w-10 h-10 overflow-hidden rounded-lg">
@@ -50,12 +50,12 @@ const Sidebar: React.FC<{ mobileOpen?: boolean; onClose?: () => void }> = ({ mob
       </nav>
 
       <div className="mt-auto pt-6">
-        {/* <div className="text-xs text-slate-500">&copy;EstimaApp.</div> */}
+        
         
       </div>
     </aside>
 
-      {/* Mobile overlay sidebar */}
+      
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-40">
           <div className="absolute inset-0 bg-black/40" onClick={onClose} />
