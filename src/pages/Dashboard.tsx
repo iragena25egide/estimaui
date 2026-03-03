@@ -32,9 +32,7 @@ const Dashboard: React.FC = () => {
     recentProjects: [],
   });
 
-  // =============================
-  // Fetch Dashboard Data
-  // =============================
+  
   useEffect(() => {
     loadDashboard();
   }, []);
@@ -79,7 +77,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="space-y-6">
 
-      {/* HEADER */}
+      
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">
@@ -109,7 +107,7 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* CARDS */}
+      
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <DashboardCard
           title="Total Projects"
@@ -140,7 +138,7 @@ const Dashboard: React.FC = () => {
       <RecentProjects
       />
 
-      {/* SIDE INFO */}
+      
       <div className="bg-white p-4 rounded-2xl border">
         <h3 className="text-sm font-medium mb-3">
           Team & Reports
