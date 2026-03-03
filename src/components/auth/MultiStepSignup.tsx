@@ -555,7 +555,7 @@ React.useEffect(() => {
                 </p>
               </div>
 
-              {/* Step 2 */}
+             
               <div className="flex flex-col items-center">
                 <div
                   className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-500 ${
@@ -577,7 +577,7 @@ React.useEffect(() => {
                 </p>
               </div>
 
-              {/* Step 3 */}
+             
               <div className="flex flex-col items-center">
                 <div
                   className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-500 ${
@@ -599,7 +599,7 @@ React.useEffect(() => {
                 </p>
               </div>
 
-              {/* Step 4 */}
+              
               <div className="flex flex-col items-center">
                 <div
                   className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-500 ${
@@ -640,7 +640,7 @@ React.useEffect(() => {
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {/* STEP 1 — ROLE SELECTION */}
+         
           {currentStep === 1 && (
             <div className="space-y-5">
               {["ESTIMATOR", "VIEWER"].map((r) => (
@@ -679,7 +679,7 @@ React.useEffect(() => {
                 </div>
               ))}
 
-              {/* Navigation for Step 1 */}
+             
               <Button
                 onClick={handleNextStep}
                 disabled={!role}
@@ -690,10 +690,10 @@ React.useEffect(() => {
             </div>
           )}
 
-          {/* STEP 2 — USER INFO */}
+         
           {currentStep === 2 && (
             <form className="space-y-5">
-              {/* First Name & Last Name */}
+             
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName" className="text-slate-700 font-medium">
@@ -739,7 +739,7 @@ React.useEffect(() => {
                 </div>
               </div>
 
-              {/* Email */}
+              
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-slate-700 font-medium">
                   Email Address *
@@ -763,7 +763,7 @@ React.useEffect(() => {
                 )}
               </div>
 
-              {/* Phone with Country Code */}
+             
               <div className="space-y-2">
                 <Label className="text-slate-700 font-medium">
                   Phone Number
