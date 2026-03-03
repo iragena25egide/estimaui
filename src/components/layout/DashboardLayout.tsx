@@ -8,7 +8,7 @@ const DashboardLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Sidebar is fixed on md+, on small screens it's an overlay controlled by state */}
+      
       <Sidebar mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
       <TopBar projectName="EstimaPro Projects" onOpenSidebar={() => setMobileOpen(true)} />
 
