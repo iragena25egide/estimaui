@@ -20,9 +20,7 @@ const Teams: React.FC = () => {
   const [inviteEmail, setInviteEmail] = useState("");
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
 
-  // =============================
-  // LOAD TEAMS FROM BACKEND
-  // =============================
+ 
   const loadTeams = async () => {
     try {
       const res = await API.get("/teams");
@@ -36,9 +34,7 @@ const Teams: React.FC = () => {
     loadTeams();
   }, []);
 
-  // =============================
-  // CREATE TEAM
-  // =============================
+  
   const createTeam = async () => {
     if (!teamName) return;
 
@@ -50,9 +46,7 @@ const Teams: React.FC = () => {
     loadTeams();
   };
 
-  // =============================
-  // INVITE MEMBER
-  // =============================
+  
   const inviteMember = async (teamId: string) => {
 
     if (!inviteEmail) return;
@@ -66,9 +60,7 @@ const Teams: React.FC = () => {
     setInviteEmail("");
   };
 
-  // =============================
-  // REMOVE MEMBER
-  // =============================
+  
   const removeMember = async (teamId: string, memberId: string) => {
     if (!confirm("Remove member?")) return;
 
@@ -80,7 +72,7 @@ const Teams: React.FC = () => {
   return (
     <div className="space-y-6">
 
-      {/* HEADER */}
+     
       <div>
         <h2 className="text-2xl font-bold">Teams</h2>
         <p className="text-slate-500 text-sm">
@@ -88,7 +80,7 @@ const Teams: React.FC = () => {
         </p>
       </div>
 
-      {/* CREATE TEAM */}
+      
       <div className="flex gap-3">
         <input
           className="border rounded-lg px-3 py-2"

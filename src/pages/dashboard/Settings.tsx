@@ -5,29 +5,29 @@ const Settings: React.FC = () => {
   const [activeTab, setActiveTab] = useState("organization");
 
   const [settings, setSettings] = useState({
-    // Organization
+    
     companyName: "EstimaApp Ltd",
     address: "",
     taxId: "",
     currency: "USD",
     language: "English",
 
-    // Financial
+   
     vatPercent: 15,
     overheadPercent: 10,
     defaultProfit: 12,
     roundingPrecision: 2,
 
-    // Project
+   
     measurementUnit: "Metric",
     autoGenerateBoqCode: true,
     enableCostBreakdown: true,
 
-    // Security
+    
     twoFactorAuth: false,
     sessionTimeout: 30,
 
-    // Notifications
+    
     emailNotifications: true,
     weeklySummary: false
   });
