@@ -290,7 +290,7 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
     const newErrors: FormErrors = {}
 
     if (step === 2) {
-      // validating user info
+     
       if (!formData.firstName.trim()) {
         newErrors.firstName = "First name is required"
       }
@@ -306,7 +306,7 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
         newErrors.phone = "Please enter a valid phone number"
       }
     } else if (step === 4) {
-      // password validation
+      
       if (!formData.password) {
         newErrors.password = "Password is required"
       } else if (formData.password.length < 8) {
@@ -411,20 +411,20 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
 
     let strength = 0
 
-    // Length check
+    
     if (password.length >= 8) strength++
     if (password.length >= 12) strength++
 
-    // Lowercase letters
+    
     if (/[a-z]/.test(password)) strength++
 
-    // Uppercase letters
+   
     if (/[A-Z]/.test(password)) strength++
 
-    // Numbers
+    
     if (/[0-9]/.test(password)) strength++
 
-    // Special characters
+    
     if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) strength++
 
     if (strength <= 2) return "weak"
@@ -1016,7 +1016,7 @@ React.useEffect(() => {
             </form>
           )}
 
-          {/* Switch to Login */}
+         
           <p className="text-sm text-center text-slate-600 pt-6">
             Already have an account?{" "}
             <span
