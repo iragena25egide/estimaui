@@ -88,14 +88,14 @@ const TopHeader: React.FC<{
   return (
     <header className="fixed top-0 md:left-64 left-0 right-0 h-16 bg-white shadow-sm border-b px-6 flex items-center justify-between z-30">
 
-      {/* Mobile Menu */}
+      
       <div className="md:hidden">
         <button onClick={onOpenSidebar}>
           <Menu className="w-5 h-5" />
         </button>
       </div>
 
-      {/* Search */}
+      
       <div className="flex-1 flex justify-center px-4">
         <div className="relative w-full max-w-xl">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -106,10 +106,10 @@ const TopHeader: React.FC<{
         </div>
       </div>
 
-      {/* Right Section */}
+      
       <div className="flex items-center gap-4">
 
-        {/* Notifications */}
+        
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => setNotifOpen(!notifOpen)}
