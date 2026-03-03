@@ -438,7 +438,7 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
       ...prev,
       [name]: value,
     }))
-    // Clear error for this field when user starts typing
+    
     if (errors[name as keyof FormErrors]) {
       setErrors((prev) => ({
         ...prev,
@@ -486,7 +486,7 @@ React.useEffect(() => {
 
   return (
     <div className="relative">
-      {/* Background Effects */}
+      
       <div className="absolute w-96 h-96 bg-white/10 rounded-full blur-3xl top-10 -left-20 pointer-events-none" />
       <div className="absolute w-96 h-96 bg-purple-500/20 rounded-full blur-3xl bottom-10 right-0 pointer-events-none" />
 
@@ -518,13 +518,13 @@ React.useEffect(() => {
           }
         `}</style>
 
-        {/* Enhanced Progress Indicator with Animation */}
+        
         <div className="px-6 pt-8 pb-4">
           <div className="relative">
-            {/* Background Progress Bar */}
+           
             <div className="absolute top-5 left-0 right-0 h-1 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 rounded-full" />
             
-            {/* Animated Progress Bar */}
+           
             <div
               className={`absolute top-5 left-0 h-1 bg-gradient-to-r from-slate-900 via-black to-slate-900 rounded-full transition-all duration-500 ease-out`}
               style={{
@@ -533,7 +533,7 @@ React.useEffect(() => {
             />
 
             <div className="flex items-center justify-between relative z-10">
-              {/* Step 1 */}
+             
               <div className="flex flex-col items-center">
                 <div
                   className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-500 ${
