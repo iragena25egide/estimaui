@@ -770,7 +770,7 @@ React.useEffect(() => {
                   <span className="text-xs text-slate-500 ml-2">(optional)</span>
                 </Label>
                 <div className="flex gap-2">
-                  {/* Country Code Dropdown with Flags */}
+                 
                   <select
                     value={formData.countryCode}
                     onChange={(e) =>
@@ -788,7 +788,7 @@ React.useEffect(() => {
                     ))}
                   </select>
 
-                  {/* Phone Input */}
+                  
                   <Input
                     id="phone"
                     name="phone"
@@ -808,7 +808,7 @@ React.useEffect(() => {
                 )}
               </div>
 
-              {/* Navigation for Step 2 */}
+              
               <div className="flex gap-3 pt-4">
                 <Button
                   type="button"
@@ -829,7 +829,7 @@ React.useEffect(() => {
             </form>
           )}
 
-          {/* STEP 3 — EMAIL VERIFICATION */}
+          
           {currentStep === 3 && (
             <form className="space-y-5">
               <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
@@ -839,7 +839,7 @@ React.useEffect(() => {
                 </p>
               </div>
 
-              {/* OTP 6-Digit Input */}
+              
               <div className="space-y-3">
                 <Label className="text-slate-700 font-medium">
                   Verification Code *
@@ -870,14 +870,14 @@ React.useEffect(() => {
                 )}
               </div>
 
-              {/* Auto-verify message */}
+              
               {verificationCode.length === 6 && !isEmailVerified && (
                 <p className="text-xs text-blue-600 text-center">Verifying code...</p>
               )}
 
               
 
-              {/* Navigation for Step 3 */}
+              
               <div className="flex gap-3 pt-2">
                 <Button
                   type="button"
@@ -891,10 +891,10 @@ React.useEffect(() => {
             </form>
           )}
 
-          {/* STEP 4 — PASSWORD */}
+          
           {currentStep === 4 && (
             <form className="space-y-5">
-              {/* Password */}
+              
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-slate-700 font-medium">
                   Password *
@@ -914,7 +914,7 @@ React.useEffect(() => {
                   }`}
                 />
                 
-                {/* Password Strength Indicator */}
+                
                 {formData.password && (
                   <div className="space-y-2">
                     <div className="flex gap-1.5">
@@ -967,7 +967,7 @@ React.useEffect(() => {
                 )}
               </div>
 
-              {/* Confirm Password */}
+              
               <div className="space-y-2">
                 <Label
                   htmlFor="confirmPassword"
@@ -994,7 +994,7 @@ React.useEffect(() => {
                 )}
               </div>
 
-              {/* Navigation for Step 4 */}
+              
               <div className="flex gap-3 pt-4">
                 <Button
                   type="button"
