@@ -56,7 +56,7 @@ const Reports: React.FC = () => {
         </button>
       </div>
 
-      {/* Project Selection */}
+      
       <div className="bg-white p-4 rounded-xl border max-w-md">
         <select
           className="w-full border p-2 rounded"
@@ -74,7 +74,7 @@ const Reports: React.FC = () => {
         </select>
       </div>
 
-      {/* Reports Table */}
+      
       <div className="bg-white rounded-xl border overflow-hidden">
 
         <table className="w-full text-sm">
