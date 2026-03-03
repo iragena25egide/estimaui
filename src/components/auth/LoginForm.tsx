@@ -52,29 +52,7 @@ useEffect(() => {
     }
   }
 }, [searchParams, navigate])
-  // const handleSendOTP = async () => {
-  //   setError(null)
-  //   try {
-  //     if (!email || !password) {
-  //       throw new Error("Please fill in email and password")
-  //     }
-
-      
-  //     const res = await fetch("http://localhost:3000/api/estimaApp/auth/send-otp", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ email }),
-  //     })
-  //     const data = await res.json()
-
-  //     if (!res.ok) throw new Error(data.message || "Failed to send OTP")
-
-  //     setCurrentStep("otp")
-  //     setVerificationCode("")
-  //   } catch (err: any) {
-  //     setError(err.message || "Failed to send OTP")
-  //   }
-  // }
+  
 
   const handleVerifyOTP = async () => {
   setError(null)
@@ -151,14 +129,14 @@ useEffect(() => {
       </CardHeader>
 
       <CardContent className="space-y-6">
-        {/* Error Message */}
+        
         {(error || authError) && (
           <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-md">
             {error || authError}
           </div>
         )}
 
-        {/* Google Login */}
+       
         <Button
           type="button"
           variant="outline"
@@ -199,10 +177,10 @@ useEffect(() => {
 
         
 
-        {/* Form */}
+       
         {currentStep === "credentials" && (
           <form onSubmit={handleCredentialsSubmit} className="space-y-4">
-            {/* Email Input with Icon */}
+            
             <div className="space-y-2">
               <Label>Email</Label>
               <div className="relative">
@@ -224,7 +202,7 @@ useEffect(() => {
               </div>
             </div>
 
-            {/* Password Input with Icon and Toggle */}
+            
             <div className="space-y-2">
               <Label>Password</Label>
               <div className="relative">
@@ -262,7 +240,7 @@ useEffect(() => {
               </div>
             </div>
 
-            {/* Remember Me & Forgot Password */}
+            
             <div className="flex items-center justify-between pt-2">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -292,7 +270,7 @@ useEffect(() => {
           </form>
         )}
 
-        {/* OTP Verification Step */}
+        
         {currentStep === "otp" && (
           <form className="space-y-5">
             <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
@@ -352,7 +330,7 @@ useEffect(() => {
             
             
 
-            {/* Resend OTP Button */}
+           
             <Button
               type="button"
               variant="outline"
@@ -364,7 +342,7 @@ useEffect(() => {
           </form>
         )}
 
-        {/* Switch */}
+        
         <p className="text-sm text-center text-slate-600">
           Don’t have an account?{" "}
           <span
