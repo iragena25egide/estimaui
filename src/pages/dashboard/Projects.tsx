@@ -43,9 +43,7 @@ const Projects: React.FC = () => {
     completionDate: ""
   });
 
-  // ======================
-  // Load Projects
-  // ======================
+  
   const loadProjects = async () => {
     setLoading(true);
     try {
@@ -60,9 +58,7 @@ const Projects: React.FC = () => {
     loadProjects();
   }, []);
 
-  // ======================
-  // Submit
-  // ======================
+ 
   const handleSubmit = async () => {
     if (editingId) {
       await ProjectService.updateProject(editingId, form);
@@ -76,7 +72,7 @@ const Projects: React.FC = () => {
     loadProjects();
   };
 
-  // ======================
+  
   const handleDelete = async (id:string) => {
     if (!confirm("Delete project?")) return;
 
@@ -94,7 +90,7 @@ const Projects: React.FC = () => {
     p.name?.toLowerCase().includes(search.toLowerCase())
   );
 
-  // ======================
+  
   const getStatusStyle = (status:string) => {
     switch(status){
       case "Completed":
@@ -111,10 +107,10 @@ const Projects: React.FC = () => {
  return (
   <div className="max-w-7xl mx-auto">
 
-    {/* Main White Container */}
+    
     <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-6">
 
-      {/* HEADER + ACTIONS */}
+     
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
         <div>
@@ -147,7 +143,7 @@ const Projects: React.FC = () => {
         </div>
       </div>
 
-      {/* TABLE */}
+     
       <div className="rounded-xl border border-slate-200 overflow-hidden">
 
         <table className="w-full text-sm">
@@ -230,7 +226,7 @@ const Projects: React.FC = () => {
 
     </div>
 
-    {/* MODAL */}
+    
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="max-w-2xl">
 
