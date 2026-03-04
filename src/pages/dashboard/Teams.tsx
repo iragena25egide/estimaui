@@ -21,7 +21,7 @@ const Teams: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
 
-  /* ================= LOAD TEAMS ================= */
+  
 
   const loadTeams = async () => {
     setLoading(true);
@@ -40,7 +40,7 @@ const Teams: React.FC = () => {
     loadTeams();
   }, []);
 
-  /* ================= CREATE TEAM ================= */
+  
 
   const createTeam = async () => {
     if (!teamName.trim()) return;
