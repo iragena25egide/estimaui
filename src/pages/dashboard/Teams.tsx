@@ -95,7 +95,7 @@ const Teams: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      {/* HEADER */}
+      
       <div>
         <h2 className="text-2xl font-bold flex items-center gap-2">
           <Users className="w-6 h-6 text-blue-600" />
@@ -106,7 +106,7 @@ const Teams: React.FC = () => {
         </p>
       </div>
 
-      {/* CREATE TEAM */}
+      
       <div className="bg-white p-6 rounded-2xl shadow-sm border flex gap-4 items-center">
         <input
           className="flex-1 border rounded-xl px-4 py-2"
