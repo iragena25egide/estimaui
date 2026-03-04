@@ -125,12 +125,12 @@ const Teams: React.FC = () => {
         </button>
       </div>
 
-      {/* LOADING STATE */}
+      
       {loading && (
         <div className="text-center text-slate-500">Loading teams...</div>
       )}
 
-      {/* EMPTY STATE */}
+     
       {!loading && teams.length === 0 && (
         <div className="text-center bg-white p-10 rounded-2xl border">
           <Users className="mx-auto w-10 h-10 text-slate-300 mb-3" />
@@ -138,7 +138,7 @@ const Teams: React.FC = () => {
         </div>
       )}
 
-      {/* TEAMS LIST */}
+      
       {!loading &&
         teams.map((team) => (
           <div
