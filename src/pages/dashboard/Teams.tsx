@@ -79,7 +79,7 @@ const Teams: React.FC = () => {
     }
   };
 
-  /* ================= REMOVE MEMBER ================= */
+  
 
   const removeMember = async (teamId: string, memberId: string) => {
     if (!confirm("Remove member?")) return;
