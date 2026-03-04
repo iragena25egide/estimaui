@@ -58,7 +58,7 @@ const Teams: React.FC = () => {
     }
   };
 
-  /* ================= INVITE MEMBER ================= */
+ 
 
   const inviteMember = async (teamId: string) => {
     const email = inviteInputs[teamId];
