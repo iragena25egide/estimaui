@@ -145,7 +145,7 @@ const Teams: React.FC = () => {
             key={team.id}
             className="bg-white border rounded-2xl p-6 shadow-sm space-y-5"
           >
-            {/* TEAM HEADER */}
+           
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="font-semibold text-lg">{team.name}</h3>
@@ -154,7 +154,7 @@ const Teams: React.FC = () => {
                 </p>
               </div>
 
-              {/* INVITE INPUT */}
+             
               <div className="flex gap-2">
                 <input
                   placeholder="Invite by email"
