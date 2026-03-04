@@ -132,7 +132,7 @@ const Teams: React.FC = () => {
             </div>
           </div>
 
-          {/* MEMBERS */}
+          
           <div className="space-y-2">
             {team.members?.map(m => (
               <div
