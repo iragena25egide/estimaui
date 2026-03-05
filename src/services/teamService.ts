@@ -1,6 +1,6 @@
 import API from "../context/axios";
 
-/* ================= TYPES ================= */
+
 
 export interface TeamMember {
   id: string;
