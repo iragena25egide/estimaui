@@ -73,7 +73,7 @@ class TeamService {
     }
   }
 
-  /* ---------- REMOVE MEMBER ---------- */
+  
   static async removeMember(
     teamId: string,
     memberId: string
@@ -86,7 +86,7 @@ class TeamService {
     }
   }
 
-  /* ---------- ACCEPT INVITATION ---------- */
+  
   static async acceptInvite(token: string): Promise<any> {
     try {
       const res = await API.get(`/teams/accept?token=${token}`);
