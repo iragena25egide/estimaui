@@ -49,7 +49,7 @@ class TeamService {
     }
   }
 
-  /* ---------- DELETE TEAM ---------- */
+  
   static async deleteTeam(teamId: string): Promise<void> {
     try {
       await API.delete(`/teams/${teamId}`);
