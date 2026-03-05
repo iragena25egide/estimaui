@@ -27,7 +27,7 @@ export interface InviteMemberDTO {
 
 class TeamService {
 
-  /* ---------- GET ALL TEAMS ---------- */
+  
   static async getTeams(): Promise<Team[]> {
     try {
       const res = await API.get("/teams");
