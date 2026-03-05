@@ -38,7 +38,7 @@ class TeamService {
     }
   }
 
-  /* ---------- CREATE TEAM ---------- */
+ 
   static async createTeam(data: CreateTeamDTO): Promise<Team> {
     try {
       const res = await API.post("/teams", data);
