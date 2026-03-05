@@ -23,7 +23,7 @@ export interface InviteMemberDTO {
   role: "ADMIN" | "EDITOR" | "VIEWER";
 }
 
-/* ================= SERVICE ================= */
+
 
 class TeamService {
 
