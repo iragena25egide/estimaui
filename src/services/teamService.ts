@@ -59,7 +59,7 @@ class TeamService {
     }
   }
 
-  /* ---------- INVITE MEMBER ---------- */
+
   static async inviteMember(
     teamId: string,
     data: InviteMemberDTO
