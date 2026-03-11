@@ -1,9 +1,22 @@
 import API from "../context/axios";
 
 class DimensionSheetService {
+  // ===============================
+  // GET ALL DIMENSION SHEETS FOR A DRAWING
+  // ===============================
+  static async getByDrawing(drawingId: string) {
+    try {
+      // Adjust endpoint as per your backend
+      const res = await API.get(`/dimension-sheets/drawing/${drawingId}`);
+      return res.data;
+    } catch (error) {
+      console.error("Get dimension sheets by drawing error:", error);
+      throw error;
+    }
+  }
 
   // ===============================
-  // GET ALL DIMENSION SHEETS
+  // GET ALL DIMENSION SHEETS FOR A PROJECT
   // ===============================
   static async getAll(projectId: string) {
     try {
@@ -45,7 +58,6 @@ class DimensionSheetService {
           height: Number(data.height || 0),
         }
       );
-
       return res.data;
     } catch (error) {
       console.error("Create sheet error:", error);
@@ -64,7 +76,6 @@ class DimensionSheetService {
         quantity: Number(data.quantity),
         total: Number(data.total),
       });
-
       return res.data;
     } catch (error) {
       console.error("Update sheet error:", error);
@@ -84,7 +95,6 @@ class DimensionSheetService {
       throw error;
     }
   }
-
 }
 
 export default DimensionSheetService;
