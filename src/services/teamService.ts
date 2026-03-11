@@ -13,21 +13,20 @@ interface Team {
 }
 
 class TeamService {
-  // Get all teams for the current user
+
   static async getTeams(): Promise<Team[]> {
     try {
-      const res = await API.get("/teams");
+      const res = await API.get("/team/my-team"); 
       return res.data;
     } catch (error) {
       console.error("Get teams error:", error);
       throw error;
     }
   }
-
-  // Create a new team
+ 
   static async createTeam(name: string): Promise<Team> {
     try {
-      const res = await API.post("/teams", { name });
+      const res = await API.post("/team", { name });
       return res.data;
     } catch (error) {
       console.error("Create team error:", error);
@@ -35,10 +34,21 @@ class TeamService {
     }
   }
 
-  // Invite a member to a team
+ 
+  static async getTeam(teamId: string): Promise<Team> {
+    try {
+      const res = await API.get(`/team/${teamId}`);
+      return res.data;
+    } catch (error) {
+      console.error("Get team error:", error);
+      throw error;
+    }
+  }
+
+
   static async inviteMember(teamId: string, email: string, role: string = "VIEWER"): Promise<any> {
     try {
-      const res = await API.post(`/teams/${teamId}/invite`, { email, role });
+      const res = await API.post(`/team/${teamId}/invite`, { email, role });
       return res.data;
     } catch (error) {
       console.error("Invite member error:", error);
@@ -46,25 +56,18 @@ class TeamService {
     }
   }
 
-  // Remove a member from a team
-  static async removeMember(teamId: string, memberId: string): Promise<void> {
+ 
+  static async acceptInvitation(token: string): Promise<any> {
     try {
-      await API.delete(`/teams/${teamId}/members/${memberId}`);
+      const res = await API.post("/team/accept-invite", { token });
+      return res.data;
     } catch (error) {
-      console.error("Remove member error:", error);
+      console.error("Accept invitation error:", error);
       throw error;
     }
   }
 
-  // Optionally delete a team (if needed)
-  static async deleteTeam(teamId: string): Promise<void> {
-    try {
-      await API.delete(`/teams/${teamId}`);
-    } catch (error) {
-      console.error("Delete team error:", error);
-      throw error;
-    }
-  }
+  
 }
 
 export default TeamService;

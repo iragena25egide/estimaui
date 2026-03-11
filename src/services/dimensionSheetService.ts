@@ -1,13 +1,12 @@
 import API from "../context/axios";
 
 class DimensionSheetService {
-  // ===============================
-  // GET ALL DIMENSION SHEETS FOR A DRAWING
-  // ===============================
+  /**
+   * Get dimension sheets for a specific drawing
+   */
   static async getByDrawing(drawingId: string) {
     try {
-      // Adjust endpoint as per your backend
-      const res = await API.get(`/dimension-sheets/drawing/${drawingId}`);
+      const res = await API.get(`/dimension/drawing/${drawingId}`);
       return res.data;
     } catch (error) {
       console.error("Get dimension sheets by drawing error:", error);
@@ -15,83 +14,28 @@ class DimensionSheetService {
     }
   }
 
-  // ===============================
-  // GET ALL DIMENSION SHEETS FOR A PROJECT
-  // ===============================
-  static async getAll(projectId: string) {
+  /**
+   * Get dimension sheets for a project (all drawings)
+   */
+  static async getByProject(projectId: string) {
     try {
-      const res = await API.get(`/dimension-sheets/project/${projectId}`);
+      const res = await API.get(`/dimension/project/${projectId}`);
       return res.data;
     } catch (error) {
-      console.error("Get dimension sheets error:", error);
+      console.error("Get dimension sheets by project error:", error);
       throw error;
     }
   }
 
-  // ===============================
-  // GET SINGLE SHEET
-  // ===============================
+  /**
+   * Get a single dimension sheet by its ID
+   */
   static async getById(id: string) {
     try {
-      const res = await API.get(`/dimension-sheets/${id}`);
+      const res = await API.get(` /dimension/${id}`);
       return res.data;
     } catch (error) {
-      console.error("Get sheet error:", error);
-      throw error;
-    }
-  }
-
-  // ===============================
-  // CREATE SHEET
-  // ===============================
-  static async create(projectId: string, data: any) {
-    try {
-      const res = await API.post(
-        `/dimension-sheets/project/${projectId}`,
-        {
-          ...data,
-          rate: Number(data.rate),
-          quantity: Number(data.quantity),
-          total: Number(data.total),
-          length: Number(data.length || 0),
-          width: Number(data.width || 0),
-          height: Number(data.height || 0),
-        }
-      );
-      return res.data;
-    } catch (error) {
-      console.error("Create sheet error:", error);
-      throw error;
-    }
-  }
-
-  // ===============================
-  // UPDATE SHEET
-  // ===============================
-  static async update(id: string, data: any) {
-    try {
-      const res = await API.put(`/dimension-sheets/${id}`, {
-        ...data,
-        rate: Number(data.rate),
-        quantity: Number(data.quantity),
-        total: Number(data.total),
-      });
-      return res.data;
-    } catch (error) {
-      console.error("Update sheet error:", error);
-      throw error;
-    }
-  }
-
-  // ===============================
-  // DELETE SHEET
-  // ===============================
-  static async delete(id: string) {
-    try {
-      const res = await API.delete(`/dimension-sheets/${id}`);
-      return res.data;
-    } catch (error) {
-      console.error("Delete sheet error:", error);
+      console.error("Get dimension sheet error:", error);
       throw error;
     }
   }
