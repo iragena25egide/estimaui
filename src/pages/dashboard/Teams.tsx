@@ -1,36 +1,54 @@
 import React, { useEffect, useState } from "react";
-import API from "../../context/axios";
-import { Users, Mail, Trash2, Plus } from "lucide-react";
-
-interface TeamMember {
-  id: string;
-  email: string;
-  role: string;
-}
-
-interface Team {
-  id: string;
-  name: string;
-  members: TeamMember[];
-}
+import { toast } from "sonner";
+import {
+  Users,
+  Mail,
+  Trash2,
+  Plus,
+  Loader2,
+  UserPlus,
+  X,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import TeamService, { Team } from "@/services/teamService";
 
 const Teams: React.FC = () => {
   const [teams, setTeams] = useState<Team[]>([]);
-  const [teamName, setTeamName] = useState("");
-  const [inviteInputs, setInviteInputs] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
-
-  
+  const [teamName, setTeamName] = useState("");
+  const [inviteEmail, setInviteEmail] = useState<Record<string, string>>({});
+  const [inviteRole, setInviteRole] = useState<Record<string, string>>({});
+  const [openCreateDialog, setOpenCreateDialog] = useState(false);
 
   const loadTeams = async () => {
-    setLoading(true);
     try {
-      const res = await API.get("/teams");
-      setTeams(res.data || []);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to load teams");
+      const data = await TeamService.getTeams();
+      setTeams(data);
+    } catch (error) {
+      toast.error("Failed to load teams");
     } finally {
       setLoading(false);
     }
@@ -40,169 +58,267 @@ const Teams: React.FC = () => {
     loadTeams();
   }, []);
 
-  
+  const handleCreateTeam = async () => {
+    if (!teamName.trim()) {
+      toast.warning("Please enter a team name");
+      return;
+    }
 
-  const createTeam = async () => {
-    if (!teamName.trim()) return;
-
+    setCreating(true);
     try {
-      setCreating(true);
-      await API.post("/teams", { name: teamName });
+      await TeamService.createTeam(teamName);
+      toast.success("Team created successfully");
       setTeamName("");
+      setOpenCreateDialog(false);
       loadTeams();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to create team");
+    } catch (error) {
+      toast.error("Failed to create team");
     } finally {
       setCreating(false);
     }
   };
 
- 
+  const handleInvite = async (teamId: string) => {
+    const email = inviteEmail[teamId];
+    const role = inviteRole[teamId] || "VIEWER";
 
-  const inviteMember = async (teamId: string) => {
-    const email = inviteInputs[teamId];
-    if (!email) return;
+    if (!email) {
+      toast.warning("Please enter an email address");
+      return;
+    }
 
     try {
-      await API.post(`/teams/${teamId}/invite`, {
-        email,
-        role: "VIEWER",
-      });
-
-      alert("Invitation sent!");
-      setInviteInputs((prev) => ({ ...prev, [teamId]: "" }));
-      loadTeams();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to invite member");
+      await TeamService.inviteMember(teamId, email, role);
+      toast.success("Invitation sent");
+      setInviteEmail((prev) => ({ ...prev, [teamId]: "" }));
+      loadTeams(); // refresh to show pending member?
+    } catch (error) {
+      toast.error("Failed to send invitation");
     }
   };
 
-  
-
-  const removeMember = async (teamId: string, memberId: string) => {
-    if (!confirm("Remove member?")) return;
-
+  const handleRemoveMember = async (teamId: string, memberId: string) => {
+    if (!confirm("Remove this member from the team?")) return;
     try {
-      await API.delete(`/teams/${teamId}/members/${memberId}`);
+      await TeamService.removeMember(teamId, memberId);
+      toast.success("Member removed");
       loadTeams();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to remove member");
+    } catch (error) {
+      toast.error("Failed to remove member");
     }
   };
+
+  const handleDeleteTeam = async (teamId: string) => {
+    if (!confirm("Delete this team? This action cannot be undone.")) return;
+    try {
+      await TeamService.deleteTeam(teamId);
+      toast.success("Team deleted");
+      loadTeams();
+    } catch (error) {
+      toast.error("Failed to delete team");
+    }
+  };
+
+  const updateInviteEmail = (teamId: string, value: string) => {
+    setInviteEmail((prev) => ({ ...prev, [teamId]: value }));
+  };
+
+  const updateInviteRole = (teamId: string, value: string) => {
+    setInviteRole((prev) => ({ ...prev, [teamId]: value }));
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-8">
-      
-      <div>
-        <h2 className="text-2xl font-bold flex items-center gap-2">
-          <Users className="w-6 h-6 text-blue-600" />
-          Teams
-        </h2>
-        <p className="text-slate-500 text-sm">
-          Manage team collaboration and permissions
-        </p>
-      </div>
-
-      
-      <div className="bg-white p-6 rounded-2xl shadow-sm border flex gap-4 items-center">
-        <input
-          className="flex-1 border rounded-xl px-4 py-2"
-          placeholder="Enter team name"
-          value={teamName}
-          onChange={(e) => setTeamName(e.target.value)}
-        />
-
-        <button
-          onClick={createTeam}
-          disabled={creating}
-          className="bg-blue-600 text-white px-5 py-2 rounded-xl flex items-center gap-2 hover:bg-blue-700 disabled:opacity-50"
+    <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+            <Users className="w-8 h-8 text-blue-600" />
+            Teams
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Manage team collaboration and permissions
+          </p>
+        </div>
+        <Button
+          onClick={() => setOpenCreateDialog(true)}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-sm"
         >
           <Plus className="w-4 h-4" />
-          {creating ? "Creating..." : "Create Team"}
-        </button>
+          Create Team
+        </Button>
       </div>
 
-      
-      {loading && (
-        <div className="text-center text-slate-500">Loading teams...</div>
-      )}
+      {/* Teams List */}
+      {teams.length === 0 ? (
+        <Card className="border-gray-200 shadow-sm rounded-2xl">
+          <CardContent className="flex flex-col items-center justify-center py-16">
+            <Users className="w-12 h-12 text-gray-300 mb-4" />
+            <p className="text-gray-500 text-lg">No teams created yet</p>
+            <Button
+              onClick={() => setOpenCreateDialog(true)}
+              variant="outline"
+              className="mt-4 border-gray-200 rounded-xl"
+            >
+              Create your first team
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-6">
+          {teams.map((team) => (
+            <Card key={team.id} className="border-gray-200 shadow-sm rounded-2xl overflow-hidden">
+              <CardHeader className="bg-gray-50 border-b border-gray-200 p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div>
+                    <CardTitle className="text-xl font-bold text-gray-900">
+                      {team.name}
+                    </CardTitle>
+                    <CardDescription className="text-sm text-gray-500">
+                      {team.members?.length || 0} member{team.members?.length !== 1 ? "s" : ""}
+                    </CardDescription>
+                  </div>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDeleteTeam(team.id)}
+                    className="rounded-lg"
+                  >
+                    <Trash2 className="w-4 h-4 mr-1" />
+                    Delete Team
+                  </Button>
+                </div>
+              </CardHeader>
 
-     
-      {!loading && teams.length === 0 && (
-        <div className="text-center bg-white p-10 rounded-2xl border">
-          <Users className="mx-auto w-10 h-10 text-slate-300 mb-3" />
-          <p className="text-slate-500">No teams created yet</p>
+              <CardContent className="p-6 space-y-5">
+                {/* Invite section */}
+                <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                  <h4 className="text-sm font-medium text-blue-800 mb-3 flex items-center gap-1">
+                    <UserPlus className="w-4 h-4" />
+                    Invite new member
+                  </h4>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Input
+                      placeholder="Email address"
+                      value={inviteEmail[team.id] || ""}
+                      onChange={(e) => updateInviteEmail(team.id, e.target.value)}
+                      className="flex-1 border-blue-200 focus:border-blue-400 rounded-lg"
+                    />
+                    <Select
+                      value={inviteRole[team.id] || "VIEWER"}
+                      onValueChange={(val) => updateInviteRole(team.id, val)}
+                    >
+                      <SelectTrigger className="w-full sm:w-32 border-blue-200 rounded-lg">
+                        <SelectValue placeholder="Role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="VIEWER">Viewer</SelectItem>
+                        <SelectItem value="EDITOR">Editor</SelectItem>
+                        <SelectItem value="ADMIN">Admin</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      onClick={() => handleInvite(team.id)}
+                      className="bg-green-600 hover:bg-green-700 text-white rounded-lg"
+                    >
+                      <Mail className="w-4 h-4 mr-1" />
+                      Invite
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Members list */}
+                <div>
+                  <h4 className="text-sm font-medium text-gray-700 mb-3">Members</h4>
+                  {team.members && team.members.length > 0 ? (
+                    <div className="space-y-2">
+                      {team.members.map((member) => (
+                        <div
+                          key={member.id}
+                          className="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-100"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-medium">
+                              {member.email.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900">{member.email}</p>
+                              <p className="text-xs text-gray-500">{member.role}</p>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => handleRemoveMember(team.id, member.id)}
+                            className="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50 transition-colors"
+                            title="Remove member"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500 italic">No members yet</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       )}
 
-      
-      {!loading &&
-        teams.map((team) => (
-          <div
-            key={team.id}
-            className="bg-white border rounded-2xl p-6 shadow-sm space-y-5"
-          >
-           
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="font-semibold text-lg">{team.name}</h3>
-                <p className="text-xs text-slate-500">
-                  {team.members?.length || 0} Members
-                </p>
-              </div>
+      {/* Create Team Dialog */}
+      <Dialog open={openCreateDialog} onOpenChange={setOpenCreateDialog}>
+        <DialogContent className="sm:max-w-md p-0 gap-0 rounded-2xl overflow-hidden">
+          <DialogHeader className="p-6 border-b border-gray-200">
+            <DialogTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <Users className="w-5 h-5 text-blue-600" />
+              Create New Team
+            </DialogTitle>
+          </DialogHeader>
 
-             
-              <div className="flex gap-2">
-                <input
-                  placeholder="Invite by email"
-                  value={inviteInputs[team.id] || ""}
-                  onChange={(e) =>
-                    setInviteInputs((prev) => ({
-                      ...prev,
-                      [team.id]: e.target.value,
-                    }))
-                  }
-                  className="border rounded-xl px-3 py-1 text-sm"
-                />
-
-                <button
-                  onClick={() => inviteMember(team.id)}
-                  className="bg-green-600 text-white px-4 rounded-xl text-sm flex items-center gap-1 hover:bg-green-700"
-                >
-                  <Mail className="w-4 h-4" />
-                  Invite
-                </button>
-              </div>
-            </div>
-
-           
-            <div className="space-y-2">
-              {team.members?.map((m) => (
-                <div
-                  key={m.id}
-                  className="flex justify-between items-center bg-slate-50 px-4 py-2 rounded-xl"
-                >
-                  <div>
-                    <span className="font-medium">{m.email}</span>
-                    <span className="ml-2 text-xs text-slate-500">
-                      {m.role}
-                    </span>
-                  </div>
-
-                  <button
-                    onClick={() => removeMember(team.id, m.id)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-            </div>
+          <div className="p-6">
+            <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+              Team Name
+            </label>
+            <Input
+              value={teamName}
+              onChange={(e) => setTeamName(e.target.value)}
+              placeholder="e.g., Project Alpha"
+              className="border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20"
+              autoFocus
+            />
           </div>
-        ))}
+
+          <DialogFooter className="p-6 border-t border-gray-200 bg-gray-50">
+            <div className="flex justify-end gap-3 w-full">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpenCreateDialog(false)}
+                className="border-gray-200 rounded-lg text-gray-600 hover:bg-white"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleCreateTeam}
+                disabled={creating}
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm"
+              >
+                {creating ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null}
+                {creating ? "Creating..." : "Create Team"}
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

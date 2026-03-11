@@ -1,9 +1,10 @@
 import API from "../context/axios";
 
 class BoqService {
-
-  
-  static async getProjectBoqItems(projectId: string) {
+  /**
+   * Fetch all BOQ items for a specific project
+   */
+  static async getByProject(projectId: string) {
     try {
       const res = await API.get(`/boq-items/project/${projectId}`);
       return res.data;
@@ -13,8 +14,10 @@ class BoqService {
     }
   }
 
-  
-  static async getBoqItem(id: string) {
+  /**
+   * Fetch a single BOQ item by ID
+   */
+  static async getById(id: string) {
     try {
       const res = await API.get(`/boq-items/${id}`);
       return res.data;
@@ -24,22 +27,26 @@ class BoqService {
     }
   }
 
-  
-  static async createBoqItem(projectId: string, data: any) {
+  /**
+   * Create a new BOQ item
+   * Expects data object containing projectId and all fields
+   */
+  static async create(data: any) {
     try {
-      const res = await API.post(
-        `/boq-items/project/${projectId}`,
-        {
-          ...data,
-          quantity: Number(data.quantity),
-          materialRate: Number(data.materialRate || 0),
-          laborRate: Number(data.laborRate || 0),
-          equipmentRate: Number(data.equipmentRate || 0),
-          totalRate: Number(data.totalRate || 0),
-          amount: Number(data.amount || 0)
-        }
-      );
+      // Ensure numeric fields are numbers
+      const payload = {
+        ...data,
+        quantity: Number(data.quantity || 0),
+        materialRate: Number(data.materialRate || 0),
+        laborRate: Number(data.laborRate || 0),
+        equipmentRate: Number(data.equipmentRate || 0),
+        totalRate: Number(data.totalRate || 0),
+        amount: Number(data.amount || 0),
+      };
 
+      // The backend expects projectId in the URL, so we extract it
+      const { projectId, ...rest } = payload;
+      const res = await API.post(`/boq-items/project/${projectId}`, rest);
       return res.data;
     } catch (error) {
       console.error("Create BOQ item error:", error);
@@ -47,19 +54,22 @@ class BoqService {
     }
   }
 
- 
-  static async updateBoqItem(id: string, data: any) {
+  /**
+   * Update an existing BOQ item
+   */
+  static async update(id: string, data: any) {
     try {
-      const res = await API.put(`/boq-items/${id}`, {
+      const payload = {
         ...data,
-        quantity: Number(data.quantity),
+        quantity: Number(data.quantity || 0),
         materialRate: Number(data.materialRate || 0),
         laborRate: Number(data.laborRate || 0),
         equipmentRate: Number(data.equipmentRate || 0),
         totalRate: Number(data.totalRate || 0),
-        amount: Number(data.amount || 0)
-      });
+        amount: Number(data.amount || 0),
+      };
 
+      const res = await API.put(`/boq-items/${id}`, payload);
       return res.data;
     } catch (error) {
       console.error("Update BOQ item error:", error);
@@ -67,8 +77,10 @@ class BoqService {
     }
   }
 
-  
-  static async deleteBoqItem(id: string) {
+  /**
+   * Delete a BOQ item by ID
+   */
+  static async delete(id: string) {
     try {
       const res = await API.delete(`/boq-items/${id}`);
       return res.data;
@@ -77,7 +89,6 @@ class BoqService {
       throw error;
     }
   }
-
 }
 
 export default BoqService;

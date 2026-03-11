@@ -1,8 +1,42 @@
 import React, { useEffect, useState } from "react";
+import {
+  Search,
+  Plus,
+  Edit,
+  Trash,
+  X,
+  FolderOpen,
+  Calculator,
+  Loader2,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import DrawingService from "@/services/drawingService";
+import RateAnalysisService from "@/services/analysisService";
 
-const RateAnalysis = () => {
+const RateAnalysis: React.FC = () => {
+  const [projects, setProjects] = useState<any[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState<string>("");
   const [items, setItems] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState({
+    projects: false,
+    items: false,
+  });
+  const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -14,97 +48,450 @@ const RateAnalysis = () => {
     equipmentCost: "",
     overheadPercent: "",
     profitPercent: "",
-    totalRate: ""
+    totalRate: "",
+    projectId: "",
   });
 
-  const loadData = async () => {
-    setLoading(true);
+  // Load projects on mount
+  useEffect(() => {
+    const loadProjects = async () => {
+      setLoading((prev) => ({ ...prev, projects: true }));
+      try {
+        const res = await DrawingService.getDrawingSummary();
+        setProjects(res);
+        if (res.length > 0) setSelectedProjectId(res[0].projectId);
+      } catch (error) {
+        console.error("Failed to load projects", error);
+      } finally {
+        setLoading((prev) => ({ ...prev, projects: false }));
+      }
+    };
+    loadProjects();
+  }, []);
+
+  // Load rate analysis records when project changes
+  useEffect(() => {
+    if (!selectedProjectId) {
+      setItems([]);
+      return;
+    }
+    loadItems();
+  }, [selectedProjectId]);
+
+  const loadItems = async () => {
+    setLoading((prev) => ({ ...prev, items: true }));
     try {
-      const res: any[] = [];
-      setItems(res);
+      const data = await RateAnalysisService.getByProject(selectedProjectId);
+      setItems(data);
+    } catch (error) {
+      console.error("Failed to load rate analysis", error);
     } finally {
-      setLoading(false);
+      setLoading((prev) => ({ ...prev, items: false }));
     }
   };
 
+  // Auto-calculate total rate
   useEffect(() => {
-    loadData();
-  }, []);
+    const material = parseFloat(form.materialCost) || 0;
+    const labor = parseFloat(form.laborCost) || 0;
+    const equipment = parseFloat(form.equipmentCost) || 0;
+    const overhead = parseFloat(form.overheadPercent) || 0;
+    const profit = parseFloat(form.profitPercent) || 0;
+
+    const subtotal = material + labor + equipment;
+    const withOverhead = subtotal * (1 + overhead / 100);
+    const total = withOverhead * (1 + profit / 100);
+
+    setForm((prev) => ({ ...prev, totalRate: total.toFixed(2) }));
+  }, [
+    form.materialCost,
+    form.laborCost,
+    form.equipmentCost,
+    form.overheadPercent,
+    form.profitPercent,
+  ]);
 
   const handleSubmit = async () => {
-    if (editingId) {
-      // update
-    } else {
-      // create
+    if (!selectedProjectId) {
+      alert("Please select a project first.");
+      return;
     }
-    setOpen(false);
-    setEditingId(null);
-    loadData();
+
+    try {
+      const payload = {
+        ...form,
+        projectId: selectedProjectId,
+      };
+
+      if (editingId) {
+        await RateAnalysisService.update(editingId, payload);
+      } else {
+        await RateAnalysisService.create(payload);
+      }
+
+      resetForm();
+      loadItems();
+    } catch (error) {
+      console.error("Save error", error);
+    }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete rate analysis?")) return;
-    loadData();
+    if (!confirm("Delete this rate analysis record?")) return;
+    try {
+      await RateAnalysisService.delete(id);
+      loadItems();
+    } catch (error) {
+      console.error("Delete error", error);
+    }
   };
 
   const handleEdit = (item: any) => {
     setEditingId(item.id);
-    setForm(item);
+    setForm({
+      itemName: item.itemName || "",
+      unit: item.unit || "",
+      materialCost: item.materialCost?.toString() || "",
+      laborCost: item.laborCost?.toString() || "",
+      equipmentCost: item.equipmentCost?.toString() || "",
+      overheadPercent: item.overheadPercent?.toString() || "",
+      profitPercent: item.profitPercent?.toString() || "",
+      totalRate: item.totalRate?.toString() || "",
+      projectId: item.projectId || selectedProjectId,
+    });
     setOpen(true);
   };
 
-  return (
-    <div className="bg-white rounded-2xl border shadow-sm p-6 space-y-6">
+  const resetForm = () => {
+    setOpen(false);
+    setEditingId(null);
+    setForm({
+      itemName: "",
+      unit: "",
+      materialCost: "",
+      laborCost: "",
+      equipmentCost: "",
+      overheadPercent: "",
+      profitPercent: "",
+      totalRate: "",
+      projectId: selectedProjectId,
+    });
+  };
 
-      <div className="flex justify-between">
-        <h2 className="text-xl font-bold">Rate Analysis</h2>
-        <button
-          onClick={() => setOpen(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
-        >
-          + Add Analysis
-        </button>
+  const filteredItems = items.filter(
+    (item) =>
+      item.itemName?.toLowerCase().includes(search.toLowerCase()) ||
+      item.unit?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const clearSearch = () => setSearch("");
+
+  return (
+    <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
+      {/* Header with Project Selector */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Rate Analysis</h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Manage item rates with overhead and profit
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3">
+          {/* Project Dropdown */}
+          <div className="relative min-w-[200px]">
+            <FolderOpen className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Select
+              value={selectedProjectId}
+              onValueChange={setSelectedProjectId}
+              disabled={loading.projects}
+            >
+              <SelectTrigger className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20">
+                <SelectValue placeholder="Select project" />
+              </SelectTrigger>
+              <SelectContent>
+                {loading.projects ? (
+                  <SelectItem value="loading" disabled>
+                    Loading projects...
+                  </SelectItem>
+                ) : projects.length === 0 ? (
+                  <SelectItem value="none" disabled>
+                    No projects found
+                  </SelectItem>
+                ) : (
+                  projects.map((p) => (
+                    <SelectItem key={p.projectId} value={p.projectId}>
+                      {p.projectName}
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+            {loading.projects && (
+              <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 animate-spin" />
+            )}
+          </div>
+
+          <Button
+            onClick={() => setOpen(true)}
+            disabled={!selectedProjectId}
+            className={`px-5 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-sm ${
+              selectedProjectId
+                ? "bg-blue-600 hover:bg-blue-700 text-white"
+                : "bg-gray-100 text-gray-400 cursor-not-allowed"
+            }`}
+          >
+            <Plus className="w-4 h-4" />
+            Add Analysis
+          </Button>
+        </div>
       </div>
 
-      <div className="rounded-xl border overflow-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-slate-50">
-            <tr>
-              <th className="p-3">Item</th>
-              <th className="p-3">Unit</th>
-              <th className="p-3">Material</th>
-              <th className="p-3">Labor</th>
-              <th className="p-3">Equipment</th>
-              <th className="p-3">Total Rate</th>
-              <th className="p-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading && (
+      {/* Search Bar */}
+      <div className="relative max-w-md">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <Input
+          placeholder="Search by item name or unit..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+        />
+        {search && (
+          <button
+            onClick={clearSearch}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
+      </div>
+
+      {/* Rate Analysis Table */}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <td colSpan={7} className="p-6">
-                  <div className="h-4 bg-slate-200 animate-pulse rounded" />
-                </td>
+                <th className="p-4 text-left font-semibold text-gray-600">Item</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Unit</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Material (₹)</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Labor (₹)</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Equipment (₹)</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Overhead %</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Profit %</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Total Rate (₹)</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Actions</th>
               </tr>
-            )}
-            {!loading &&
-              items.map((i) => (
-                <tr key={i.id} className="border-t hover:bg-slate-50">
-                  <td className="p-3">{i.itemName}</td>
-                  <td className="p-3">{i.unit}</td>
-                  <td className="p-3">{i.materialCost}</td>
-                  <td className="p-3">{i.laborCost}</td>
-                  <td className="p-3">{i.equipmentCost}</td>
-                  <td className="p-3">{i.totalRate}</td>
-                  <td className="p-3 flex gap-2">
-                    <button onClick={() => handleEdit(i)} className="text-blue-600 text-xs">Edit</button>
-                    <button onClick={() => handleDelete(i.id)} className="text-red-600 text-xs">Delete</button>
+            </thead>
+            <tbody>
+              {loading.items ? (
+                Array.from({ length: 4 }).map((_, i) => (
+                  <tr key={i} className="border-b border-gray-100 animate-pulse">
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-24"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-12"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-12"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-12"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
+                  </tr>
+                ))
+              ) : !selectedProjectId ? (
+                <tr>
+                  <td colSpan={9} className="text-center py-12 text-gray-500">
+                    Please select a project to view rate analysis records.
                   </td>
                 </tr>
-              ))}
-          </tbody>
-        </table>
+              ) : filteredItems.length === 0 ? (
+                <tr>
+                  <td colSpan={9} className="text-center py-12 text-gray-500">
+                    {search
+                      ? "No records match your search."
+                      : "No rate analysis records found. Click 'Add Analysis' to create one."}
+                  </td>
+                </tr>
+              ) : (
+                filteredItems.map((item) => (
+                  <tr
+                    key={item.id}
+                    className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="p-4 font-medium text-gray-900">{item.itemName}</td>
+                    <td className="p-4 text-gray-700">{item.unit}</td>
+                    <td className="p-4 text-gray-700">₹{item.materialCost}</td>
+                    <td className="p-4 text-gray-700">₹{item.laborCost}</td>
+                    <td className="p-4 text-gray-700">₹{item.equipmentCost}</td>
+                    <td className="p-4 text-gray-700">{item.overheadPercent}%</td>
+                    <td className="p-4 text-gray-700">{item.profitPercent}%</td>
+                    <td className="p-4 font-bold text-blue-600">₹{item.totalRate}</td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleEdit(item)}
+                          className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                          title="Edit"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(item.id)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete"
+                        >
+                          <Trash className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
+
+      {/* Add/Edit Modal */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-2xl p-0 gap-0 rounded-2xl overflow-hidden">
+          <DialogHeader className="p-6 border-b border-gray-200">
+            <DialogTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <Calculator className="w-5 h-5 text-blue-600" />
+              {editingId ? "Edit Rate Analysis" : "Add Rate Analysis"}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="md:col-span-2">
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Item Name
+                </label>
+                <Input
+                  value={form.itemName}
+                  onChange={(e) => setForm({ ...form, itemName: e.target.value })}
+                  placeholder="e.g., Concrete (M25)"
+                  className="border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Unit
+                </label>
+                <Input
+                  value={form.unit}
+                  onChange={(e) => setForm({ ...form, unit: e.target.value })}
+                  placeholder="e.g., m³"
+                  className="border-gray-200 rounded-lg"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Material Cost (₹)
+                </label>
+                <Input
+                  type="number"
+                  value={form.materialCost}
+                  onChange={(e) => setForm({ ...form, materialCost: e.target.value })}
+                  placeholder="0.00"
+                  step="0.01"
+                  className="border-gray-200 rounded-lg"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Labor Cost (₹)
+                </label>
+                <Input
+                  type="number"
+                  value={form.laborCost}
+                  onChange={(e) => setForm({ ...form, laborCost: e.target.value })}
+                  placeholder="0.00"
+                  step="0.01"
+                  className="border-gray-200 rounded-lg"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Equipment Cost (₹)
+                </label>
+                <Input
+                  type="number"
+                  value={form.equipmentCost}
+                  onChange={(e) => setForm({ ...form, equipmentCost: e.target.value })}
+                  placeholder="0.00"
+                  step="0.01"
+                  className="border-gray-200 rounded-lg"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Overhead (%)
+                </label>
+                <Input
+                  type="number"
+                  value={form.overheadPercent}
+                  onChange={(e) => setForm({ ...form, overheadPercent: e.target.value })}
+                  placeholder="10"
+                  step="0.1"
+                  className="border-gray-200 rounded-lg"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Profit (%)
+                </label>
+                <Input
+                  type="number"
+                  value={form.profitPercent}
+                  onChange={(e) => setForm({ ...form, profitPercent: e.target.value })}
+                  placeholder="15"
+                  step="0.1"
+                  className="border-gray-200 rounded-lg"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Total Rate (₹)
+                </label>
+                <Input
+                  type="number"
+                  value={form.totalRate}
+                  readOnly
+                  className="w-full bg-gray-50 border-gray-200 rounded-lg text-sm font-bold text-blue-700"
+                />
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="p-6 border-t border-gray-200 bg-gray-50">
+            <div className="flex justify-end gap-3 w-full">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={resetForm}
+                className="border-gray-200 rounded-lg text-gray-600 hover:bg-white"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSubmit}
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm"
+              >
+                {editingId ? "Update" : "Create"} Analysis
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

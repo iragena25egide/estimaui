@@ -1,11 +1,10 @@
 import API from "../context/axios";
 
 class RateAnalysisService {
-
-  // ============================
-  // GET RATE ANALYSIS BY PROJECT
-  // ============================
-  static async getProjectRateAnalysis(projectId: string) {
+  /**
+   * Get all rate analysis records for a project
+   */
+  static async getByProject(projectId: string) {
     try {
       const res = await API.get(`/rate-analysis/project/${projectId}`);
       return res.data;
@@ -15,95 +14,68 @@ class RateAnalysisService {
     }
   }
 
-  // ============================
-  // GET SINGLE RATE ANALYSIS
-  // ============================
-  static async getRateAnalysis(id: string) {
+  /**
+   * Get a single rate analysis record by ID
+   */
+  static async getById(id: string) {
     try {
       const res = await API.get(`/rate-analysis/${id}`);
       return res.data;
     } catch (error) {
-      console.error("Get rate analysis error:", error);
+      console.error("Get rate analysis record error:", error);
       throw error;
     }
   }
 
-  // ============================
-  // CREATE RATE ANALYSIS
-  // ============================
-  static async createRateAnalysis(projectId: string, data: any) {
+  /**
+   * Create a new rate analysis record
+   */
+  static async create(data: any) {
     try {
-
-      const materialCost = Number(data.materialCost || 0);
-      const laborCost = Number(data.laborCost || 0);
-      const equipmentCost = Number(data.equipmentCost || 0);
-
-      const subtotal = materialCost + laborCost + equipmentCost;
-
-      const overheadPercent = Number(data.overheadPercent || 0);
-      const profitPercent = Number(data.profitPercent || 0);
-
-      const overheadAmount = (subtotal * overheadPercent) / 100;
-      const profitAmount = (subtotal * profitPercent) / 100;
-
-      const totalRate = subtotal + overheadAmount + profitAmount;
-
       const payload = {
         ...data,
-        projectId,
-        materialCost,
-        laborCost,
-        equipmentCost,
-        overheadPercent,
-        profitPercent,
-        totalRate
+        materialCost: Number(data.materialCost || 0),
+        laborCost: Number(data.laborCost || 0),
+        equipmentCost: Number(data.equipmentCost || 0),
+        overheadPercent: Number(data.overheadPercent || 0),
+        profitPercent: Number(data.profitPercent || 0),
+        totalRate: Number(data.totalRate || 0),
       };
-
-      const res = await API.post("/rate-analysis", payload);
+      const { projectId, ...rest } = payload;
+      const res = await API.post(`/rate-analysis/project/${projectId}`, rest);
       return res.data;
-
     } catch (error) {
       console.error("Create rate analysis error:", error);
       throw error;
     }
   }
 
- 
-  static async updateRateAnalysis(id: string, data: any) {
+  /**
+   * Update an existing rate analysis record
+   */
+  static async update(id: string, data: any) {
     try {
-
-      const materialCost = Number(data.materialCost || 0);
-      const laborCost = Number(data.laborCost || 0);
-      const equipmentCost = Number(data.equipmentCost || 0);
-
-      const subtotal = materialCost + laborCost + equipmentCost;
-
-      const overheadPercent = Number(data.overheadPercent || 0);
-      const profitPercent = Number(data.profitPercent || 0);
-
-      const totalRate =
-        subtotal +
-        (subtotal * overheadPercent) / 100 +
-        (subtotal * profitPercent) / 100;
-
-      const res = await API.put(`/rate-analysis/${id}`, {
+      const payload = {
         ...data,
-        materialCost,
-        laborCost,
-        equipmentCost,
-        totalRate
-      });
-
+        materialCost: Number(data.materialCost || 0),
+        laborCost: Number(data.laborCost || 0),
+        equipmentCost: Number(data.equipmentCost || 0),
+        overheadPercent: Number(data.overheadPercent || 0),
+        profitPercent: Number(data.profitPercent || 0),
+        totalRate: Number(data.totalRate || 0),
+      };
+      const res = await API.put(`/rate-analysis/${id}`, payload);
       return res.data;
-
     } catch (error) {
       console.error("Update rate analysis error:", error);
       throw error;
     }
   }
 
-  
-  static async deleteRateAnalysis(id: string) {
+  /**
+   * Delete a rate analysis record
+   */
+  static async delete(id: string) {
     try {
       const res = await API.delete(`/rate-analysis/${id}`);
       return res.data;
@@ -112,7 +84,6 @@ class RateAnalysisService {
       throw error;
     }
   }
-
 }
 
 export default RateAnalysisService;

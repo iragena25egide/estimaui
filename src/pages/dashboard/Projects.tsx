@@ -1,35 +1,28 @@
 import React, { useEffect, useState } from "react";
 import ProjectService from "../../services/projectService";
-
-import {
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-} from "@/components/ui/table";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
-
-import { Plus, Trash, Edit, Search } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Plus, Trash, Edit, Search, X, FolderOpen } from "lucide-react";
 
 const Projects: React.FC = () => {
-
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-
   const [search, setSearch] = useState("");
 
   const [form, setForm] = useState<any>({
@@ -40,10 +33,10 @@ const Projects: React.FC = () => {
     contractType: "",
     estimatorName: "",
     startDate: "",
-    completionDate: ""
+    completionDate: "",
+    status: "Planning",
   });
 
-  
   const loadProjects = async () => {
     setLoading(true);
     try {
@@ -58,225 +51,340 @@ const Projects: React.FC = () => {
     loadProjects();
   }, []);
 
- 
   const handleSubmit = async () => {
-    if (editingId) {
-      await ProjectService.updateProject(editingId, form);
-    } else {
-      await ProjectService.createProject(form);
+    try {
+      if (editingId) {
+        await ProjectService.updateProject(editingId, form);
+      } else {
+        await ProjectService.createProject(form);
+      }
+      resetForm();
+      loadProjects();
+    } catch (error) {
+      console.error("Save error", error);
     }
-
-    setOpen(false);
-    setEditingId(null);
-
-    loadProjects();
   };
 
-  
-  const handleDelete = async (id:string) => {
+  const handleDelete = async (id: string) => {
     if (!confirm("Delete project?")) return;
-
-    await ProjectService.deleteProject(id);
-    loadProjects();
+    try {
+      await ProjectService.deleteProject(id);
+      loadProjects();
+    } catch (error) {
+      console.error("Delete error", error);
+    }
   };
 
-  const handleEdit = (p:any) => {
+  const handleEdit = (p: any) => {
     setEditingId(p.id);
     setForm(p);
     setOpen(true);
   };
 
-  const filteredProjects = projects.filter(p =>
+  const resetForm = () => {
+    setOpen(false);
+    setEditingId(null);
+    setForm({
+      name: "",
+      client: "",
+      location: "",
+      projectType: "",
+      contractType: "",
+      estimatorName: "",
+      startDate: "",
+      completionDate: "",
+      status: "Planning",
+    });
+  };
+
+  const filteredProjects = projects.filter((p) =>
     p.name?.toLowerCase().includes(search.toLowerCase())
   );
 
-  
-  const getStatusStyle = (status:string) => {
-    switch(status){
+  const getStatusStyle = (status: string) => {
+    switch (status) {
       case "Completed":
-        return "bg-green-50 text-green-700";
+        return "bg-green-100 text-green-700";
       case "In Progress":
-        return "bg-blue-50 text-blue-700";
+        return "bg-blue-100 text-blue-700";
       case "Planning":
-        return "bg-yellow-50 text-yellow-700";
+        return "bg-yellow-100 text-yellow-700";
       default:
-        return "bg-slate-50 text-slate-700";
+        return "bg-gray-100 text-gray-700";
     }
   };
 
- return (
-  <div className="max-w-7xl mx-auto">
+  const clearSearch = () => setSearch("");
 
-    
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-6">
-
-     
+  return (
+    <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
+      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-
         <div>
-          <h2 className="text-2xl font-bold text-slate-900">Projects</h2>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
+          <p className="text-sm text-gray-500 mt-1">
             Manage your estimation projects
           </p>
         </div>
-
-        <div className="flex items-center gap-3">
-
-          <div className="relative w-full md:w-64">
-            <Search className="absolute left-3 top-3 w-4 h-4 text-slate-400"/>
-            <Input
-              placeholder="Search projects..."
-              className="pl-10 bg-slate-50 border-slate-200"
-              value={search}
-              onChange={e=>setSearch(e.target.value)}
-            />
-          </div>
-
-          <Button
-            onClick={()=>setOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            <Plus className="w-4 h-4 mr-2"/>
-            New Project
-          </Button>
-
-        </div>
+        <Button
+          onClick={() => setOpen(true)}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-sm"
+        >
+          <Plus className="w-4 h-4" />
+          New Project
+        </Button>
       </div>
 
-     
-      <div className="rounded-xl border border-slate-200 overflow-hidden">
+      {/* Search Bar */}
+      <div className="relative max-w-md">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <Input
+          placeholder="Search projects..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+        />
+        {search && (
+          <button
+            onClick={clearSearch}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
+      </div>
 
-        <table className="w-full text-sm">
-
-          <thead className="bg-slate-50">
-            <tr className="text-left text-slate-600">
-
-              <th className="p-4 font-medium">Project</th>
-              <th className="p-4 font-medium">Client</th>
-              <th className="p-4 font-medium">Location</th>
-              <th className="p-4 font-medium">Type</th>
-              <th className="p-4 font-medium">Actions</th>
-
-            </tr>
-          </thead>
-
-          <tbody>
-
-            {loading &&
-              Array.from({length:5}).map((_,i)=>(
-                <tr key={i} className="border-t border-slate-100">
-                  <td colSpan={5} className="p-4">
-                    <div className="h-4 bg-slate-200 rounded animate-pulse w-full"/>
+      {/* Projects Table */}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="p-4 text-left font-semibold text-gray-600">Project</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Client</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Location</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Type</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Status</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                // Skeleton rows
+                Array.from({ length: 4 }).map((_, i) => (
+                  <tr key={i} className="border-b border-gray-100 animate-pulse">
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-24"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
+                  </tr>
+                ))
+              ) : filteredProjects.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="text-center py-12 text-gray-500">
+                    {search
+                      ? "No projects match your search."
+                      : "No projects found. Click 'New Project' to create one."}
                   </td>
                 </tr>
-              ))
-            }
-
-            {!loading && filteredProjects.map(p=>(
-              <tr
-                key={p.id}
-                className="border-t border-slate-100 hover:bg-slate-50 transition"
-              >
-
-                <td className="p-4 font-medium text-slate-900">
-                  {p.name}
-                </td>
-
-                <td className="p-4 text-slate-600">{p.client}</td>
-                <td className="p-4 text-slate-600">{p.location}</td>
-
-                <td className="p-4">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyle(p.status)}`}>
-                    {p.status || "Draft"}
-                  </span>
-                </td>
-
-                <td className="p-4">
-                  <div className="flex gap-2">
-
-                    <Button size="sm" variant="outline"
-                      onClick={()=>handleEdit(p)}>
-                      <Edit className="w-4 h-4"/>
-                    </Button>
-
-                    <Button size="sm" variant="destructive"
-                      onClick={()=>handleDelete(p.id)}>
-                      <Trash className="w-4 h-4"/>
-                    </Button>
-
-                  </div>
-                </td>
-
-              </tr>
-            ))}
-
-            {!loading && filteredProjects.length === 0 && (
-              <tr>
-                <td colSpan={5} className="text-center p-8 text-slate-500">
-                  No projects found
-                </td>
-              </tr>
-            )}
-
-          </tbody>
-
-        </table>
-
+              ) : (
+                filteredProjects.map((p) => (
+                  <tr
+                    key={p.id}
+                    className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="p-4 font-medium text-gray-900">{p.name}</td>
+                    <td className="p-4 text-gray-700">{p.client}</td>
+                    <td className="p-4 text-gray-700">{p.location}</td>
+                    <td className="p-4 text-gray-700">{p.projectType}</td>
+                    <td className="p-4">
+                      <span
+                        className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusStyle(
+                          p.status
+                        )}`}
+                      >
+                        {p.status || "Planning"}
+                      </span>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleEdit(p)}
+                          className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                          title="Edit"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(p.id)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete"
+                        >
+                          <Trash className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-    </div>
+      {/* Add/Edit Project Modal */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-2xl p-0 gap-0 rounded-2xl overflow-hidden">
+          <DialogHeader className="p-6 border-b border-gray-200">
+            <DialogTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <FolderOpen className="w-5 h-5 text-blue-600" />
+              {editingId ? "Edit Project" : "Create New Project"}
+            </DialogTitle>
+          </DialogHeader>
 
-    
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="max-w-2xl">
+          <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Project Name
+                </label>
+                <Input
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  placeholder="e.g., Commercial Tower"
+                  className="border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20"
+                />
+              </div>
 
-        <DialogHeader>
-          <DialogTitle>
-            {editingId ? "Edit Project" : "Create Project"}
-          </DialogTitle>
-        </DialogHeader>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Client
+                </label>
+                <Input
+                  value={form.client}
+                  onChange={(e) => setForm({ ...form, client: e.target.value })}
+                  placeholder="e.g., ABC Corp"
+                  className="border-gray-200 rounded-lg"
+                />
+              </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Location
+                </label>
+                <Input
+                  value={form.location}
+                  onChange={(e) => setForm({ ...form, location: e.target.value })}
+                  placeholder="e.g., New York, NY"
+                  className="border-gray-200 rounded-lg"
+                />
+              </div>
 
-          {[
-            {key:"name", label:"Project Name"},
-            {key:"client", label:"Client"},
-            {key:"location", label:"Location"},
-            {key:"projectType", label:"Project Type"},
-            {key:"contractType", label:"Contract Type"},
-            {key:"estimatorName", label:"Estimator"},
-            {key:"startDate", label:"Start Date", type:"date"},
-            {key:"completionDate", label:"Completion Date", type:"date"}
-          ].map(field=>(
-            <div key={field.key} className="space-y-1">
-              <label className="text-xs text-slate-500">
-                {field.label}
-              </label>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Project Type
+                </label>
+                <Input
+                  value={form.projectType}
+                  onChange={(e) => setForm({ ...form, projectType: e.target.value })}
+                  placeholder="e.g., Residential"
+                  className="border-gray-200 rounded-lg"
+                />
+              </div>
 
-              <Input
-                type={field.type || "text"}
-                value={form[field.key] || ""}
-                onChange={e =>
-                  setForm({
-                    ...form,
-                    [field.key]: e.target.value
-                  })
-                }
-              />
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Contract Type
+                </label>
+                <Input
+                  value={form.contractType}
+                  onChange={(e) => setForm({ ...form, contractType: e.target.value })}
+                  placeholder="e.g., Fixed Price"
+                  className="border-gray-200 rounded-lg"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Estimator Name
+                </label>
+                <Input
+                  value={form.estimatorName}
+                  onChange={(e) => setForm({ ...form, estimatorName: e.target.value })}
+                  placeholder="e.g., John Doe"
+                  className="border-gray-200 rounded-lg"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Start Date
+                </label>
+                <Input
+                  type="date"
+                  value={form.startDate}
+                  onChange={(e) => setForm({ ...form, startDate: e.target.value })}
+                  className="border-gray-200 rounded-lg"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Completion Date
+                </label>
+                <Input
+                  type="date"
+                  value={form.completionDate}
+                  onChange={(e) => setForm({ ...form, completionDate: e.target.value })}
+                  className="border-gray-200 rounded-lg"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Status
+                </label>
+                <Select
+                  value={form.status}
+                  onValueChange={(value) => setForm({ ...form, status: value })}
+                >
+                  <SelectTrigger className="border-gray-200 rounded-lg">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Planning">Planning</SelectItem>
+                    <SelectItem value="In Progress">In Progress</SelectItem>
+                    <SelectItem value="Completed">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          ))}
+          </div>
 
-        </div>
-
-        <Button onClick={handleSubmit} className="w-full mt-4">
-          Save Project
-        </Button>
-
-      </DialogContent>
-    </Dialog>
-
-  </div>
-);
+          <DialogFooter className="p-6 border-t border-gray-200 bg-gray-50">
+            <div className="flex justify-end gap-3 w-full">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={resetForm}
+                className="border-gray-200 rounded-lg text-gray-600 hover:bg-white"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSubmit}
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm"
+              >
+                {editingId ? "Update" : "Create"} Project
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
 };
 
 export default Projects;
