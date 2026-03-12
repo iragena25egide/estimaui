@@ -1,9 +1,7 @@
 import API from "../context/axios";
 
 class DimensionSheetService {
-  /**
-   * Get dimension sheets for a specific drawing
-   */
+ 
   static async getByDrawing(drawingId: string) {
     try {
       const res = await API.get(`/dimension/drawing/${drawingId}`);
@@ -14,9 +12,7 @@ class DimensionSheetService {
     }
   }
 
-  /**
-   * Get dimension sheets for a project (all drawings)
-   */
+  
   static async getByProject(projectId: string) {
     try {
       const res = await API.get(`/dimension/project/${projectId}`);
@@ -27,9 +23,7 @@ class DimensionSheetService {
     }
   }
 
-  /**
-   * Get a single dimension sheet by its ID
-   */
+ 
   static async getById(id: string) {
     try {
       const res = await API.get(` /dimension/${id}`);
