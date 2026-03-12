@@ -2,14 +2,14 @@ import API from "../context/axios";
 
 class ReportService {
   /**
-   * Fetch all reports
+   * Fetch all projects for dropdown
    */
-  static async getAll() {
+  static async getProjects() {
     try {
-      const res = await API.get("/reports");
+      const res = await API.get("/projects/my");
       return res.data;
     } catch (error) {
-      console.error("Get reports error:", error);
+      console.error("Get projects error:", error);
       throw error;
     }
   }
@@ -28,27 +28,34 @@ class ReportService {
   }
 
   /**
-   * Fetch all projects (for dropdown)
+   * Generate a new report for a project
    */
-  static async getProjects() {
+  static async generate(projectId: string) {
     try {
-      const res = await API.get("/projects/my");
+      const res = await API.post(`/reports/${projectId}/generate`);
       return res.data;
-    } catch (error) {
-      console.error("Get projects error:", error);
+    } catch (error: any) {
+      if (error.response) {
+        console.error("Generate report error response:", error.response.data);
+        // Attach server message to error object
+        error.serverMessage = error.response.data.message || "Failed to generate report";
+      }
       throw error;
     }
   }
 
   /**
-   * Generate a new report for a project
+   * Send a report via email
    */
-  static async generate(projectId: string) {
+  static async send(reportId: string) {
     try {
-      const res = await API.post(`/reports/generate/${projectId}`);
+      const res = await API.post(`/reports/${reportId}/send`);
       return res.data;
-    } catch (error) {
-      console.error("Generate report error:", error);
+    } catch (error: any) {
+      if (error.response) {
+        console.error("Send report error response:", error.response.data);
+        error.serverMessage = error.response.data.message || "Failed to send report";
+      }
       throw error;
     }
   }
@@ -70,34 +77,8 @@ class ReportService {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Download report error:", error);
-      throw error;
-    }
-  }
-
-  /**
-   * Send a report via email
-   */
-  static async sendEmail(reportId: string) {
-    try {
-      const res = await API.post(`/reports/send-email/${reportId}`);
-      return res.data;
-    } catch (error) {
-      console.error("Send report email error:", error);
-      throw error;
-    }
-  }
-
-  /**
-   * Delete a report
-   */
-  static async delete(reportId: string) {
-    try {
-      const res = await API.delete(`/reports/${reportId}`);
-      return res.data;
-    } catch (error) {
-      console.error("Delete report error:", error);
       throw error;
     }
   }
