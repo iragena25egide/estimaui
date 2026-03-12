@@ -9,9 +9,25 @@ import {
   Users,
   Loader2,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
 import DrawingService from "@/services/drawingService";
 import LaborProductivityService from "@/services/laborProductivity";
-import { toast } from "sonner";
 
 const LaborProductivity: React.FC = () => {
   const [projects, setProjects] = useState<any[]>([]);
@@ -26,16 +42,16 @@ const LaborProductivity: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const [form, setForm] = useState({
-    laborType: "",
-    unit: "",
+    activity: "",       
+    trade: "",
     productivityRate: "",
-    wageRate: "",
-    workingHours: "",
-    outputPerDay: "",
-    totalLaborCost: "", // added for completeness
+    manHours: "",
+    laborRatePerHour: "",
+    totalLaborCost: "",
     projectId: "",
   });
 
+ 
   useEffect(() => {
     const loadProjects = async () => {
       setLoading((prev) => ({ ...prev, projects: true }));
@@ -52,6 +68,7 @@ const LaborProductivity: React.FC = () => {
     loadProjects();
   }, []);
 
+  // Load records when project changes
   useEffect(() => {
     if (!selectedProjectId) {
       setItems([]);
@@ -72,6 +89,15 @@ const LaborProductivity: React.FC = () => {
     }
   };
 
+  // Auto-calculate total labor cost (backend formula)
+  useEffect(() => {
+    const manHours = parseFloat(form.manHours) || 0;
+    const rate = parseFloat(form.laborRatePerHour) || 0;
+    const productivity = parseFloat(form.productivityRate) || 0;
+    const total = manHours * rate * (productivity / 100);
+    setForm((prev) => ({ ...prev, totalLaborCost: total.toFixed(2) }));
+  }, [form.manHours, form.laborRatePerHour, form.productivityRate]);
+
   const handleSubmit = async () => {
     if (!selectedProjectId) {
       toast.warning("Please select a project first.");
@@ -79,12 +105,11 @@ const LaborProductivity: React.FC = () => {
     }
 
     const requiredFields = [
-      { field: "laborType", label: "Labor Type" },
-      { field: "unit", label: "Unit" },
+      { field: "activity", label: "Activity" },
+      { field: "trade", label: "Trade" },
       { field: "productivityRate", label: "Productivity Rate" },
-      { field: "wageRate", label: "Wage Rate" },
-      { field: "workingHours", label: "Working Hours" },
-      { field: "outputPerDay", label: "Output per Day" },
+      { field: "manHours", label: "Man Hours" },
+      { field: "laborRatePerHour", label: "Labor Rate per Hour" }
     ];
     for (const { field, label } of requiredFields) {
       if (!form[field as keyof typeof form]) {
@@ -93,18 +118,16 @@ const LaborProductivity: React.FC = () => {
       }
     }
 
-    // Compute totalLaborCost (example: wage * hours – adjust if needed)
-    const wage = parseFloat(form.wageRate) || 0;
-    const hours = parseFloat(form.workingHours) || 0;
-    const totalLaborCost = wage * hours;
+    const payload = {
+      ...form,
+      projectId: selectedProjectId,
+      productivityRate: parseFloat(form.productivityRate),
+      manHours: parseFloat(form.manHours),
+      laborRatePerHour: parseFloat(form.laborRatePerHour),
+      totalLaborCost: parseFloat(form.totalLaborCost),
+    };
 
     try {
-      const payload = {
-        ...form,
-        projectId: selectedProjectId,
-        totalLaborCost, // send computed value
-      };
-
       if (editingId) {
         await LaborProductivityService.update(editingId, payload);
         toast.success("Labor productivity updated");
@@ -112,7 +135,6 @@ const LaborProductivity: React.FC = () => {
         await LaborProductivityService.create(payload);
         toast.success("Labor productivity created");
       }
-
       resetForm();
       loadItems();
     } catch (error: any) {
@@ -136,13 +158,13 @@ const LaborProductivity: React.FC = () => {
   const handleEdit = (item: any) => {
     setEditingId(item.id);
     setForm({
-      laborType: item.laborType || "",
-      unit: item.unit || "",
+      activity: item.activity || "",
+      trade: item.trade || "",
+     
       productivityRate: item.productivityRate?.toString() || "",
-      wageRate: item.wageRate?.toString() || "",
-      workingHours: item.workingHours?.toString() || "",
-      outputPerDay: item.outputPerDay?.toString() || "",
-      totalLaborCost: item.totalLaborCost?.toString() || "", // preserve if stored
+      manHours: item.manHours?.toString() || "",
+      laborRatePerHour: item.laborRatePerHour?.toString() || "",
+      totalLaborCost: item.totalLaborCost?.toString() || "",
       projectId: item.projectId || selectedProjectId,
     });
     setOpen(true);
@@ -152,12 +174,11 @@ const LaborProductivity: React.FC = () => {
     setOpen(false);
     setEditingId(null);
     setForm({
-      laborType: "",
-      unit: "",
+      activity: "",
+      trade: "",
       productivityRate: "",
-      wageRate: "",
-      workingHours: "",
-      outputPerDay: "",
+      manHours: "",
+      laborRatePerHour: "",
       totalLaborCost: "",
       projectId: selectedProjectId,
     });
@@ -165,7 +186,8 @@ const LaborProductivity: React.FC = () => {
 
   const filteredItems = items.filter(
     (item) =>
-      item.laborType?.toLowerCase().includes(search.toLowerCase()) ||
+      item.activity?.toLowerCase().includes(search.toLowerCase()) ||
+      item.trade?.toLowerCase().includes(search.toLowerCase()) ||
       item.unit?.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -181,54 +203,63 @@ const LaborProductivity: React.FC = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3">
+          {/* Project Dropdown */}
           <div className="relative min-w-[200px]">
             <FolderOpen className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <select
+            <Select
               value={selectedProjectId}
-              onChange={(e) => setSelectedProjectId(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none bg-white"
+              onValueChange={setSelectedProjectId}
               disabled={loading.projects}
             >
-              {loading.projects ? (
-                <option>Loading projects...</option>
-              ) : projects.length === 0 ? (
-                <option>No projects found</option>
-              ) : (
-                projects.map((p) => (
-                  <option key={p.projectId} value={p.projectId}>
-                    {p.projectName}
-                  </option>
-                ))
-              )}
-            </select>
+              <SelectTrigger className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20">
+                <SelectValue placeholder="Select project" />
+              </SelectTrigger>
+              <SelectContent>
+                {loading.projects ? (
+                  <SelectItem value="loading" disabled>
+                    Loading projects...
+                  </SelectItem>
+                ) : projects.length === 0 ? (
+                  <SelectItem value="none" disabled>
+                    No projects found
+                  </SelectItem>
+                ) : (
+                  projects.map((p) => (
+                    <SelectItem key={p.projectId} value={p.projectId}>
+                      {p.projectName}
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
             {loading.projects && (
               <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 animate-spin" />
             )}
           </div>
 
-          <button
+          <Button
             onClick={() => setOpen(true)}
             disabled={!selectedProjectId}
-            className={`px-5 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 transition-all shadow-sm ${
+            className={`px-5 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-sm ${
               selectedProjectId
-                ? "bg-blue-600 hover:bg-blue-700 text-white hover:shadow-md"
+                ? "bg-blue-600 hover:bg-blue-700 text-white"
                 : "bg-gray-100 text-gray-400 cursor-not-allowed"
             }`}
           >
             <Plus className="w-4 h-4" />
             Add Labor
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Search Bar */}
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-        <input
-          placeholder="Search by labor type or unit..."
+        <Input
+          placeholder="Search by activity, trade or unit..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-shadow"
+          className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
         />
         {search && (
           <button
@@ -246,12 +277,13 @@ const LaborProductivity: React.FC = () => {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="p-4 text-left font-semibold text-gray-600">Labor Type</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Unit</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Productivity Rate</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Wage Rate (₹)</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Working Hours</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Output/Day</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Activity</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Trade</th>
+                
+                <th className="p-4 text-left font-semibold text-gray-600">Productivity (%)</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Man Hours</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Rate/Hour </th>
+                <th className="p-4 text-left font-semibold text-gray-600">Total Cost </th>
                 <th className="p-4 text-left font-semibold text-gray-600">Actions</th>
               </tr>
             </thead>
@@ -259,24 +291,26 @@ const LaborProductivity: React.FC = () => {
               {loading.items ? (
                 Array.from({ length: 4 }).map((_, i) => (
                   <tr key={i} className="border-b border-gray-100 animate-pulse">
-                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-24"></div></td>
-                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-12"></div></td>
-                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
                     <td className="p-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
                     <td className="p-4"><div className="h-4 bg-gray-200 rounded w-12"></div></td>
                     <td className="p-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-12"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
                     <td className="p-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
                   </tr>
                 ))
               ) : !selectedProjectId ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-12 text-gray-500">
+                  <td colSpan={9} className="text-center py-12 text-gray-500">
                     Please select a project to view labor productivity records.
                   </td>
                 </tr>
               ) : filteredItems.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-12 text-gray-500">
+                  <td colSpan={9} className="text-center py-12 text-gray-500">
                     {search
                       ? "No records match your search."
                       : "No labor productivity records found. Click 'Add Labor' to create one."}
@@ -288,12 +322,12 @@ const LaborProductivity: React.FC = () => {
                     key={item.id}
                     className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
                   >
-                    <td className="p-4 font-medium text-gray-900">{item.laborType}</td>
-                    <td className="p-4 text-gray-700">{item.unit}</td>
-                    <td className="p-4 text-gray-700">{item.productivityRate}</td>
-                    <td className="p-4 text-gray-700">₹{item.wageRate}</td>
-                    <td className="p-4 text-gray-700">{item.workingHours}</td>
-                    <td className="p-4 font-medium text-blue-600">{item.outputPerDay}</td>
+                    <td className="p-4 text-gray-700">{item.activity}</td>
+                    <td className="p-4 font-medium text-gray-900">{item.trade}</td>
+                    <td className="p-4 text-gray-700">{item.productivityRate}%</td>
+                    <td className="p-4 text-gray-700">{item.manHours}</td>
+                    <td className="p-4 text-gray-700">₹{item.laborRatePerHour}</td>
+                    <td className="p-4 font-bold text-blue-600">{item.totalLaborCost}</td>
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <button
@@ -321,125 +355,121 @@ const LaborProductivity: React.FC = () => {
       </div>
 
       {/* Modal */}
-      {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-auto">
-            <div className="sticky top-0 bg-white p-6 border-b border-gray-200 flex justify-between items-center">
-              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                <Users className="w-5 h-5 text-blue-600" />
-                {editingId ? "Edit Labor Productivity" : "Add Labor Productivity"}
-              </h3>
-              <button
-                onClick={resetForm}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <X className="w-5 h-5 text-gray-500" />
-              </button>
-            </div>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-2xl p-0 gap-0 rounded-2xl overflow-hidden">
+          <DialogHeader className="p-6 border-b border-gray-200">
+            <DialogTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <Users className="w-5 h-5 text-blue-600" />
+              {editingId ? "Edit Labor Productivity" : "Add Labor Productivity"}
+            </DialogTitle>
+          </DialogHeader>
 
-            <div className="p-6 space-y-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                    Labor Type
-                  </label>
-                  <input
-                    type="text"
-                    value={form.laborType}
-                    onChange={(e) => setForm({ ...form, laborType: e.target.value })}
-                    placeholder="e.g., Mason, Carpenter"
-                    className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                  />
-                </div>
+          <div className="p-6 space-y-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="md:col-span-2">
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Activity <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  value={form.activity}
+                  onChange={(e) => setForm({ ...form, activity: e.target.value })}
+                  placeholder="e.g., Bricklaying, Plastering"
+                  className="border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20"
+                />
+              </div>
 
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                    Unit
-                  </label>
-                  <input
-                    type="text"
-                    value={form.unit}
-                    onChange={(e) => setForm({ ...form, unit: e.target.value })}
-                    placeholder="e.g., m², m³, day"
-                    className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Trade <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  value={form.trade}
+                  onChange={(e) => setForm({ ...form, trade: e.target.value })}
+                  placeholder="e.g., Mason, Carpenter"
+                  className="border-gray-200 rounded-lg"
+                />
+              </div>
 
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                    Productivity Rate
-                  </label>
-                  <input
-                    type="number"
-                    value={form.productivityRate}
-                    onChange={(e) => setForm({ ...form, productivityRate: e.target.value })}
-                    placeholder="0.00"
-                    step="0.01"
-                    className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                  />
-                </div>
+              
 
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                    Wage Rate (₹)
-                  </label>
-                  <input
-                    type="number"
-                    value={form.wageRate}
-                    onChange={(e) => setForm({ ...form, wageRate: e.target.value })}
-                    placeholder="0.00"
-                    step="0.01"
-                    className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Productivity Rate (%) <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="number"
+                  value={form.productivityRate}
+                  onChange={(e) => setForm({ ...form, productivityRate: e.target.value })}
+                  placeholder="e.g., 85"
+                  step="0.1"
+                  className="border-gray-200 rounded-lg"
+                />
+              </div>
 
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                    Working Hours per Day
-                  </label>
-                  <input
-                    type="number"
-                    value={form.workingHours}
-                    onChange={(e) => setForm({ ...form, workingHours: e.target.value })}
-                    placeholder="8"
-                    step="0.5"
-                    className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Man Hours <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="number"
+                  value={form.manHours}
+                  onChange={(e) => setForm({ ...form, manHours: e.target.value })}
+                  placeholder="e.g., 8"
+                  step="0.5"
+                  className="border-gray-200 rounded-lg"
+                />
+              </div>
 
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                    Output per Day
-                  </label>
-                  <input
-                    type="number"
-                    value={form.outputPerDay}
-                    onChange={(e) => setForm({ ...form, outputPerDay: e.target.value })}
-                    placeholder="0.00"
-                    step="0.01"
-                    className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Labor Rate per Hour (₹) <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="number"
+                  value={form.laborRatePerHour}
+                  onChange={(e) => setForm({ ...form, laborRatePerHour: e.target.value })}
+                  placeholder="e.g., 500"
+                  step="1"
+                  className="border-gray-200 rounded-lg"
+                />
+              </div>
+
+              
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Total Labor Cost (₹)
+                </label>
+                <Input
+                  type="number"
+                  value={form.totalLaborCost}
+                  readOnly
+                  className="w-full bg-gray-50 border-gray-200 rounded-lg text-sm font-bold text-blue-700"
+                />
               </div>
             </div>
+          </div>
 
-            <div className="sticky bottom-0 bg-gray-50 p-6 border-t border-gray-200 flex justify-end gap-3 rounded-b-2xl">
-              <button
+          <DialogFooter className="p-6 border-t border-gray-200 bg-gray-50">
+            <div className="flex justify-end gap-3 w-full">
+              <Button
+                type="button"
+                variant="outline"
                 onClick={resetForm}
-                className="px-5 py-2.5 border border-gray-200 rounded-lg text-gray-600 hover:bg-white transition-colors"
+                className="border-gray-200 rounded-lg text-gray-600 hover:bg-white"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleSubmit}
-                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-sm"
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm"
               >
                 {editingId ? "Update" : "Create"} Labor
-              </button>
+              </Button>
             </div>
-          </div>
-        </div>
-      )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
