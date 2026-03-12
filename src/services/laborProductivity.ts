@@ -5,7 +5,7 @@ class LaborProductivityService {
     try {
       const res = await API.get(`/labor-productivity/project/${projectId}`);
       return res.data;
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Get labor productivity error:", error);
       throw error;
     }
@@ -25,15 +25,14 @@ class LaborProductivityService {
     try {
       const payload = {
         ...data,
-        productivityRate: Number(data.productivityRate || 0),
-        wageRate: Number(data.wageRate || 0),
-        workingHours: Number(data.workingHours || 0),
-        outputPerDay: Number(data.outputPerDay || 0),
-        totalLaborCost: Number(data.totalLaborCost || 0), 
+        productivityRate: Number(data.productivityRate) || 0,
+        manHours: Number(data.manHours) || 0,
+        laborRatePerHour: Number(data.laborRatePerHour) || 0,
+        totalLaborCost: Number(data.totalLaborCost) || 0,
       };
       const res = await API.post("/labor-productivity/create", payload);
       return res.data;
-    } catch (error:any) {
+    } catch (error: any) {
       if (error.response) {
         console.error("Create labor productivity error response:", error.response.data);
       } else {
@@ -47,15 +46,14 @@ class LaborProductivityService {
     try {
       const payload = {
         ...data,
-        productivityRate: Number(data.productivityRate || 0),
-        wageRate: Number(data.wageRate || 0),
-        workingHours: Number(data.workingHours || 0),
-        outputPerDay: Number(data.outputPerDay || 0),
-        totalLaborCost: Number(data.totalLaborCost || 0),
+        productivityRate: Number(data.productivityRate) || 0,
+        manHours: Number(data.manHours) || 0,
+        laborRatePerHour: Number(data.laborRatePerHour) || 0,
+        totalLaborCost: Number(data.totalLaborCost) || 0,
       };
       const res = await API.patch(`/labor-productivity/${id}`, payload);
       return res.data;
-    } catch (error:any) {
+    } catch (error: any) {
       if (error.response) {
         console.error("Update labor productivity error response:", error.response.data);
       }
