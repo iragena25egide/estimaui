@@ -14,9 +14,7 @@ class BoqService {
     }
   }
 
-  /**
-   * Fetch a single BOQ item by ID
-   */
+ 
   static async getById(id: string) {
     try {
       const res = await API.get(`/boq-items/${id}`);
@@ -27,13 +25,9 @@ class BoqService {
     }
   }
 
-  /**
-   * Create a new BOQ item
-   * Expects data object containing projectId and all fields
-   */
+
   static async create(data: any) {
     try {
-      // Ensure numeric fields are numbers
       const payload = {
         ...data,
         quantity: Number(data.quantity || 0),
@@ -43,10 +37,7 @@ class BoqService {
         totalRate: Number(data.totalRate || 0),
         amount: Number(data.amount || 0),
       };
-
-      // The backend expects projectId in the URL, so we extract it
-      const { projectId, ...rest } = payload;
-      const res = await API.post(`/boq-items/project/${projectId}`, rest);
+      const res = await API.post("/boq-items/create", payload);
       return res.data;
     } catch (error) {
       console.error("Create BOQ item error:", error);
@@ -54,9 +45,7 @@ class BoqService {
     }
   }
 
-  /**
-   * Update an existing BOQ item
-   */
+ 
   static async update(id: string, data: any) {
     try {
       const payload = {
@@ -68,8 +57,8 @@ class BoqService {
         totalRate: Number(data.totalRate || 0),
         amount: Number(data.amount || 0),
       };
-
-      const res = await API.put(`/boq-items/${id}`, payload);
+     
+      const res = await API.patch(`/boq-items/${id}`, payload);
       return res.data;
     } catch (error) {
       console.error("Update BOQ item error:", error);
@@ -77,9 +66,7 @@ class BoqService {
     }
   }
 
-  /**
-   * Delete a BOQ item by ID
-   */
+  
   static async delete(id: string) {
     try {
       const res = await API.delete(`/boq-items/${id}`);
