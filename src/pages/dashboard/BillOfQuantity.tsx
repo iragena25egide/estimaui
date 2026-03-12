@@ -8,8 +8,9 @@ import {
   FolderOpen,
   Calculator,
 } from "lucide-react";
-import BoqService from "@/services/BoqService"; 
-import DrawingService from "@/services/drawingService"; 
+import BoqService from "@/services/BoqService";
+import DrawingService from "@/services/drawingService";
+import { toast } from "sonner"; 
 
 const BoqItems: React.FC = () => {
   const [projects, setProjects] = useState<any[]>([]);
@@ -34,15 +35,16 @@ const BoqItems: React.FC = () => {
     projectId: "",
   });
 
-  // Load projects for dropdown
+  
   useEffect(() => {
     const loadProjects = async () => {
       try {
-        const res = await DrawingService.getDrawingSummary(); // returns project list
+        const res = await DrawingService.getDrawingSummary();
         setProjects(res);
         if (res.length > 0) setSelectedProjectId(res[0].projectId);
       } catch (error) {
         console.error("Failed to load projects", error);
+        toast?.error("Failed to load projects");
       }
     };
     loadProjects();
@@ -64,6 +66,7 @@ const BoqItems: React.FC = () => {
       setItems(data);
     } catch (error) {
       console.error("Failed to load BOQ items", error);
+      toast?.error("Failed to load BOQ items");
     } finally {
       setLoading(false);
     }
@@ -87,7 +90,7 @@ const BoqItems: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!selectedProjectId) {
-      alert("Please select a project first.");
+      toast?.warning("Please select a project first.");
       return;
     }
 
@@ -105,14 +108,17 @@ const BoqItems: React.FC = () => {
 
       if (editingId) {
         await BoqService.update(editingId, payload);
+        toast?.success("BOQ item updated");
       } else {
         await BoqService.create(payload);
+        toast?.success("BOQ item created");
       }
 
       resetForm();
       loadItems();
     } catch (error) {
       console.error("Save error", error);
+      toast?.error("Save failed");
     }
   };
 
@@ -120,9 +126,11 @@ const BoqItems: React.FC = () => {
     if (!confirm("Delete this BOQ item?")) return;
     try {
       await BoqService.delete(id);
+      toast?.success("BOQ item deleted");
       loadItems();
     } catch (error) {
       console.error("Delete error", error);
+      toast?.error("Delete failed");
     }
   };
 
