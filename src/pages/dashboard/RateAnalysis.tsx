@@ -307,13 +307,13 @@ const RateAnalysis: React.FC = () => {
                 <th className="p-4 text-left font-semibold text-gray-600">Item No</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Description</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Unit</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Material (₹)</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Labor (₹)</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Equipment (₹)</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Material ()</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Labor ()</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Equipment ()</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Wastage %</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Overheads %</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Profit %</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Final Rate (₹)</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Final Rate ()</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Actions</th>
               </tr>
             </thead>
@@ -357,13 +357,13 @@ const RateAnalysis: React.FC = () => {
                     <td className="p-4 font-medium text-gray-900">{item.boqItemNo}</td>
                     <td className="p-4 text-gray-700">{item.description}</td>
                     <td className="p-4 text-gray-700">{item.unit}</td>
-                    <td className="p-4 text-gray-700">₹{item.materialCost}</td>
-                    <td className="p-4 text-gray-700">₹{item.laborCost}</td>
-                    <td className="p-4 text-gray-700">₹{item.equipmentCost}</td>
+                    <td className="p-4 text-gray-700">{item.materialCost}</td>
+                    <td className="p-4 text-gray-700">{item.laborCost}</td>
+                    <td className="p-4 text-gray-700">{item.equipmentCost}</td>
                     <td className="p-4 text-gray-700">{item.wastage}%</td>
                     <td className="p-4 text-gray-700">{item.overheads}%</td>
                     <td className="p-4 text-gray-700">{item.profitPercent}%</td>
-                    <td className="p-4 font-bold text-blue-600">₹{item.finalUnitRate}</td>
+                    <td className="p-4 font-bold text-blue-600">{item.finalUnitRate}</td>
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <button
@@ -440,7 +440,7 @@ const RateAnalysis: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                  Material Cost (₹)
+                  Material Cost ()
                 </label>
                 <Input
                   type="number"
@@ -454,7 +454,7 @@ const RateAnalysis: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                  Labor Cost (₹)
+                  Labor Cost ()
                 </label>
                 <Input
                   type="number"
@@ -468,7 +468,7 @@ const RateAnalysis: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                  Equipment Cost (₹)
+                  Equipment Cost ()
                 </label>
                 <Input
                   type="number"
@@ -524,7 +524,7 @@ const RateAnalysis: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                  Final Rate (₹) - calculated
+                  Final Rate () - calculated
                 </label>
                 <Input
                   type="number"

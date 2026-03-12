@@ -112,7 +112,7 @@ const DimensionSheetModal: React.FC<DimensionSheetModalProps> = ({
                           Rate
                         </p>
                         <p className="font-medium text-gray-900">
-                          ₹{Number(sheet.rate).toLocaleString()}
+                          {Number(sheet.rate).toLocaleString()}
                         </p>
                       </div>
                       <div>
@@ -120,7 +120,7 @@ const DimensionSheetModal: React.FC<DimensionSheetModalProps> = ({
                           Total
                         </p>
                         <p className="font-bold text-blue-600">
-                          ₹{Number(sheet.total).toLocaleString()}
+                          {Number(sheet.total).toLocaleString()}
                         </p>
                       </div>
                     </div>

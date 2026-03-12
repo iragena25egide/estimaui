@@ -231,9 +231,9 @@ const DimensionSheets: React.FC = () => {
                     <td className="p-4 font-medium text-gray-900">{sheet.code}</td>
                     <td className="p-4 text-gray-700">{sheet.description}</td>
                     <td className="p-4 text-gray-700">{sheet.unit}</td>
-                    <td className="p-4 text-gray-700">₹{sheet.rate}</td>
+                    <td className="p-4 text-gray-700">{sheet.rate}</td>
                     <td className="p-4 text-gray-700">{sheet.quantity}</td>
-                    <td className="p-4 font-bold text-blue-600">₹{sheet.total}</td>
+                    <td className="p-4 font-bold text-blue-600">{sheet.total}</td>
                     <td className="p-4 text-gray-700">
                       {sheet.length} × {sheet.width} × {sheet.height}
                     </td>

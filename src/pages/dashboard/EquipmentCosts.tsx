@@ -237,11 +237,11 @@ const EquipmentCosts: React.FC = () => {
               <tr>
                 <th className="p-4 text-left font-semibold text-gray-600">Equipment</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Capacity</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Rate/Day (₹)</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Rate/Day ()</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Duration (days)</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Fuel (₹)</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Operator (₹)</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Total Cost (₹)</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Fuel ()</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Operator ()</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Total Cost ()</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Actions</th>
               </tr>
             </thead>
@@ -281,11 +281,11 @@ const EquipmentCosts: React.FC = () => {
                   >
                     <td className="p-4 font-medium text-gray-900">{item.equipmentName}</td>
                     <td className="p-4 text-gray-700">{item.capacity}</td>
-                    <td className="p-4 text-gray-700">₹{item.hireRatePerDay}</td>
+                    <td className="p-4 text-gray-700">{item.hireRatePerDay}</td>
                     <td className="p-4 text-gray-700">{item.durationDays}</td>
-                    <td className="p-4 text-gray-700">₹{item.fuelCost}</td>
-                    <td className="p-4 text-gray-700">₹{item.operatorCost}</td>
-                    <td className="p-4 font-bold text-blue-600">₹{item.totalCost}</td>
+                    <td className="p-4 text-gray-700">{item.fuelCost}</td>
+                    <td className="p-4 text-gray-700">{item.operatorCost}</td>
+                    <td className="p-4 font-bold text-blue-600">{item.totalCost}</td>
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <button
@@ -363,7 +363,7 @@ const EquipmentCosts: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                    Hire Rate per Day (₹)
+                    Hire Rate per Day ()
                   </label>
                   <input
                     type="number"
@@ -395,7 +395,7 @@ const EquipmentCosts: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                    Fuel Cost (₹)
+                    Fuel Cost ()
                   </label>
                   <input
                     type="number"
@@ -411,7 +411,7 @@ const EquipmentCosts: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                    Operator Cost (₹)
+                    Operator Cost ()
                   </label>
                   <input
                     type="number"
@@ -427,7 +427,7 @@ const EquipmentCosts: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                    Total Cost (₹)
+                    Total Cost ()
                   </label>
                   <input
                     type="number"

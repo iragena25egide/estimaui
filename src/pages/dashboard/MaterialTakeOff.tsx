@@ -251,9 +251,9 @@ const MaterialTakeOff: React.FC = () => {
                 <th className="p-4 text-left font-semibold text-gray-600">Material</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Unit</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Quantity</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Rate (₹)</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Rate ()</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Wastage %</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Total Cost (₹)</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Total Cost ()</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Actions</th>
               </tr>
             </thead>
@@ -293,9 +293,9 @@ const MaterialTakeOff: React.FC = () => {
                     <td className="p-4 font-medium text-gray-900">{item.materialName}</td>
                     <td className="p-4 text-gray-700">{item.unit}</td>
                     <td className="p-4 text-gray-700">{item.quantity}</td>
-                    <td className="p-4 text-gray-700">₹{item.rate}</td>
+                    <td className="p-4 text-gray-700">{item.rate}</td>
                     <td className="p-4 text-gray-700">{item.wastagePercent}%</td>
-                    <td className="p-4 font-bold text-blue-600">₹{item.totalCost}</td>
+                    <td className="p-4 font-bold text-blue-600">{item.totalCost}</td>
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <button
@@ -383,7 +383,7 @@ const MaterialTakeOff: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                    Rate (₹)
+                    Rate ()
                   </label>
                   <input
                     type="number"
@@ -411,7 +411,7 @@ const MaterialTakeOff: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                    Total Cost (₹)
+                    Total Cost ()
                   </label>
                   <input
                     type="number"

@@ -305,11 +305,11 @@ const BoqItems: React.FC = () => {
                     <td className="p-4 text-gray-700">{item.section}</td>
                     <td className="p-4 text-gray-700">{item.unit}</td>
                     <td className="p-4 text-gray-700">{item.quantity}</td>
-                    <td className="p-4 text-gray-700">₹{item.materialRate}</td>
-                    <td className="p-4 text-gray-700">₹{item.laborRate}</td>
-                    <td className="p-4 text-gray-700">₹{item.equipmentRate}</td>
-                    <td className="p-4 font-medium text-blue-600">₹{item.totalRate}</td>
-                    <td className="p-4 font-bold text-gray-900">₹{item.amount}</td>
+                    <td className="p-4 text-gray-700">{item.materialRate}</td>
+                    <td className="p-4 text-gray-700">{item.laborRate}</td>
+                    <td className="p-4 text-gray-700">{item.equipmentRate}</td>
+                    <td className="p-4 font-medium text-blue-600">{item.totalRate}</td>
+                    <td className="p-4 font-bold text-gray-900">{item.amount}</td>
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <button
@@ -423,7 +423,7 @@ const BoqItems: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                    Material Rate (₹)
+                    Material Rate ()
                   </label>
                   <input
                     type="number"
@@ -437,7 +437,7 @@ const BoqItems: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                    Labor Rate (₹)
+                    Labor Rate ()
                   </label>
                   <input
                     type="number"
@@ -451,7 +451,7 @@ const BoqItems: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                    Equipment Rate (₹)
+                    Equipment Rate ()
                   </label>
                   <input
                     type="number"
@@ -465,7 +465,7 @@ const BoqItems: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                    Total Rate (₹)
+                    Total Rate ()
                   </label>
                   <input
                     type="number"
@@ -477,7 +477,7 @@ const BoqItems: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                    Amount (₹)
+                    Amount ()
                   </label>
                   <input
                     type="number"

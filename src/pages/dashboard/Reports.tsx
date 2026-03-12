@@ -257,7 +257,7 @@ const Reports: React.FC = () => {
                         : "—"}
                     </td>
                     <td className="p-4 font-semibold text-blue-600">
-                      ₹{report.totalAmount?.toLocaleString() ?? 0}
+                      {report.totalAmount?.toLocaleString() ?? 0}
                     </td>
                     <td className="p-4">
                       <span

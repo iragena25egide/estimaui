@@ -326,7 +326,7 @@ const LaborProductivity: React.FC = () => {
                     <td className="p-4 font-medium text-gray-900">{item.trade}</td>
                     <td className="p-4 text-gray-700">{item.productivityRate}%</td>
                     <td className="p-4 text-gray-700">{item.manHours}</td>
-                    <td className="p-4 text-gray-700">₹{item.laborRatePerHour}</td>
+                    <td className="p-4 text-gray-700">{item.laborRatePerHour}</td>
                     <td className="p-4 font-bold text-blue-600">{item.totalLaborCost}</td>
                     <td className="p-4">
                       <div className="flex items-center gap-2">
@@ -422,7 +422,7 @@ const LaborProductivity: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                  Labor Rate per Hour (₹) <span className="text-red-500">*</span>
+                  Labor Rate per Hour () <span className="text-red-500">*</span>
                 </label>
                 <Input
                   type="number"
@@ -438,7 +438,7 @@ const LaborProductivity: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                  Total Labor Cost (₹)
+                  Total Labor Cost 
                 </label>
                 <Input
                   type="number"
