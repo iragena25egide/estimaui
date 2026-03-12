@@ -422,7 +422,7 @@ const LaborProductivity: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                  Labor Rate per Hour () <span className="text-red-500">*</span>
+                  Labor Rate per Hour  <span className="text-red-500">*</span>
                 </label>
                 <Input
                   type="number"
