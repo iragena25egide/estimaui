@@ -5,6 +5,8 @@ import {
   FileText,
   Loader2,
   Download,
+  Send,
+  Eye,
   X,
   FolderOpen,
   PlusCircle,
@@ -25,14 +27,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import ReportService from "@/services/reportService";
 
 interface Report {
   id: string;
-  project: {
-    id: string;
-    name: string;
-  };
+  projectId: string;
   version: number;
   totalAmount: number;
   status: string;
@@ -41,37 +46,50 @@ interface Report {
 }
 
 const Reports: React.FC = () => {
-  const [reports, setReports] = useState<Report[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<string>("");
+  const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState({
-    reports: false,
     projects: false,
+    reports: false,
     generating: false,
+    sending: false,
   });
   const [search, setSearch] = useState("");
+  const [previewReport, setPreviewReport] = useState<Report | null>(null);
 
+  // Load projects on mount
   useEffect(() => {
+    const loadProjects = async () => {
+      setLoading((prev) => ({ ...prev, projects: true }));
+      try {
+        const data = await ReportService.getProjects();
+        setProjects(data || []);
+        if (data && data.length > 0) {
+          setSelectedProject(data[0].id);
+        }
+      } catch (error) {
+        toast.error("Failed to load projects");
+      } finally {
+        setLoading((prev) => ({ ...prev, projects: false }));
+      }
+    };
     loadProjects();
-    loadReports();
   }, []);
 
-  const loadProjects = async () => {
-    setLoading((prev) => ({ ...prev, projects: true }));
-    try {
-      const data = await ReportService.getProjects();
-      setProjects(data || []);
-    } catch (error) {
-      toast.error("Failed to load projects");
-    } finally {
-      setLoading((prev) => ({ ...prev, projects: false }));
+  // Load reports when selected project changes
+  useEffect(() => {
+    if (!selectedProject) {
+      setReports([]);
+      return;
     }
-  };
+    loadReports();
+  }, [selectedProject]);
 
   const loadReports = async () => {
     setLoading((prev) => ({ ...prev, reports: true }));
     try {
-      const data = await ReportService.getAll();
+      const data = await ReportService.getByProject(selectedProject);
       setReports(data || []);
     } catch (error) {
       toast.error("Failed to load reports");
@@ -90,33 +108,43 @@ const Reports: React.FC = () => {
     try {
       await ReportService.generate(selectedProject);
       toast.success("Report generation started");
-      setSelectedProject("");
       loadReports(); // refresh list
-    } catch (error) {
-      toast.error("Failed to generate report");
+    } catch (error: any) {
+      const message = error.serverMessage || "Failed to generate report";
+      toast.error(message);
     } finally {
       setLoading((prev) => ({ ...prev, generating: false }));
     }
   };
 
-  // Filter reports by project name or status
-  const filteredReports = reports.filter((r) =>
-    r.project?.name?.toLowerCase().includes(search.toLowerCase()) ||
-    r.status?.toLowerCase().includes(search.toLowerCase())
-  );
+  const sendReport = async (reportId: string) => {
+    setLoading((prev) => ({ ...prev, sending: true }));
+    try {
+      await ReportService.send(reportId);
+      toast.success("Report sent via email");
+      loadReports();
+    } catch (error: any) {
+      const message = error.serverMessage || "Failed to send report";
+      toast.error(message);
+    } finally {
+      setLoading((prev) => ({ ...prev, sending: false }));
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status?.toLowerCase()) {
-      case "completed":
+      case "generated":
         return "bg-green-100 text-green-700";
-      case "processing":
-        return "bg-yellow-100 text-yellow-700";
-      case "failed":
-        return "bg-red-100 text-red-700";
+      case "sent":
+        return "bg-blue-100 text-blue-700";
       default:
         return "bg-gray-100 text-gray-700";
     }
   };
+
+  const filteredReports = reports.filter((r) =>
+    r.status?.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
@@ -124,11 +152,11 @@ const Reports: React.FC = () => {
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Reports</h1>
         <p className="text-sm text-gray-500 mt-1">
-          Generate and download project reports
+          Generate and manage project reports
         </p>
       </div>
 
-      {/* Generate Report Card */}
+      {/* Project Selection & Generate Card */}
       <Card className="border-gray-200 shadow-sm rounded-2xl">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg font-semibold flex items-center gap-2">
@@ -136,7 +164,7 @@ const Reports: React.FC = () => {
             Generate New Report
           </CardTitle>
           <CardDescription>
-            Select a project to generate a cost report
+            Select a project and click generate
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -191,7 +219,7 @@ const Reports: React.FC = () => {
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <Input
-          placeholder="Search reports by project or status..."
+          placeholder="Search reports by status..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
@@ -222,7 +250,6 @@ const Reports: React.FC = () => {
             </thead>
             <tbody>
               {loading.reports ? (
-                // Skeleton rows
                 Array.from({ length: 4 }).map((_, i) => (
                   <tr key={i} className="border-b border-gray-100 animate-pulse">
                     <td className="p-4"><div className="h-4 bg-gray-200 rounded w-24"></div></td>
@@ -230,15 +257,21 @@ const Reports: React.FC = () => {
                     <td className="p-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
                     <td className="p-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
                     <td className="p-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
-                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-12"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
                   </tr>
                 ))
+              ) : !selectedProject ? (
+                <tr>
+                  <td colSpan={6} className="text-center py-12 text-gray-500">
+                    Select a project to view its reports.
+                  </td>
+                </tr>
               ) : filteredReports.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="text-center py-12 text-gray-500">
                     {search
                       ? "No reports match your search."
-                      : "No reports generated yet. Use the form above to create one."}
+                      : "No reports generated yet for this project."}
                   </td>
                 </tr>
               ) : (
@@ -248,7 +281,7 @@ const Reports: React.FC = () => {
                     className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
                   >
                     <td className="p-4 font-medium text-gray-900">
-                      {report.project?.name || "—"}
+                      {projects.find(p => p.id === report.projectId)?.name || "—"}
                     </td>
                     <td className="p-4 text-gray-700">v{report.version}</td>
                     <td className="p-4 text-gray-700">
@@ -257,7 +290,7 @@ const Reports: React.FC = () => {
                         : "—"}
                     </td>
                     <td className="p-4 font-semibold text-blue-600">
-                      {report.totalAmount?.toLocaleString() ?? 0}
+                      ₹{report.totalAmount?.toLocaleString() ?? 0}
                     </td>
                     <td className="p-4">
                       <span
@@ -265,23 +298,44 @@ const Reports: React.FC = () => {
                           report.status
                         )}`}
                       >
-                        {report.status || "Draft"}
+                        {report.status || "GENERATED"}
                       </span>
                     </td>
                     <td className="p-4">
-                      {report.filePath ? (
-                        <a
-                          href={report.filePath}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium"
+                      <div className="flex items-center gap-2">
+                        {report.filePath ? (
+                          <>
+                            <button
+                              onClick={() => setPreviewReport(report)}
+                              className="text-blue-600 hover:text-blue-800"
+                              title="Preview"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                            <a
+                              href={report.filePath}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:text-blue-800"
+                              title="Download PDF"
+                            >
+                              <Download className="w-4 h-4" />
+                            </a>
+                          </>
+                        ) : (
+                          <span className="text-gray-400" title="No file available">
+                            <Eye className="w-4 h-4 opacity-30" />
+                          </span>
+                        )}
+                        <button
+                          onClick={() => sendReport(report.id)}
+                          disabled={loading.sending}
+                          className="text-green-600 hover:text-green-800 disabled:opacity-50"
+                          title="Send via email"
                         >
-                          <Download className="w-4 h-4" />
-                          PDF
-                        </a>
-                      ) : (
-                        <span className="text-gray-400 text-sm">Not ready</span>
-                      )}
+                          <Send className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -290,6 +344,39 @@ const Reports: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Preview Modal */}
+      <Dialog open={!!previewReport} onOpenChange={() => setPreviewReport(null)}>
+        <DialogContent className="sm:max-w-4xl p-0 gap-0 rounded-2xl overflow-hidden h-[80vh]">
+          <DialogHeader className="p-6 border-b border-gray-200 flex flex-row items-center justify-between">
+            <DialogTitle className="text-xl font-bold text-gray-900">
+              Report Preview - {previewReport ? `v${previewReport.version}` : ""}
+            </DialogTitle>
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => setPreviewReport(null)}
+              className="rounded-full"
+            >
+              <X className="w-5 h-5" />
+            </Button>
+          </DialogHeader>
+          <div className="flex-1 bg-gray-100 p-4 overflow-auto">
+            {previewReport?.filePath ? (
+              <iframe
+                src={previewReport.filePath}
+                title="Report Preview"
+                className="w-full h-full rounded-lg border border-gray-200"
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-500">
+                <FileText className="w-12 h-12 mr-2" />
+                <span>No preview available. The file may not be generated yet.</span>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
