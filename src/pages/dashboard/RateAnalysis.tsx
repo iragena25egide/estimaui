@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 import DrawingService from "@/services/drawingService";
 import RateAnalysisService from "@/services/analysisService";
 
@@ -41,14 +42,15 @@ const RateAnalysis: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const [form, setForm] = useState({
-    itemName: "",
+    boqItemNo: "",
+    description: "",
     unit: "",
     materialCost: "",
     laborCost: "",
     equipmentCost: "",
-    overheadPercent: "",
+    wastage: "",
+    overheads: "",
     profitPercent: "",
-    totalRate: "",
     projectId: "",
   });
 
@@ -61,7 +63,7 @@ const RateAnalysis: React.FC = () => {
         setProjects(res);
         if (res.length > 0) setSelectedProjectId(res[0].projectId);
       } catch (error) {
-        console.error("Failed to load projects", error);
+        toast.error("Failed to load projects");
       } finally {
         setLoading((prev) => ({ ...prev, projects: false }));
       }
@@ -84,55 +86,81 @@ const RateAnalysis: React.FC = () => {
       const data = await RateAnalysisService.getByProject(selectedProjectId);
       setItems(data);
     } catch (error) {
-      console.error("Failed to load rate analysis", error);
+      toast.error("Failed to load rate analysis");
     } finally {
       setLoading((prev) => ({ ...prev, items: false }));
     }
   };
 
-  // Auto-calculate total rate
-  useEffect(() => {
+  // Auto-calculate finalUnitRate (not sent to backend, just for display)
+  const calculatedFinalRate = React.useMemo(() => {
     const material = parseFloat(form.materialCost) || 0;
     const labor = parseFloat(form.laborCost) || 0;
     const equipment = parseFloat(form.equipmentCost) || 0;
-    const overhead = parseFloat(form.overheadPercent) || 0;
+    const wastage = parseFloat(form.wastage) || 0;
+    const overheads = parseFloat(form.overheads) || 0;
     const profit = parseFloat(form.profitPercent) || 0;
 
-    const subtotal = material + labor + equipment;
-    const withOverhead = subtotal * (1 + overhead / 100);
-    const total = withOverhead * (1 + profit / 100);
-
-    setForm((prev) => ({ ...prev, totalRate: total.toFixed(2) }));
-  }, [
-    form.materialCost,
-    form.laborCost,
-    form.equipmentCost,
-    form.overheadPercent,
-    form.profitPercent,
-  ]);
+    const baseCost = material + labor + equipment;
+    const wastageCost = baseCost * (wastage / 100);
+    const overheadCost = baseCost * (overheads / 100);
+    const profitAmount = (baseCost + wastageCost + overheadCost) * (profit / 100);
+    const total = baseCost + wastageCost + overheadCost + profitAmount;
+    return total.toFixed(2);
+  }, [form.materialCost, form.laborCost, form.equipmentCost, form.wastage, form.overheads, form.profitPercent]);
 
   const handleSubmit = async () => {
     if (!selectedProjectId) {
-      alert("Please select a project first.");
+      toast.warning("Please select a project first.");
       return;
     }
 
-    try {
-      const payload = {
-        ...form,
-        projectId: selectedProjectId,
-      };
+    // Validate required fields
+    const requiredFields = [
+      { field: "boqItemNo", label: "BOQ Item No" },
+      { field: "description", label: "Description" },
+      { field: "unit", label: "Unit" },
+      { field: "materialCost", label: "Material Cost" },
+      { field: "laborCost", label: "Labor Cost" },
+      { field: "equipmentCost", label: "Equipment Cost" },
+      { field: "wastage", label: "Wastage %" },
+      { field: "overheads", label: "Overheads %" },
+      { field: "profitPercent", label: "Profit %" },
+    ];
+    for (const { field, label } of requiredFields) {
+      if (!form[field as keyof typeof form]) {
+        toast.warning(`Please fill in ${label}`);
+        return;
+      }
+    }
 
+    const payload = {
+      ...form,
+      projectId: selectedProjectId,
+      // Ensure numbers are sent as numbers
+      materialCost: parseFloat(form.materialCost),
+      laborCost: parseFloat(form.laborCost),
+      equipmentCost: parseFloat(form.equipmentCost),
+      wastage: parseFloat(form.wastage),
+      overheads: parseFloat(form.overheads),
+      profitPercent: parseFloat(form.profitPercent),
+    };
+
+    try {
       if (editingId) {
         await RateAnalysisService.update(editingId, payload);
+        toast.success("Rate analysis updated");
       } else {
         await RateAnalysisService.create(payload);
+        toast.success("Rate analysis created");
       }
 
       resetForm();
       loadItems();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Save error", error);
+      const message = error.response?.data?.message || "Save failed. Please try again.";
+      toast.error(message);
     }
   };
 
@@ -140,23 +168,25 @@ const RateAnalysis: React.FC = () => {
     if (!confirm("Delete this rate analysis record?")) return;
     try {
       await RateAnalysisService.delete(id);
+      toast.success("Record deleted");
       loadItems();
     } catch (error) {
-      console.error("Delete error", error);
+      toast.error("Delete failed");
     }
   };
 
   const handleEdit = (item: any) => {
     setEditingId(item.id);
     setForm({
-      itemName: item.itemName || "",
+      boqItemNo: item.boqItemNo || "",
+      description: item.description || "",
       unit: item.unit || "",
       materialCost: item.materialCost?.toString() || "",
       laborCost: item.laborCost?.toString() || "",
       equipmentCost: item.equipmentCost?.toString() || "",
-      overheadPercent: item.overheadPercent?.toString() || "",
+      wastage: item.wastage?.toString() || "",
+      overheads: item.overheads?.toString() || "",
       profitPercent: item.profitPercent?.toString() || "",
-      totalRate: item.totalRate?.toString() || "",
       projectId: item.projectId || selectedProjectId,
     });
     setOpen(true);
@@ -166,21 +196,23 @@ const RateAnalysis: React.FC = () => {
     setOpen(false);
     setEditingId(null);
     setForm({
-      itemName: "",
+      boqItemNo: "",
+      description: "",
       unit: "",
       materialCost: "",
       laborCost: "",
       equipmentCost: "",
-      overheadPercent: "",
+      wastage: "",
+      overheads: "",
       profitPercent: "",
-      totalRate: "",
       projectId: selectedProjectId,
     });
   };
 
   const filteredItems = items.filter(
     (item) =>
-      item.itemName?.toLowerCase().includes(search.toLowerCase()) ||
+      item.description?.toLowerCase().includes(search.toLowerCase()) ||
+      item.boqItemNo?.toLowerCase().includes(search.toLowerCase()) ||
       item.unit?.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -193,7 +225,7 @@ const RateAnalysis: React.FC = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Rate Analysis</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Manage item rates with overhead and profit
+            Manage item rates with overhead, wastage and profit
           </p>
         </div>
 
@@ -251,7 +283,7 @@ const RateAnalysis: React.FC = () => {
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <Input
-          placeholder="Search by item name or unit..."
+          placeholder="Search by item no, description or unit..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
@@ -272,14 +304,16 @@ const RateAnalysis: React.FC = () => {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="p-4 text-left font-semibold text-gray-600">Item</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Item No</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Description</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Unit</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Material (₹)</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Labor (₹)</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Equipment (₹)</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Overhead %</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Wastage %</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Overheads %</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Profit %</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Total Rate (₹)</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Final Rate (₹)</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Actions</th>
               </tr>
             </thead>
@@ -287,11 +321,13 @@ const RateAnalysis: React.FC = () => {
               {loading.items ? (
                 Array.from({ length: 4 }).map((_, i) => (
                   <tr key={i} className="border-b border-gray-100 animate-pulse">
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
                     <td className="p-4"><div className="h-4 bg-gray-200 rounded w-24"></div></td>
                     <td className="p-4"><div className="h-4 bg-gray-200 rounded w-12"></div></td>
                     <td className="p-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
                     <td className="p-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
                     <td className="p-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-12"></div></td>
                     <td className="p-4"><div className="h-4 bg-gray-200 rounded w-12"></div></td>
                     <td className="p-4"><div className="h-4 bg-gray-200 rounded w-12"></div></td>
                     <td className="p-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
@@ -300,13 +336,13 @@ const RateAnalysis: React.FC = () => {
                 ))
               ) : !selectedProjectId ? (
                 <tr>
-                  <td colSpan={9} className="text-center py-12 text-gray-500">
+                  <td colSpan={11} className="text-center py-12 text-gray-500">
                     Please select a project to view rate analysis records.
                   </td>
                 </tr>
               ) : filteredItems.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="text-center py-12 text-gray-500">
+                  <td colSpan={11} className="text-center py-12 text-gray-500">
                     {search
                       ? "No records match your search."
                       : "No rate analysis records found. Click 'Add Analysis' to create one."}
@@ -318,14 +354,16 @@ const RateAnalysis: React.FC = () => {
                     key={item.id}
                     className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
                   >
-                    <td className="p-4 font-medium text-gray-900">{item.itemName}</td>
+                    <td className="p-4 font-medium text-gray-900">{item.boqItemNo}</td>
+                    <td className="p-4 text-gray-700">{item.description}</td>
                     <td className="p-4 text-gray-700">{item.unit}</td>
                     <td className="p-4 text-gray-700">₹{item.materialCost}</td>
                     <td className="p-4 text-gray-700">₹{item.laborCost}</td>
                     <td className="p-4 text-gray-700">₹{item.equipmentCost}</td>
-                    <td className="p-4 text-gray-700">{item.overheadPercent}%</td>
+                    <td className="p-4 text-gray-700">{item.wastage}%</td>
+                    <td className="p-4 text-gray-700">{item.overheads}%</td>
                     <td className="p-4 text-gray-700">{item.profitPercent}%</td>
-                    <td className="p-4 font-bold text-blue-600">₹{item.totalRate}</td>
+                    <td className="p-4 font-bold text-blue-600">₹{item.finalUnitRate}</td>
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <button
@@ -364,15 +402,27 @@ const RateAnalysis: React.FC = () => {
 
           <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="md:col-span-2">
+              <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                  Item Name
+                  BOQ Item No
                 </label>
                 <Input
-                  value={form.itemName}
-                  onChange={(e) => setForm({ ...form, itemName: e.target.value })}
-                  placeholder="e.g., Concrete (M25)"
+                  value={form.boqItemNo}
+                  onChange={(e) => setForm({ ...form, boqItemNo: e.target.value })}
+                  placeholder="e.g., 1.1"
                   className="border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Description
+                </label>
+                <Input
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  placeholder="e.g., Concrete (M25)"
+                  className="border-gray-200 rounded-lg"
                 />
               </div>
 
@@ -432,12 +482,26 @@ const RateAnalysis: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                  Overhead (%)
+                  Wastage (%)
                 </label>
                 <Input
                   type="number"
-                  value={form.overheadPercent}
-                  onChange={(e) => setForm({ ...form, overheadPercent: e.target.value })}
+                  value={form.wastage}
+                  onChange={(e) => setForm({ ...form, wastage: e.target.value })}
+                  placeholder="5"
+                  step="0.1"
+                  className="border-gray-200 rounded-lg"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                  Overheads (%)
+                </label>
+                <Input
+                  type="number"
+                  value={form.overheads}
+                  onChange={(e) => setForm({ ...form, overheads: e.target.value })}
                   placeholder="10"
                   step="0.1"
                   className="border-gray-200 rounded-lg"
@@ -460,11 +524,11 @@ const RateAnalysis: React.FC = () => {
 
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                  Total Rate (₹)
+                  Final Rate (₹) - calculated
                 </label>
                 <Input
                   type="number"
-                  value={form.totalRate}
+                  value={calculatedFinalRate}
                   readOnly
                   className="w-full bg-gray-50 border-gray-200 rounded-lg text-sm font-bold text-blue-700"
                 />

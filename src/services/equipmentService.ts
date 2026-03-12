@@ -6,7 +6,7 @@ class EquipmentCostService {
    */
   static async getByProject(projectId: string) {
     try {
-      const res = await API.get(`/equipment-costs/project/${projectId}`);
+      const res = await API.get(`/equipment-cost/project/${projectId}`);
       return res.data;
     } catch (error) {
       console.error("Get equipment costs error:", error);
@@ -14,12 +14,10 @@ class EquipmentCostService {
     }
   }
 
-  /**
-   * Get a single equipment cost by ID
-   */
+  
   static async getById(id: string) {
     try {
-      const res = await API.get(`/equipment-costs/${id}`);
+      const res = await API.get(`/equipment-cost/${id}`);
       return res.data;
     } catch (error) {
       console.error("Get equipment cost error:", error);
@@ -27,9 +25,7 @@ class EquipmentCostService {
     }
   }
 
-  /**
-   * Create a new equipment cost entry
-   */
+ 
   static async create(data: any) {
     try {
       const payload = {
@@ -40,8 +36,8 @@ class EquipmentCostService {
         operatorCost: Number(data.operatorCost || 0),
         totalCost: Number(data.totalCost || 0),
       };
-      const { projectId, ...rest } = payload;
-      const res = await API.post(`/equipment-costs/project/${projectId}`, rest);
+      
+      const res = await API.post("/equipment-cost/create", payload);
       return res.data;
     } catch (error) {
       console.error("Create equipment cost error:", error);
@@ -49,9 +45,7 @@ class EquipmentCostService {
     }
   }
 
-  /**
-   * Update an existing equipment cost entry
-   */
+ 
   static async update(id: string, data: any) {
     try {
       const payload = {
@@ -62,7 +56,7 @@ class EquipmentCostService {
         operatorCost: Number(data.operatorCost || 0),
         totalCost: Number(data.totalCost || 0),
       };
-      const res = await API.put(`/equipment-costs/${id}`, payload);
+      const res = await API.patch(`/equipment-cost/${id}`, payload);
       return res.data;
     } catch (error) {
       console.error("Update equipment cost error:", error);
@@ -70,12 +64,10 @@ class EquipmentCostService {
     }
   }
 
-  /**
-   * Delete an equipment cost entry
-   */
+  
   static async delete(id: string) {
     try {
-      const res = await API.delete(`/equipment-costs/${id}`);
+      const res = await API.delete(`/equipment-cost/${id}`);
       return res.data;
     } catch (error) {
       console.error("Delete equipment cost error:", error);

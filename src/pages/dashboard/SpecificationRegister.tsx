@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 import DrawingService from "@/services/drawingService";
 import SpecificationService from "@/services/specificationService";
 
@@ -33,6 +34,8 @@ interface Spec {
   specSection: string;
   description: string;
   discipline: string;
+  revision?: string;
+  remarks?: string;
   projectId?: string;
 }
 
@@ -52,6 +55,8 @@ const SpecificationRegister: React.FC = () => {
     specSection: "",
     description: "",
     discipline: "ARCH",
+    revision: "",
+    remarks: "",
     projectId: "",
   });
 
@@ -64,7 +69,7 @@ const SpecificationRegister: React.FC = () => {
         setProjects(res);
         if (res.length > 0) setSelectedProjectId(res[0].projectId);
       } catch (error) {
-        console.error("Failed to load projects", error);
+        toast.error("Failed to load projects");
       } finally {
         setLoading((prev) => ({ ...prev, projects: false }));
       }
@@ -87,7 +92,7 @@ const SpecificationRegister: React.FC = () => {
       const data = await SpecificationService.getByProject(selectedProjectId);
       setSpecs(data);
     } catch (error) {
-      console.error("Failed to load specifications", error);
+      toast.error("Failed to load specifications");
     } finally {
       setLoading((prev) => ({ ...prev, items: false }));
     }
@@ -95,7 +100,13 @@ const SpecificationRegister: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!selectedProjectId) {
-      alert("Please select a project first.");
+      toast.warning("Please select a project first.");
+      return;
+    }
+
+    // Validate required fields
+    if (!form.specSection || !form.description) {
+      toast.warning("Please fill in all required fields");
       return;
     }
 
@@ -107,14 +118,18 @@ const SpecificationRegister: React.FC = () => {
 
       if (editingId) {
         await SpecificationService.update(editingId, payload);
+        toast.success("Specification updated");
       } else {
         await SpecificationService.create(payload);
+        toast.success("Specification created");
       }
 
       resetForm();
       loadSpecs();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Save error", error);
+      const message = error.response?.data?.message || "Save failed. Please try again.";
+      toast.error(message);
     }
   };
 
@@ -122,9 +137,10 @@ const SpecificationRegister: React.FC = () => {
     if (!confirm("Delete this specification?")) return;
     try {
       await SpecificationService.delete(id);
+      toast.success("Specification deleted");
       loadSpecs();
     } catch (error) {
-      console.error("Delete error", error);
+      toast.error("Delete failed");
     }
   };
 
@@ -134,6 +150,8 @@ const SpecificationRegister: React.FC = () => {
       specSection: spec.specSection,
       description: spec.description,
       discipline: spec.discipline,
+      revision: spec.revision || "",
+      remarks: spec.remarks || "",
       projectId: spec.projectId || selectedProjectId,
     });
     setOpen(true);
@@ -146,6 +164,8 @@ const SpecificationRegister: React.FC = () => {
       specSection: "",
       description: "",
       discipline: "ARCH",
+      revision: "",
+      remarks: "",
       projectId: selectedProjectId,
     });
   };
@@ -154,7 +174,8 @@ const SpecificationRegister: React.FC = () => {
     (s) =>
       s.specSection?.toLowerCase().includes(search.toLowerCase()) ||
       s.description?.toLowerCase().includes(search.toLowerCase()) ||
-      s.discipline?.toLowerCase().includes(search.toLowerCase())
+      s.discipline?.toLowerCase().includes(search.toLowerCase()) ||
+      s.revision?.toLowerCase().includes(search.toLowerCase())
   );
 
   const clearSearch = () => setSearch("");
@@ -224,7 +245,7 @@ const SpecificationRegister: React.FC = () => {
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <Input
-          placeholder="Search by section, description or discipline..."
+          placeholder="Search by section, description, discipline or revision..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
@@ -248,6 +269,8 @@ const SpecificationRegister: React.FC = () => {
                 <th className="p-4 text-left font-semibold text-gray-600">Section</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Description</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Discipline</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Revision</th>
+                <th className="p-4 text-left font-semibold text-gray-600">Remarks</th>
                 <th className="p-4 text-left font-semibold text-gray-600">Actions</th>
               </tr>
             </thead>
@@ -258,18 +281,20 @@ const SpecificationRegister: React.FC = () => {
                     <td className="p-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
                     <td className="p-4"><div className="h-4 bg-gray-200 rounded w-32"></div></td>
                     <td className="p-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-12"></div></td>
+                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-24"></div></td>
                     <td className="p-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
                   </tr>
                 ))
               ) : !selectedProjectId ? (
                 <tr>
-                  <td colSpan={4} className="text-center py-12 text-gray-500">
+                  <td colSpan={6} className="text-center py-12 text-gray-500">
                     Please select a project to view specifications.
                   </td>
                 </tr>
               ) : filteredSpecs.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="text-center py-12 text-gray-500">
+                  <td colSpan={6} className="text-center py-12 text-gray-500">
                     {search
                       ? "No specifications match your search."
                       : "No specifications found. Click 'Add Specification' to create one."}
@@ -288,6 +313,8 @@ const SpecificationRegister: React.FC = () => {
                         {spec.discipline}
                       </span>
                     </td>
+                    <td className="p-4 text-gray-700">{spec.revision || "-"}</td>
+                    <td className="p-4 text-gray-700">{spec.remarks || "-"}</td>
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <button
@@ -327,7 +354,7 @@ const SpecificationRegister: React.FC = () => {
           <div className="p-6 space-y-5">
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                Section
+                Section <span className="text-red-500">*</span>
               </label>
               <Input
                 value={form.specSection}
@@ -339,7 +366,7 @@ const SpecificationRegister: React.FC = () => {
 
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                Description
+                Description <span className="text-red-500">*</span>
               </label>
               <Input
                 value={form.description}
@@ -367,6 +394,30 @@ const SpecificationRegister: React.FC = () => {
                   <SelectItem value="CIVIL">CIVIL</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                Revision
+              </label>
+              <Input
+                value={form.revision}
+                onChange={(e) => setForm({ ...form, revision: e.target.value })}
+                placeholder="e.g., A, 01, Rev1"
+                className="border-gray-200 rounded-lg"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                Remarks
+              </label>
+              <Input
+                value={form.remarks}
+                onChange={(e) => setForm({ ...form, remarks: e.target.value })}
+                placeholder="Optional notes"
+                className="border-gray-200 rounded-lg"
+              />
             </div>
           </div>
 

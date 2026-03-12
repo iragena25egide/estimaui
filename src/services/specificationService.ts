@@ -1,10 +1,10 @@
 import API from "../context/axios";
 
 class SpecificationService {
-  // Get all specifications for a project
+ 
   static async getByProject(projectId: string) {
     try {
-      const res = await API.get(`/specifications/project/${projectId}`);
+      const res = await API.get(`specifications/project/${projectId}`);
       return res.data;
     } catch (error) {
       console.error("Get specifications error:", error);
@@ -12,10 +12,10 @@ class SpecificationService {
     }
   }
 
-  // Get single specification by ID
+  
   static async getById(id: string) {
     try {
-      const res = await API.get(`/specifications/${id}`);
+      const res = await API.get(`specifications/${id}`);
       return res.data;
     } catch (error) {
       console.error("Get specification error:", error);
@@ -23,11 +23,11 @@ class SpecificationService {
     }
   }
 
-  // Create a new specification
+  
   static async create(data: any) {
     try {
-      const { projectId, ...rest } = data;
-      const res = await API.post(`/specifications/project/${projectId}`, rest);
+     
+      const res = await API.post("specifications/create", data);
       return res.data;
     } catch (error) {
       console.error("Create specification error:", error);
@@ -35,11 +35,10 @@ class SpecificationService {
     }
   }
 
-  // Update an existing specification
+  
   static async update(id: string, data: any) {
     try {
-      const { projectId, ...rest } = data; // projectId not needed for update but keep for payload
-      const res = await API.put(`/specifications/${id}`, rest);
+      const res = await API.patch(`specifications/${id}`, data);
       return res.data;
     } catch (error) {
       console.error("Update specification error:", error);
@@ -47,10 +46,10 @@ class SpecificationService {
     }
   }
 
-  // Delete a specification
+  
   static async delete(id: string) {
     try {
-      const res = await API.delete(`/specifications/${id}`);
+      const res = await API.delete(`specifications/${id}`);
       return res.data;
     } catch (error) {
       console.error("Delete specification error:", error);

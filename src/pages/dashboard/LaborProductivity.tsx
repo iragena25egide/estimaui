@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import DrawingService from "@/services/drawingService";
 import LaborProductivityService from "@/services/laborProductivity";
+import { toast } from "sonner";
 
 const LaborProductivity: React.FC = () => {
   const [projects, setProjects] = useState<any[]>([]);
@@ -31,10 +32,10 @@ const LaborProductivity: React.FC = () => {
     wageRate: "",
     workingHours: "",
     outputPerDay: "",
+    totalLaborCost: "", // added for completeness
     projectId: "",
   });
 
-  // Load projects on mount
   useEffect(() => {
     const loadProjects = async () => {
       setLoading((prev) => ({ ...prev, projects: true }));
@@ -43,7 +44,7 @@ const LaborProductivity: React.FC = () => {
         setProjects(res);
         if (res.length > 0) setSelectedProjectId(res[0].projectId);
       } catch (error) {
-        console.error("Failed to load projects", error);
+        toast.error("Failed to load projects");
       } finally {
         setLoading((prev) => ({ ...prev, projects: false }));
       }
@@ -51,7 +52,6 @@ const LaborProductivity: React.FC = () => {
     loadProjects();
   }, []);
 
-  // Load labor productivity records when project changes
   useEffect(() => {
     if (!selectedProjectId) {
       setItems([]);
@@ -66,7 +66,7 @@ const LaborProductivity: React.FC = () => {
       const data = await LaborProductivityService.getByProject(selectedProjectId);
       setItems(data);
     } catch (error) {
-      console.error("Failed to load labor productivity", error);
+      toast.error("Failed to load labor productivity");
     } finally {
       setLoading((prev) => ({ ...prev, items: false }));
     }
@@ -74,26 +74,51 @@ const LaborProductivity: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!selectedProjectId) {
-      alert("Please select a project first.");
+      toast.warning("Please select a project first.");
       return;
     }
+
+    const requiredFields = [
+      { field: "laborType", label: "Labor Type" },
+      { field: "unit", label: "Unit" },
+      { field: "productivityRate", label: "Productivity Rate" },
+      { field: "wageRate", label: "Wage Rate" },
+      { field: "workingHours", label: "Working Hours" },
+      { field: "outputPerDay", label: "Output per Day" },
+    ];
+    for (const { field, label } of requiredFields) {
+      if (!form[field as keyof typeof form]) {
+        toast.warning(`Please fill in ${label}`);
+        return;
+      }
+    }
+
+    // Compute totalLaborCost (example: wage * hours – adjust if needed)
+    const wage = parseFloat(form.wageRate) || 0;
+    const hours = parseFloat(form.workingHours) || 0;
+    const totalLaborCost = wage * hours;
 
     try {
       const payload = {
         ...form,
         projectId: selectedProjectId,
+        totalLaborCost, // send computed value
       };
 
       if (editingId) {
         await LaborProductivityService.update(editingId, payload);
+        toast.success("Labor productivity updated");
       } else {
         await LaborProductivityService.create(payload);
+        toast.success("Labor productivity created");
       }
 
       resetForm();
       loadItems();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Save error", error);
+      const message = error.response?.data?.message || error.message || "Save failed. Please try again.";
+      toast.error(message);
     }
   };
 
@@ -101,9 +126,10 @@ const LaborProductivity: React.FC = () => {
     if (!confirm("Delete this labor productivity record?")) return;
     try {
       await LaborProductivityService.delete(id);
+      toast.success("Record deleted");
       loadItems();
     } catch (error) {
-      console.error("Delete error", error);
+      toast.error("Delete failed");
     }
   };
 
@@ -116,6 +142,7 @@ const LaborProductivity: React.FC = () => {
       wageRate: item.wageRate?.toString() || "",
       workingHours: item.workingHours?.toString() || "",
       outputPerDay: item.outputPerDay?.toString() || "",
+      totalLaborCost: item.totalLaborCost?.toString() || "", // preserve if stored
       projectId: item.projectId || selectedProjectId,
     });
     setOpen(true);
@@ -131,6 +158,7 @@ const LaborProductivity: React.FC = () => {
       wageRate: "",
       workingHours: "",
       outputPerDay: "",
+      totalLaborCost: "",
       projectId: selectedProjectId,
     });
   };
@@ -153,7 +181,6 @@ const LaborProductivity: React.FC = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3">
-          {/* Project Dropdown */}
           <div className="relative min-w-[200px]">
             <FolderOpen className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <select
@@ -213,7 +240,7 @@ const LaborProductivity: React.FC = () => {
         )}
       </div>
 
-      {/* Labor Productivity Table */}
+      {/* Table */}
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -293,7 +320,7 @@ const LaborProductivity: React.FC = () => {
         </div>
       </div>
 
-      {/* Add/Edit Modal */}
+      {/* Modal */}
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-auto">
@@ -319,9 +346,7 @@ const LaborProductivity: React.FC = () => {
                   <input
                     type="text"
                     value={form.laborType}
-                    onChange={(e) =>
-                      setForm({ ...form, laborType: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, laborType: e.target.value })}
                     placeholder="e.g., Mason, Carpenter"
                     className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
@@ -334,9 +359,7 @@ const LaborProductivity: React.FC = () => {
                   <input
                     type="text"
                     value={form.unit}
-                    onChange={(e) =>
-                      setForm({ ...form, unit: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, unit: e.target.value })}
                     placeholder="e.g., m², m³, day"
                     className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
@@ -349,9 +372,7 @@ const LaborProductivity: React.FC = () => {
                   <input
                     type="number"
                     value={form.productivityRate}
-                    onChange={(e) =>
-                      setForm({ ...form, productivityRate: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, productivityRate: e.target.value })}
                     placeholder="0.00"
                     step="0.01"
                     className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
@@ -365,9 +386,7 @@ const LaborProductivity: React.FC = () => {
                   <input
                     type="number"
                     value={form.wageRate}
-                    onChange={(e) =>
-                      setForm({ ...form, wageRate: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, wageRate: e.target.value })}
                     placeholder="0.00"
                     step="0.01"
                     className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
@@ -381,9 +400,7 @@ const LaborProductivity: React.FC = () => {
                   <input
                     type="number"
                     value={form.workingHours}
-                    onChange={(e) =>
-                      setForm({ ...form, workingHours: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, workingHours: e.target.value })}
                     placeholder="8"
                     step="0.5"
                     className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
@@ -397,9 +414,7 @@ const LaborProductivity: React.FC = () => {
                   <input
                     type="number"
                     value={form.outputPerDay}
-                    onChange={(e) =>
-                      setForm({ ...form, outputPerDay: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, outputPerDay: e.target.value })}
                     placeholder="0.00"
                     step="0.01"
                     className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"

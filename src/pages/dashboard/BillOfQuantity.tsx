@@ -50,7 +50,7 @@ const BoqItems: React.FC = () => {
     loadProjects();
   }, []);
 
-  // Load BOQ items when project changes
+  
   useEffect(() => {
     if (selectedProjectId) {
       loadItems();
@@ -72,7 +72,7 @@ const BoqItems: React.FC = () => {
     }
   };
 
-  // Auto-calculate totalRate and amount
+  
   useEffect(() => {
     const qty = parseFloat(form.quantity) || 0;
     const material = parseFloat(form.materialRate) || 0;

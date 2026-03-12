@@ -10,7 +10,8 @@ import {
   Loader2,
 } from "lucide-react";
 import DrawingService from "@/services/drawingService";
-import MaterialTakeOffService from "@/services/materialService";
+import MaterialTakeOffService from "@/services/materialService"; 
+import { toast } from "sonner";
 
 const MaterialTakeOff: React.FC = () => {
   const [projects, setProjects] = useState<any[]>([]);
@@ -43,7 +44,7 @@ const MaterialTakeOff: React.FC = () => {
         setProjects(res);
         if (res.length > 0) setSelectedProjectId(res[0].projectId);
       } catch (error) {
-        console.error("Failed to load projects", error);
+        toast.error("Failed to load projects");
       } finally {
         setLoading((prev) => ({ ...prev, projects: false }));
       }
@@ -66,7 +67,7 @@ const MaterialTakeOff: React.FC = () => {
       const data = await MaterialTakeOffService.getByProject(selectedProjectId);
       setItems(data);
     } catch (error) {
-      console.error("Failed to load material take-off", error);
+      toast.error("Failed to load material take-off");
     } finally {
       setLoading((prev) => ({ ...prev, items: false }));
     }
@@ -83,8 +84,22 @@ const MaterialTakeOff: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!selectedProjectId) {
-      alert("Please select a project first.");
+      toast.warning("Please select a project first.");
       return;
+    }
+
+    // Validate required fields
+    const requiredFields = [
+      { field: "materialName", label: "Material Name" },
+      { field: "unit", label: "Unit" },
+      { field: "quantity", label: "Quantity" },
+      { field: "rate", label: "Rate" },
+    ];
+    for (const { field, label } of requiredFields) {
+      if (!form[field as keyof typeof form]) {
+        toast.warning(`Please fill in ${label}`);
+        return;
+      }
     }
 
     try {
@@ -95,14 +110,18 @@ const MaterialTakeOff: React.FC = () => {
 
       if (editingId) {
         await MaterialTakeOffService.update(editingId, payload);
+        toast.success("Material updated");
       } else {
         await MaterialTakeOffService.create(payload);
+        toast.success("Material created");
       }
 
       resetForm();
       loadItems();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Save error", error);
+      const message = error.response?.data?.message || error.message || "Save failed";
+      toast.error(message);
     }
   };
 
@@ -110,9 +129,10 @@ const MaterialTakeOff: React.FC = () => {
     if (!confirm("Delete this material record?")) return;
     try {
       await MaterialTakeOffService.delete(id);
+      toast.success("Material deleted");
       loadItems();
     } catch (error) {
-      console.error("Delete error", error);
+      toast.error("Delete failed");
     }
   };
 
@@ -305,7 +325,7 @@ const MaterialTakeOff: React.FC = () => {
       {/* Add/Edit Modal */}
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl maxh-[90vh] overflow-auto">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-auto">
             <div className="sticky top-0 bg-white p-6 border-b border-gray-200 flex justify-between items-center">
               <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                 <Package className="w-5 h-5 text-blue-600" />
@@ -328,9 +348,7 @@ const MaterialTakeOff: React.FC = () => {
                   <input
                     type="text"
                     value={form.materialName}
-                    onChange={(e) =>
-                      setForm({ ...form, materialName: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, materialName: e.target.value })}
                     placeholder="e.g., Cement, Steel"
                     className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
@@ -343,9 +361,7 @@ const MaterialTakeOff: React.FC = () => {
                   <input
                     type="text"
                     value={form.unit}
-                    onChange={(e) =>
-                      setForm({ ...form, unit: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, unit: e.target.value })}
                     placeholder="e.g., kg, m³, nos"
                     className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
@@ -358,9 +374,7 @@ const MaterialTakeOff: React.FC = () => {
                   <input
                     type="number"
                     value={form.quantity}
-                    onChange={(e) =>
-                      setForm({ ...form, quantity: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, quantity: e.target.value })}
                     placeholder="0.00"
                     step="0.01"
                     className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
@@ -374,9 +388,7 @@ const MaterialTakeOff: React.FC = () => {
                   <input
                     type="number"
                     value={form.rate}
-                    onChange={(e) =>
-                      setForm({ ...form, rate: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, rate: e.target.value })}
                     placeholder="0.00"
                     step="0.01"
                     className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
@@ -390,9 +402,7 @@ const MaterialTakeOff: React.FC = () => {
                   <input
                     type="number"
                     value={form.wastagePercent}
-                    onChange={(e) =>
-                      setForm({ ...form, wastagePercent: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, wastagePercent: e.target.value })}
                     placeholder="5"
                     step="0.1"
                     className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"

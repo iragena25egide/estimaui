@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import DrawingService from "@/services/drawingService";
 import EquipmentCostService from "@/services/equipmentService";
+import { toast } from "sonner"; 
 
 const EquipmentCosts: React.FC = () => {
   const [projects, setProjects] = useState<any[]>([]);
@@ -35,7 +36,7 @@ const EquipmentCosts: React.FC = () => {
     projectId: "",
   });
 
-  // Load projects on mount
+
   useEffect(() => {
     const loadProjects = async () => {
       setLoading((prev) => ({ ...prev, projects: true }));
@@ -52,7 +53,7 @@ const EquipmentCosts: React.FC = () => {
     loadProjects();
   }, []);
 
-  // Load equipment costs when project changes
+  
   useEffect(() => {
     if (!selectedProjectId) {
       setItems([]);
@@ -73,7 +74,7 @@ const EquipmentCosts: React.FC = () => {
     }
   };
 
-  // Auto‑calculate total cost
+ 
   useEffect(() => {
     const rate = parseFloat(form.hireRatePerDay) || 0;
     const days = parseFloat(form.durationDays) || 0;
@@ -97,8 +98,10 @@ const EquipmentCosts: React.FC = () => {
 
       if (editingId) {
         await EquipmentCostService.update(editingId, payload);
+        toast?.success("Equipment cost updated successfully");
       } else {
         await EquipmentCostService.create(payload);
+        toast?.success("Equipment cost created successfully");
       }
 
       resetForm();
