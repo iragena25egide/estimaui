@@ -102,9 +102,9 @@ const DimensionSheets: React.FC = () => {
         </p>
       </div>
 
-      {/* Project & Drawing Selectors */}
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Project Selector */}
+        
         <div className="relative">
           <FolderOpen className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <select
@@ -130,7 +130,7 @@ const DimensionSheets: React.FC = () => {
           )}
         </div>
 
-        {/* Drawing Selector */}
+       
         <div className="relative">
           <FileText className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <select
