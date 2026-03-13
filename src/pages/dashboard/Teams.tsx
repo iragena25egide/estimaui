@@ -154,7 +154,7 @@ const Teams: React.FC = () => {
           </Button>
         </div>
 
-        {/* Team List */}
+       
         {teams.length === 0 ? (
           <Card className="border-gray-200 shadow-sm rounded-2xl">
             <CardContent className="flex flex-col items-center justify-center py-16">
@@ -208,7 +208,7 @@ const Teams: React.FC = () => {
           </div>
         )}
 
-        {/* Create Team Dialog */}
+        
         <Dialog open={openCreateDialog} onOpenChange={setOpenCreateDialog}>
           <DialogContent className="sm:max-w-md p-0 gap-0 rounded-2xl overflow-hidden">
             <DialogHeader className="p-6 border-b border-gray-200">
@@ -255,7 +255,7 @@ const Teams: React.FC = () => {
     );
   }
 
-  // Team detail view (existing code, unchanged)
+ 
   if (!team) {
     return (
       <div className="p-4 md:p-6 max-w-5xl mx-auto text-center py-16 text-gray-500">
@@ -266,7 +266,7 @@ const Teams: React.FC = () => {
 
   return (
     <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-6">
-      {/* Header */}
+     
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
