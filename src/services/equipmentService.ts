@@ -1,9 +1,7 @@
 import API from "../context/axios";
 
 class EquipmentCostService {
-  /**
-   * Get all equipment costs for a project
-   */
+ 
   static async getByProject(projectId: string) {
     try {
       const res = await API.get(`/equipment-cost/project/${projectId}`);
