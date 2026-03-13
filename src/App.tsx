@@ -26,7 +26,7 @@ const App: React.FC = () => {
   return (
     <Suspense fallback={null}>
       <TopLoader />
-      <Toaster position="top-right" richColors /> {/* <-- Add Toaster here */}
+      <Toaster position="top-right" richColors /> 
 
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
