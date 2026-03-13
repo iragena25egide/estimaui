@@ -286,12 +286,12 @@ const Teams: React.FC = () => {
         </Button>
       </div>
 
-      {/* Create Team Dialog (reused) */}
+      
       <Dialog open={openCreateDialog} onOpenChange={setOpenCreateDialog}>
-        {/* ... same dialog content as above ... */}
+       
       </Dialog>
 
-      {/* Team Content */}
+     
       <Card className="border-gray-200 shadow-sm rounded-2xl overflow-hidden">
         <CardHeader className="bg-gray-50 border-b border-gray-200 p-6">
           <CardTitle className="text-xl font-bold text-gray-900">
