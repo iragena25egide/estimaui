@@ -303,7 +303,7 @@ const Teams: React.FC = () => {
         </CardHeader>
 
         <CardContent className="p-6 space-y-5">
-          {/* Invite section */}
+        
           <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
             <h4 className="text-sm font-medium text-blue-800 mb-3 flex items-center gap-1">
               <UserPlus className="w-4 h-4" />
@@ -340,7 +340,7 @@ const Teams: React.FC = () => {
             </div>
           </div>
 
-          {/* Members list */}
+         
           <div>
             <h4 className="text-sm font-medium text-gray-700 mb-3">Members</h4>
             {team.members && team.members.length > 0 ? (
