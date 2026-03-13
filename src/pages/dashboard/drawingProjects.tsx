@@ -42,7 +42,7 @@ const DrawingProjects: React.FC = () => {
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
-      {/* Header */}
+      
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Drawing Register</h1>
@@ -55,7 +55,7 @@ const DrawingProjects: React.FC = () => {
         </div>
       </div>
 
-      {/* Project Grid */}
+      
       {projects.length === 0 ? (
         <Card className="border-gray-200 shadow-sm rounded-2xl">
           <CardContent className="flex flex-col items-center justify-center py-16">
