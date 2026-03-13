@@ -191,9 +191,7 @@ class DashboardService {
     }
   }
 
-  /**
-   * Get specific project details
-   */
+  
   static async getProjectDetails(projectId: string) {
     try {
       const response = await fetch(`${BASE_URL}/projects/${projectId}`, {
@@ -207,9 +205,7 @@ class DashboardService {
     }
   }
 
-  /**
-   * Get project BOQ items
-   */
+  
   static async getProjectBoqItems(projectId: string) {
     try {
       const response = await fetch(`${BASE_URL}/projects/${projectId}/boq-items`, {
