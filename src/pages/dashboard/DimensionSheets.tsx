@@ -23,7 +23,7 @@ const DimensionSheets: React.FC = () => {
   });
   const [search, setSearch] = useState("");
 
-  // Load projects on mount
+  
   useEffect(() => {
     const loadProjects = async () => {
       setLoading((prev) => ({ ...prev, projects: true }));
@@ -40,7 +40,7 @@ const DimensionSheets: React.FC = () => {
     loadProjects();
   }, []);
 
-  // Load drawings when project changes
+  
   useEffect(() => {
     if (!selectedProjectId) {
       setDrawings([]);
@@ -64,7 +64,7 @@ const DimensionSheets: React.FC = () => {
     loadDrawings();
   }, [selectedProjectId]);
 
-  // Load dimension sheets when drawing changes
+ 
   useEffect(() => {
     if (!selectedDrawingId) {
       setSheets([]);
@@ -85,7 +85,7 @@ const DimensionSheets: React.FC = () => {
     loadSheets();
   }, [selectedDrawingId]);
 
-  // Filter sheets by search
+  
   const filteredSheets = sheets.filter(
     (s) =>
       s.code?.toLowerCase().includes(search.toLowerCase()) ||
@@ -94,7 +94,7 @@ const DimensionSheets: React.FC = () => {
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
-      {/* Header */}
+     
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Dimension Sheets</h1>
         <p className="text-sm text-gray-500 mt-1">
