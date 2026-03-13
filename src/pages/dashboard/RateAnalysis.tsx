@@ -390,7 +390,7 @@ const RateAnalysis: React.FC = () => {
         </div>
       </div>
 
-      {/* Add/Edit Modal */}
+     
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-2xl p-0 gap-0 rounded-2xl overflow-hidden">
           <DialogHeader className="p-6 border-b border-gray-200">
