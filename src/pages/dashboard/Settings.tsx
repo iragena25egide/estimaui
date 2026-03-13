@@ -103,9 +103,9 @@ const Settings: React.FC = () => {
         </nav>
       </div>
 
-      {/* Tab Content */}
+      
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-        {/* Organization */}
+       
         {activeTab === "organization" && (
           <div className="space-y-5">
             <h3 className="text-lg font-semibold text-gray-900">Organization Details</h3>
