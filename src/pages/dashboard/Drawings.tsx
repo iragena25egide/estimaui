@@ -40,7 +40,7 @@ import {
 import DrawingService from "@/services/drawingService";
 import DimensionSheetModal from "./dimensionSheetModal";
 
-// Helper to get file icon based on type
+
 const getFileIcon = (fileType?: string) => {
   if (!fileType) return <File className="w-4 h-4" />;
   if (fileType.includes("image") || fileType === "IMAGE") return <ImageIcon className="w-4 h-4" />;
@@ -49,7 +49,7 @@ const getFileIcon = (fileType?: string) => {
   return <File className="w-4 h-4" />;
 };
 
-// Helper to determine file type from file name
+
 const getFileTypeFromFile = (file: File): string => {
   const extension = file.name.split('.').pop()?.toUpperCase();
   if (extension === 'IFC') return 'IFC';
@@ -79,7 +79,7 @@ const Drawings: React.FC = () => {
     scale: "",
     status: "ISSUED",
     file: null as File | null,
-    fileType: "IFC", // default, but will be updated when file is selected
+    fileType: "IFC", 
   });
 
   const loadDrawings = async () => {
@@ -106,7 +106,7 @@ const Drawings: React.FC = () => {
         await DrawingService.update(editingId, form);
         toast.success("Drawing updated");
       } else {
-        // Ensure file is present when creating
+        
         if (!form.file) {
           toast.warning("Please select a file");
           return;
