@@ -156,7 +156,7 @@ const Reports: React.FC = () => {
         </p>
       </div>
 
-      {/* Project Selection & Generate Card */}
+     
       <Card className="border-gray-200 shadow-sm rounded-2xl">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg font-semibold flex items-center gap-2">
@@ -234,7 +234,7 @@ const Reports: React.FC = () => {
         )}
       </div>
 
-      {/* Reports Table */}
+     
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -345,7 +345,7 @@ const Reports: React.FC = () => {
         </div>
       </div>
 
-      {/* Preview Modal */}
+      
       <Dialog open={!!previewReport} onOpenChange={() => setPreviewReport(null)}>
         <DialogContent className="sm:max-w-4xl p-0 gap-0 rounded-2xl overflow-hidden h-[80vh]">
           <DialogHeader className="p-6 border-b border-gray-200 flex flex-row items-center justify-between">
