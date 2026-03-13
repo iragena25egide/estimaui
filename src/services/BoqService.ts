@@ -1,9 +1,7 @@
 import API from "../context/axios";
 
 class BoqService {
-  /**
-   * Fetch all BOQ items for a specific project
-   */
+  
   static async getByProject(projectId: string) {
     try {
       const res = await API.get(`/boq-items/project/${projectId}`);
