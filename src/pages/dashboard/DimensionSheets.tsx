@@ -159,7 +159,7 @@ const DimensionSheets: React.FC = () => {
         </div>
       </div>
 
-      {/* Search Bar */}
+     
       {selectedDrawingId && (
         <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -180,7 +180,7 @@ const DimensionSheets: React.FC = () => {
         </div>
       )}
 
-      {/* Dimension Sheets Table */}
+      
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
