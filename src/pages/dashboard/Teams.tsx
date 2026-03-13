@@ -130,11 +130,11 @@ const Teams: React.FC = () => {
     );
   }
 
-  // No teamId – show list of user's teams
+ 
   if (!teamId) {
     return (
       <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-6">
-        {/* Header */}
+        
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
