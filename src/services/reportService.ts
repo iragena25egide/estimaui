@@ -1,9 +1,7 @@
 import API from "../context/axios";
 
 class ReportService {
-  /**
-   * Fetch all projects for dropdown
-   */
+  
   static async getProjects() {
     try {
       const res = await API.get("/projects/my");
@@ -14,9 +12,7 @@ class ReportService {
     }
   }
 
-  /**
-   * Fetch reports for a specific project
-   */
+  
   static async getByProject(projectId: string) {
     try {
       const res = await API.get(`/reports/project/${projectId}`);
@@ -27,9 +23,7 @@ class ReportService {
     }
   }
 
-  /**
-   * Generate a new report for a project
-   */
+  
   static async generate(projectId: string) {
     try {
       const res = await API.post(`/reports/${projectId}/generate`);
@@ -37,16 +31,14 @@ class ReportService {
     } catch (error: any) {
       if (error.response) {
         console.error("Generate report error response:", error.response.data);
-        // Attach server message to error object
+       
         error.serverMessage = error.response.data.message || "Failed to generate report";
       }
       throw error;
     }
   }
 
-  /**
-   * Send a report via email
-   */
+  
   static async send(reportId: string) {
     try {
       const res = await API.post(`/reports/${reportId}/send`);
@@ -60,9 +52,7 @@ class ReportService {
     }
   }
 
-  /**
-   * Download a report as PDF (triggers browser download)
-   */
+  
   static async download(reportId: string, fileName?: string) {
     try {
       const res = await API.get(`/reports/download/${reportId}`, {
