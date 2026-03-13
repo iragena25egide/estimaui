@@ -183,7 +183,7 @@ const Settings: React.FC = () => {
           </div>
         )}
 
-        {/* Financial */}
+       
         {activeTab === "financial" && (
           <div className="space-y-5">
             <h3 className="text-lg font-semibold text-gray-900">Financial Defaults</h3>
@@ -246,7 +246,7 @@ const Settings: React.FC = () => {
           </div>
         )}
 
-        {/* Project */}
+       
         {activeTab === "project" && (
           <div className="space-y-5">
             <h3 className="text-lg font-semibold text-gray-900">Project Defaults</h3>
@@ -290,7 +290,7 @@ const Settings: React.FC = () => {
           </div>
         )}
 
-        {/* Security */}
+        
         {activeTab === "security" && (
           <div className="space-y-5">
             <h3 className="text-lg font-semibold text-gray-900">Security Settings</h3>
@@ -322,7 +322,7 @@ const Settings: React.FC = () => {
           </div>
         )}
 
-        {/* Notifications */}
+       
         {activeTab === "notifications" && (
           <div className="space-y-5">
             <h3 className="text-lg font-semibold text-gray-900">Notification Preferences</h3>
@@ -351,7 +351,7 @@ const Settings: React.FC = () => {
         )}
       </div>
 
-      {/* Save Button */}
+     
       <div className="flex justify-end">
         <button
           onClick={handleSave}
