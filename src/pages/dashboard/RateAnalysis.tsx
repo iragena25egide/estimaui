@@ -298,7 +298,7 @@ const RateAnalysis: React.FC = () => {
         )}
       </div>
 
-      {/* Rate Analysis Table */}
+      
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
