@@ -62,7 +62,7 @@ const Settings: React.FC = () => {
     
     await new Promise((resolve) => setTimeout(resolve, 1000));
     console.log("Settings saved:", settings);
-    toast.success("Settings saved successfully"); // remove if you don't have sonner
+    toast.success("Settings saved successfully"); 
     setSaving(false);
   };
 
@@ -76,7 +76,7 @@ const Settings: React.FC = () => {
 
   return (
     <div className="p-4 md:p-6 max-w-5xl mx-auto space-y-6">
-      {/* Header */}
+      
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
         <p className="text-sm text-gray-500 mt-1">
@@ -84,7 +84,7 @@ const Settings: React.FC = () => {
         </p>
       </div>
 
-      {/* Custom Tabs */}
+      
       <div className="border-b border-gray-200">
         <nav className="flex gap-6">
           {tabs.map((tab) => (
