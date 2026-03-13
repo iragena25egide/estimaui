@@ -221,7 +221,7 @@ const BoqItems: React.FC = () => {
         </div>
       </div>
 
-      {/* Search Bar */}
+     
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <input
@@ -240,7 +240,7 @@ const BoqItems: React.FC = () => {
         )}
       </div>
 
-      {/* BOQ Items Table */}
+     
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -336,7 +336,7 @@ const BoqItems: React.FC = () => {
         </div>
       </div>
 
-      {/* Add/Edit BOQ Item Modal */}
+     
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-auto">
