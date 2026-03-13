@@ -118,7 +118,7 @@ const Projects: React.FC = () => {
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
-      {/* Header */}
+      
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
@@ -135,7 +135,7 @@ const Projects: React.FC = () => {
         </Button>
       </div>
 
-      {/* Search Bar */}
+      
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <Input
