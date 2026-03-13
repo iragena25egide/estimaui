@@ -154,7 +154,7 @@ const Projects: React.FC = () => {
         )}
       </div>
 
-      {/* Projects Table */}
+      
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -234,7 +234,7 @@ const Projects: React.FC = () => {
         </div>
       </div>
 
-      {/* Add/Edit Project Modal */}
+      
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-2xl p-0 gap-0 rounded-2xl overflow-hidden">
           <DialogHeader className="p-6 border-b border-gray-200">
