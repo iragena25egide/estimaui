@@ -142,7 +142,7 @@ const Drawings: React.FC = () => {
       issueDate: d.issueDate || "",
       scale: d.scale || "",
       status: d.status || "ISSUED",
-      file: null, // file must be re-uploaded
+      file: null, 
       fileType: d.fileType || "IFC",
     });
     setOpenForm(true);
@@ -223,7 +223,7 @@ const Drawings: React.FC = () => {
         )}
       </div>
 
-      {/* Drawings Table */}
+      
       <Card className="border-gray-200 shadow-sm rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -330,7 +330,7 @@ const Drawings: React.FC = () => {
         </div>
       </Card>
 
-      {/* Add/Edit Drawing Modal */}
+     
       <Dialog open={openForm} onOpenChange={setOpenForm}>
         <DialogContent className="sm:max-w-2xl p-0 gap-0 rounded-2xl overflow-hidden">
           <DialogHeader className="p-6 border-b border-gray-200">
@@ -430,7 +430,7 @@ const Drawings: React.FC = () => {
               </div>
             </div>
 
-            {/* File Upload */}
+           
             <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 hover:border-blue-400 transition-colors">
               <div className="text-center">
                 <FileIcon className="mx-auto w-8 h-8 text-gray-400 mb-2" />
@@ -488,7 +488,7 @@ const Drawings: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* File Preview Modal */}
+      
       <Dialog open={!!previewDrawing} onOpenChange={() => setPreviewDrawing(null)}>
         <DialogContent className="sm:max-w-4xl p-0 gap-0 rounded-2xl overflow-hidden">
           <DialogHeader className="p-6 border-b border-gray-200 flex flex-row items-center justify-between">
@@ -535,7 +535,7 @@ const Drawings: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Dimension Sheet Modal */}
+      
       <DimensionSheetModal
         drawingId={selectedDrawingId!}
         open={modalOpen}
