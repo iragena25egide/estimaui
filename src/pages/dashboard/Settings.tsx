@@ -1,31 +1,31 @@
 import React, { useState } from "react";
-import { toast } from "sonner"; // optional – remove if you don't have sonner
+import { toast } from "sonner"; 
 import { Loader2, Save } from "lucide-react";
 
 interface SettingsData {
-  // Organization
+ 
   companyName: string;
   address: string;
   taxId: string;
   currency: string;
   language: string;
 
-  // Financial
+  
   vatPercent: number;
   overheadPercent: number;
   defaultProfit: number;
   roundingPrecision: number;
 
-  // Project
+ 
   measurementUnit: "Metric" | "Imperial";
   autoGenerateBoqCode: boolean;
   enableCostBreakdown: boolean;
 
-  // Security
+  
   twoFactorAuth: boolean;
   sessionTimeout: number;
 
-  // Notifications
+ 
   emailNotifications: boolean;
   weeklySummary: boolean;
 }
@@ -59,7 +59,7 @@ const Settings: React.FC = () => {
 
   const handleSave = async () => {
     setSaving(true);
-    // Simulate API call
+    
     await new Promise((resolve) => setTimeout(resolve, 1000));
     console.log("Settings saved:", settings);
     toast.success("Settings saved successfully"); // remove if you don't have sonner
