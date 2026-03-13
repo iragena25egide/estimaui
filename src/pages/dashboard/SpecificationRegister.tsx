@@ -241,7 +241,7 @@ const SpecificationRegister: React.FC = () => {
         </div>
       </div>
 
-      {/* Search Bar */}
+     
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <Input
@@ -260,7 +260,7 @@ const SpecificationRegister: React.FC = () => {
         )}
       </div>
 
-      {/* Specifications Table */}
+      
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -341,7 +341,7 @@ const SpecificationRegister: React.FC = () => {
         </div>
       </div>
 
-      {/* Add/Edit Modal */}
+      
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-lg p-0 gap-0 rounded-2xl overflow-hidden">
           <DialogHeader className="p-6 border-b border-gray-200">
