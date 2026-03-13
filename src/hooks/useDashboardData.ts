@@ -1,8 +1,4 @@
-/**
- * Custom Hook for Dashboard Data
- * 
- * Provides easy access to dashboard data with loading and error states
- */
+
 
 import { useEffect, useState } from "react";
 import DashboardService, { DashboardStats } from "@/services/dashboardService";
