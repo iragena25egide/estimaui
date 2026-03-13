@@ -220,7 +220,7 @@ const RateAnalysis: React.FC = () => {
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
-      {/* Header with Project Selector */}
+      
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Rate Analysis</h1>
@@ -230,7 +230,7 @@ const RateAnalysis: React.FC = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3">
-          {/* Project Dropdown */}
+         
           <div className="relative min-w-[200px]">
             <FolderOpen className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Select
