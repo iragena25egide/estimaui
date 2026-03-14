@@ -61,7 +61,7 @@ const Reports: React.FC = () => {
   const [search, setSearch] = useState("");
   const [previewReport, setPreviewReport] = useState<Report | null>(null);
 
-  // Load projects on mount
+  
   useEffect(() => {
     const loadProjects = async () => {
       setLoading((prev) => ({ ...prev, projects: true }));
