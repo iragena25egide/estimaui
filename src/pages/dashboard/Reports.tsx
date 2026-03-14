@@ -151,7 +151,7 @@ const Reports: React.FC = () => {
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
-      {/* Header */}
+      
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Reports</h1>
         <p className="text-sm text-gray-500 mt-1">
