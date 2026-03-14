@@ -216,7 +216,7 @@ const Reports: React.FC = () => {
                 {loading.generating ? "Generating..." : "Generate Report"}
               </Button>
 
-              {/* Sample Report Button */}
+             
               <Button
                 variant="outline"
                 onClick={() => window.open(SAMPLE_REPORT_URL, '_blank')}
