@@ -35,6 +35,9 @@ import {
 } from "@/components/ui/dialog";
 import ReportService from "@/services/reportService";
 
+
+const SAMPLE_REPORT_URL = "/samples/report-sample.pdf";
+
 interface Report {
   id: string;
   projectId: string;
@@ -58,7 +61,7 @@ const Reports: React.FC = () => {
   const [search, setSearch] = useState("");
   const [previewReport, setPreviewReport] = useState<Report | null>(null);
 
-  
+  // Load projects on mount
   useEffect(() => {
     const loadProjects = async () => {
       setLoading((prev) => ({ ...prev, projects: true }));
@@ -77,7 +80,7 @@ const Reports: React.FC = () => {
     loadProjects();
   }, []);
 
-  
+  // Load reports when selected project changes
   useEffect(() => {
     if (!selectedProject) {
       setReports([]);
@@ -108,7 +111,7 @@ const Reports: React.FC = () => {
     try {
       await ReportService.generate(selectedProject);
       toast.success("Report generation started");
-      loadReports(); 
+      loadReports();
     } catch (error: any) {
       const message = error.serverMessage || "Failed to generate report";
       toast.error(message);
@@ -148,7 +151,7 @@ const Reports: React.FC = () => {
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
-     
+      {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Reports</h1>
         <p className="text-sm text-gray-500 mt-1">
@@ -156,7 +159,7 @@ const Reports: React.FC = () => {
         </p>
       </div>
 
-     
+      {/* Generate Report Card */}
       <Card className="border-gray-200 shadow-sm rounded-2xl">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg font-semibold flex items-center gap-2">
@@ -199,23 +202,36 @@ const Reports: React.FC = () => {
               </Select>
             </div>
 
-            <Button
-              onClick={generateReport}
-              disabled={loading.generating || !selectedProject}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-sm"
-            >
-              {loading.generating ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <PlusCircle className="w-4 h-4" />
-              )}
-              {loading.generating ? "Generating..." : "Generate Report"}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={generateReport}
+                disabled={loading.generating || !selectedProject}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-sm"
+              >
+                {loading.generating ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <PlusCircle className="w-4 h-4" />
+                )}
+                {loading.generating ? "Generating..." : "Generate Report"}
+              </Button>
+
+              {/* Sample Report Button */}
+              <Button
+                variant="outline"
+                onClick={() => window.open(SAMPLE_REPORT_URL, '_blank')}
+                className="px-6 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 border-gray-200"
+                title="View a sample report template"
+              >
+                <FileText className="w-4 h-4" />
+                Sample Report
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
 
-     
+      {/* Search Bar */}
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <Input
@@ -234,7 +250,7 @@ const Reports: React.FC = () => {
         )}
       </div>
 
-     
+      {/* Reports Table */}
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -345,7 +361,7 @@ const Reports: React.FC = () => {
         </div>
       </div>
 
-      
+      {/* Preview Modal */}
       <Dialog open={!!previewReport} onOpenChange={() => setPreviewReport(null)}>
         <DialogContent className="sm:max-w-4xl p-0 gap-0 rounded-2xl overflow-hidden h-[80vh]">
           <DialogHeader className="p-6 border-b border-gray-200 flex flex-row items-center justify-between">
