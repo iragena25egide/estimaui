@@ -137,7 +137,7 @@ const Dashboard: React.FC = () => {
       
       <RecentProjects  />
 
-      {/* Team & Reports Summary */}
+     
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           Team & Reports
