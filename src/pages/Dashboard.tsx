@@ -134,7 +134,7 @@ const Dashboard: React.FC = () => {
         />
       </div>
 
-      {/* Recent Projects */}
+      
       <RecentProjects  />
 
       {/* Team & Reports Summary */}
