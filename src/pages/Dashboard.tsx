@@ -135,7 +135,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Recent Projects */}
-      <RecentProjects projects={stats.recentProjects} loading={loading} />
+      <RecentProjects  />
 
       {/* Team & Reports Summary */}
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
