@@ -191,8 +191,7 @@ const Reports: React.FC = () => {
 
     setLoading((prev) => ({ ...prev, sending: true }));
     try {
-      // Assuming your send endpoint accepts an email parameter.
-      // If not, you can modify the service to accept email.
+      
       await ReportService.send(selectedReportForSend.id); // adjust if needed
       toast.success(`Report sent to ${sendEmail}`);
       setSendModalOpen(false);
