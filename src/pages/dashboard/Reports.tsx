@@ -158,7 +158,7 @@ const Reports: React.FC = () => {
     }
   };
 
-  // ---------- Delete report ----------
+ 
   const deleteReport = async (reportId: string) => {
     if (!confirm("Are you sure you want to delete this report? This action cannot be undone."))
       return;
