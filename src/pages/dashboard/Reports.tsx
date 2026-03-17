@@ -204,7 +204,7 @@ const Reports: React.FC = () => {
     }
   };
 
-  // ---------- Status badge styling ----------
+ -
   const getStatusBadge = (status: string) => {
     switch (status?.toLowerCase()) {
       case "generated":
@@ -216,7 +216,7 @@ const Reports: React.FC = () => {
     }
   };
 
-  // ---------- Sorting and filtering ----------
+ 
   const sortedAndFilteredReports = useMemo(() => {
     let filtered = reports.filter((r) =>
       r.status?.toLowerCase().includes(search.toLowerCase())
