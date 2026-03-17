@@ -204,7 +204,7 @@ const Reports: React.FC = () => {
     }
   };
 
- -
+ 
   const getStatusBadge = (status: string) => {
     switch (status?.toLowerCase()) {
       case "generated":
@@ -236,7 +236,7 @@ const Reports: React.FC = () => {
     return filtered;
   }, [reports, search, sortBy, sortOrder]);
 
-  // ---------- Export to CSV ----------
+ 
   const exportToCSV = () => {
     const headers = ["Project", "Version", "Date", "Amount", "Status"];
     const rows = sortedAndFilteredReports.map((r) => [
@@ -256,12 +256,12 @@ const Reports: React.FC = () => {
     window.URL.revokeObjectURL(url);
   };
 
-  // ---------- Helper to get project name ----------
+  
   const getProjectName = (projectId: string) => {
     return projects.find(p => p.id === projectId)?.name || "—";
   };
 
-  // ---------- Summary statistics ----------
+  
   const totalReports = sortedAndFilteredReports.length;
   const totalAmount = sortedAndFilteredReports.reduce((sum, r) => sum + r.totalAmount, 0);
 
