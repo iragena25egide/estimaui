@@ -222,14 +222,14 @@ const Reports: React.FC = () => {
       r.status?.toLowerCase().includes(search.toLowerCase())
     );
 
-    // Sort
+    
     filtered.sort((a, b) => {
       if (sortBy === "date") {
         const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
         const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
         return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
       } else {
-        // sort by version
+        
         return sortOrder === "desc" ? b.version - a.version : a.version - b.version;
       }
     });
