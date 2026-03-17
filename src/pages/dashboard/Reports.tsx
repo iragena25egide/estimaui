@@ -522,7 +522,7 @@ const Reports: React.FC = () => {
                           </Tooltip>
                         </TooltipProvider>
 
-                        {/* Download */}
+                       
                         {report.filePath ? (
                           <TooltipProvider>
                             <Tooltip>
