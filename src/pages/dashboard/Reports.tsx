@@ -164,7 +164,7 @@ const Reports: React.FC = () => {
       return;
     setLoading((prev) => ({ ...prev, deleting: true }));
     try {
-      await ReportService.delete(reportId); // assuming you have delete in service
+      await ReportService.delete(reportId); 
       toast.success("Report deleted");
       loadReports();
     } catch (error: any) {
@@ -175,7 +175,7 @@ const Reports: React.FC = () => {
     }
   };
 
-  // ---------- Send report via email (opens modal) ----------
+  
   const openSendModal = (report: Report) => {
     setSelectedReportForSend(report);
     setSendEmail("");
