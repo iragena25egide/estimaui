@@ -48,7 +48,7 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import ReportService from "@/services/reportService";
 
-// Sample report URL (place a PDF in public/samples/)
+
 const SAMPLE_REPORT_URL = "/samples/report-sample.pdf";
 
 interface Report {
