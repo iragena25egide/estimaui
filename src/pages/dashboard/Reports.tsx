@@ -132,7 +132,7 @@ const Reports: React.FC = () => {
     try {
       await ReportService.generate(selectedProject);
       toast.success("Report generation started");
-      loadReports(); // refresh list
+      loadReports(); 
     } catch (error: any) {
       const message = error.serverMessage || "Failed to generate report";
       toast.error(message);
@@ -141,7 +141,7 @@ const Reports: React.FC = () => {
     }
   };
 
-  // ---------- Regenerate (same as generate) ----------
+  
   const regenerateReport = async (reportId: string) => {
     // In a real backend, you might have a separate endpoint to regenerate.
     // Here we simply generate a new report for the same project.
