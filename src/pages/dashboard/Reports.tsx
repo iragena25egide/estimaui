@@ -121,7 +121,7 @@ const Reports: React.FC = () => {
     }
   };
 
-  // ---------- Generate new report ----------
+  
   const generateReport = async () => {
     if (!selectedProject) {
       toast.warning("Please select a project first");
