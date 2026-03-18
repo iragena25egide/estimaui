@@ -76,7 +76,7 @@ const Reports: React.FC = () => {
   const [selectedReportForSend, setSelectedReportForSend] = useState<Report | null>(null);
   const [sendEmail, setSendEmail] = useState("");
 
-  // ---------- Load projects on mount ----------
+  
   useEffect(() => {
     const loadProjects = async () => {
       setLoading((prev) => ({ ...prev, projects: true }));
