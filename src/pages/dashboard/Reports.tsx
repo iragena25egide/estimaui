@@ -153,13 +153,13 @@ const Reports: React.FC = () => {
     }
   };
 
-  // ---------- Delete report ----------
+ 
   const deleteReport = async (reportId: string) => {
     if (!confirm("Are you sure you want to delete this report? This action cannot be undone."))
       return;
     setLoading((prev) => ({ ...prev, deleting: true }));
     try {
-      await ReportService.delete(reportId); // assuming you have delete in service
+      await ReportService.delete(reportId); 
       toast.success("Report deleted");
       loadReports();
     } catch (error: any) {
