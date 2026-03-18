@@ -211,7 +211,7 @@ const Reports: React.FC = () => {
     }
   };
 
-  // ---------- Sorting and filtering ----------
+  
   const sortedAndFilteredReports = useMemo(() => {
     let filtered = reports.filter((r) =>
       r.status?.toLowerCase().includes(search.toLowerCase())
