@@ -95,7 +95,7 @@ const Reports: React.FC = () => {
     loadProjects();
   }, []);
 
-  // ---------- Load reports when selected project changes ----------
+ 
   useEffect(() => {
     if (!selectedProject) {
       setReports([]);
