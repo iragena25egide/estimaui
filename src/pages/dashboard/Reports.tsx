@@ -256,7 +256,7 @@ const Reports: React.FC = () => {
     return projects.find(p => p.id === projectId)?.name || "—";
   };
 
-  // ---------- Summary statistics ----------
+  
   const totalReports = sortedAndFilteredReports.length;
   const totalAmount = sortedAndFilteredReports.reduce((sum, r) => sum + r.totalAmount, 0);
 
