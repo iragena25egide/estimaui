@@ -540,7 +540,7 @@ const Reports: React.FC = () => {
                           </span>
                         )}
 
-                        {/* Send Email */}
+                       
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
