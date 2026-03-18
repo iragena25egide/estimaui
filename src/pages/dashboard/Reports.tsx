@@ -39,16 +39,11 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import ReportService from "@/services/reportService";
 
-
+// Sample report URL (place a PDF in public/samples/)
 const SAMPLE_REPORT_URL = "/samples/report-sample.pdf";
 
 interface Report {
@@ -62,7 +57,7 @@ interface Report {
 }
 
 const Reports: React.FC = () => {
-  
+  // ---------- State ----------
   const [projects, setProjects] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<string>("");
   const [reports, setReports] = useState<Report[]>([]);
@@ -81,7 +76,7 @@ const Reports: React.FC = () => {
   const [selectedReportForSend, setSelectedReportForSend] = useState<Report | null>(null);
   const [sendEmail, setSendEmail] = useState("");
 
-  
+  // ---------- Load projects on mount ----------
   useEffect(() => {
     const loadProjects = async () => {
       setLoading((prev) => ({ ...prev, projects: true }));
@@ -100,7 +95,7 @@ const Reports: React.FC = () => {
     loadProjects();
   }, []);
 
-  
+  // ---------- Load reports when selected project changes ----------
   useEffect(() => {
     if (!selectedProject) {
       setReports([]);
@@ -121,7 +116,7 @@ const Reports: React.FC = () => {
     }
   };
 
-  
+  // ---------- Generate new report ----------
   const generateReport = async () => {
     if (!selectedProject) {
       toast.warning("Please select a project first");
@@ -132,7 +127,7 @@ const Reports: React.FC = () => {
     try {
       await ReportService.generate(selectedProject);
       toast.success("Report generation started");
-      loadReports(); 
+      loadReports(); // refresh list
     } catch (error: any) {
       const message = error.serverMessage || "Failed to generate report";
       toast.error(message);
@@ -141,9 +136,10 @@ const Reports: React.FC = () => {
     }
   };
 
-  
+  // ---------- Regenerate (same as generate) ----------
   const regenerateReport = async (reportId: string) => {
-    
+    // In a real backend, you might have a separate endpoint to regenerate.
+    // Here we simply generate a new report for the same project.
     if (!selectedProject) return;
     setLoading((prev) => ({ ...prev, generating: true }));
     try {
@@ -154,17 +150,17 @@ const Reports: React.FC = () => {
       const message = error.serverMessage || "Failed to regenerate report";
       toast.error(message);
     } finally {
-      setLoading((prev) => ({ ...prev, generating: false }));x
+      setLoading((prev) => ({ ...prev, generating: false })); // <-- FIXED: removed stray 'x'
     }
   };
 
- 
+  // ---------- Delete report ----------
   const deleteReport = async (reportId: string) => {
     if (!confirm("Are you sure you want to delete this report? This action cannot be undone."))
       return;
     setLoading((prev) => ({ ...prev, deleting: true }));
     try {
-      await ReportService.delete(reportId); 
+      await ReportService.delete(reportId); // assuming you have delete in service
       toast.success("Report deleted");
       loadReports();
     } catch (error: any) {
@@ -175,7 +171,7 @@ const Reports: React.FC = () => {
     }
   };
 
-  
+  // ---------- Send report via email (opens modal) ----------
   const openSendModal = (report: Report) => {
     setSelectedReportForSend(report);
     setSendEmail("");
@@ -191,8 +187,9 @@ const Reports: React.FC = () => {
 
     setLoading((prev) => ({ ...prev, sending: true }));
     try {
-      
-      await ReportService.send(selectedReportForSend.id);  
+      // Assuming your send endpoint accepts an email parameter.
+      // If not, you can modify the service to accept email.
+      await ReportService.send(selectedReportForSend.id); // adjust if needed
       toast.success(`Report sent to ${sendEmail}`);
       setSendModalOpen(false);
       setSelectedReportForSend(null);
@@ -204,7 +201,7 @@ const Reports: React.FC = () => {
     }
   };
 
- 
+  // ---------- Status badge styling ----------
   const getStatusBadge = (status: string) => {
     switch (status?.toLowerCase()) {
       case "generated":
@@ -216,27 +213,27 @@ const Reports: React.FC = () => {
     }
   };
 
- 
+  // ---------- Sorting and filtering ----------
   const sortedAndFilteredReports = useMemo(() => {
     let filtered = reports.filter((r) =>
       r.status?.toLowerCase().includes(search.toLowerCase())
     );
 
-    
+    // Sort
     filtered.sort((a, b) => {
       if (sortBy === "date") {
         const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
         const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
         return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
       } else {
-        
+        // sort by version
         return sortOrder === "desc" ? b.version - a.version : a.version - b.version;
       }
     });
     return filtered;
   }, [reports, search, sortBy, sortOrder]);
 
- 
+  // ---------- Export to CSV ----------
   const exportToCSV = () => {
     const headers = ["Project", "Version", "Date", "Amount", "Status"];
     const rows = sortedAndFilteredReports.map((r) => [
@@ -256,18 +253,18 @@ const Reports: React.FC = () => {
     window.URL.revokeObjectURL(url);
   };
 
-  
+  // ---------- Helper to get project name ----------
   const getProjectName = (projectId: string) => {
     return projects.find(p => p.id === projectId)?.name || "—";
   };
 
-  
+  // ---------- Summary statistics ----------
   const totalReports = sortedAndFilteredReports.length;
   const totalAmount = sortedAndFilteredReports.reduce((sum, r) => sum + r.totalAmount, 0);
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
-      
+      {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Reports</h1>
         <p className="text-sm text-gray-500 mt-1">
@@ -275,7 +272,7 @@ const Reports: React.FC = () => {
         </p>
       </div>
 
-      
+      {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="border-gray-200 shadow-sm rounded-2xl">
           <CardContent className="p-6">
@@ -299,7 +296,7 @@ const Reports: React.FC = () => {
         </Card>
       </div>
 
-     
+      {/* Generate Report Card */}
       <Card className="border-gray-200 shadow-sm rounded-2xl">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg font-semibold flex items-center gap-2">
@@ -386,7 +383,7 @@ const Reports: React.FC = () => {
         </CardContent>
       </Card>
 
-     
+      {/* Search and Sort Bar */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -437,7 +434,7 @@ const Reports: React.FC = () => {
         </div>
       </div>
 
-      
+      {/* Reports Table */}
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -506,7 +503,7 @@ const Reports: React.FC = () => {
                     </td>
                     <td className="p-4">
                       <div className="flex items-center gap-2">
-                        
+                        {/* Preview */}
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -522,7 +519,7 @@ const Reports: React.FC = () => {
                           </Tooltip>
                         </TooltipProvider>
 
-                       
+                        {/* Download */}
                         {report.filePath ? (
                           <TooltipProvider>
                             <Tooltip>
@@ -545,7 +542,7 @@ const Reports: React.FC = () => {
                           </span>
                         )}
 
-                        
+                        {/* Send Email */}
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -560,7 +557,7 @@ const Reports: React.FC = () => {
                           </Tooltip>
                         </TooltipProvider>
 
-                        
+                        {/* Regenerate */}
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -576,7 +573,7 @@ const Reports: React.FC = () => {
                           </Tooltip>
                         </TooltipProvider>
 
-                        
+                        {/* Delete */}
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -601,7 +598,7 @@ const Reports: React.FC = () => {
         </div>
       </div>
 
-     
+      {/* Preview Modal */}
       <Dialog open={!!previewReport} onOpenChange={() => setPreviewReport(null)}>
         <DialogContent className="sm:max-w-4xl p-0 gap-0 rounded-2xl overflow-hidden h-[80vh]">
           <DialogHeader className="p-6 border-b border-gray-200 flex flex-row items-center justify-between">
@@ -634,7 +631,7 @@ const Reports: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      
+      {/* Send Email Modal */}
       <Dialog open={sendModalOpen} onOpenChange={setSendModalOpen}>
         <DialogContent className="sm:max-w-md p-0 gap-0 rounded-2xl overflow-hidden">
           <DialogHeader className="p-6 border-b border-gray-200">
