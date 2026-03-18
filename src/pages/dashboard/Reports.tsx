@@ -138,8 +138,7 @@ const Reports: React.FC = () => {
 
   
   const regenerateReport = async (reportId: string) => {
-    // In a real backend, you might have a separate endpoint to regenerate.
-    // Here we simply generate a new report for the same project.
+    
     if (!selectedProject) return;
     setLoading((prev) => ({ ...prev, generating: true }));
     try {
