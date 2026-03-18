@@ -629,7 +629,7 @@ const Reports: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Send Email Modal */}
+     
       <Dialog open={sendModalOpen} onOpenChange={setSendModalOpen}>
         <DialogContent className="sm:max-w-md p-0 gap-0 rounded-2xl overflow-hidden">
           <DialogHeader className="p-6 border-b border-gray-200">
