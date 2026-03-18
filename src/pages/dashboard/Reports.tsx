@@ -149,7 +149,7 @@ const Reports: React.FC = () => {
       const message = error.serverMessage || "Failed to regenerate report";
       toast.error(message);
     } finally {
-      setLoading((prev) => ({ ...prev, generating: false })); // <-- FIXED: removed stray 'x'
+      setLoading((prev) => ({ ...prev, generating: false })); 
     }
   };
 
@@ -170,7 +170,7 @@ const Reports: React.FC = () => {
     }
   };
 
-  // ---------- Send report via email (opens modal) ----------
+ 
   const openSendModal = (report: Report) => {
     setSelectedReportForSend(report);
     setSendEmail("");
