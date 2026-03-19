@@ -600,7 +600,7 @@ const Reports: React.FC = () => {
         </div>
       </div>
 
-      {/* Preview modal – shows the PDF in an iframe */}
+      
       <Dialog open={!!previewReport} onOpenChange={() => setPreviewReport(null)}>
         <DialogContent className="sm:max-w-4xl p-0 gap-0 rounded-2xl overflow-hidden h-[80vh]">
           <DialogHeader className="p-6 border-b border-gray-200 flex flex-row items-center justify-between">
