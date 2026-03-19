@@ -196,7 +196,7 @@ const Reports: React.FC = () => {
     }
   };
 
-  // ---------- Return Tailwind classes for status badge based on status text ----------
+  
   const getStatusBadge = (status: string) => {
     switch (status?.toLowerCase()) {
       case "generated":
@@ -208,7 +208,7 @@ const Reports: React.FC = () => {
     }
   };
 
-  // ---------- Memoized sorted and filtered reports (performance optimisation) ----------
+  
   const sortedAndFilteredReports = useMemo(() => {
     let filtered = reports.filter((r) =>
       r.status?.toLowerCase().includes(search.toLowerCase())
