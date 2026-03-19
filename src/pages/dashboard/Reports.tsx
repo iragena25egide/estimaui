@@ -358,7 +358,7 @@ const Reports: React.FC = () => {
                 Sample Report
               </Button>
 
-              {/* Refresh button (reloads reports for current project) */}
+              
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
