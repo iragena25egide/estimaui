@@ -288,7 +288,7 @@ const Reports: React.FC = () => {
         </Card>
       </div>
 
-      {/* Card for generating new reports */}
+      
       <Card className="border-gray-200 shadow-sm rounded-2xl">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg font-semibold flex items-center gap-2">
