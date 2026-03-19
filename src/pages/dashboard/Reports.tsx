@@ -168,7 +168,7 @@ const Reports: React.FC = () => {
     }
   };
 
-  // ---------- Open the email sending modal for a specific report ----------
+ 
   const openSendModal = (report: Report) => {
     setSelectedReportForSend(report);
     setSendEmail("");
