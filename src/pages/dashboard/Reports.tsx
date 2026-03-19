@@ -245,7 +245,7 @@ const Reports: React.FC = () => {
     window.URL.revokeObjectURL(url);
   };
 
-  // ---------- Helper to get the project name from its ID (for display) ----------
+  
   const getProjectName = (projectId: string) => {
     return projects.find(p => p.id === projectId)?.name || "—";
   };
