@@ -505,7 +505,7 @@ const Reports: React.FC = () => {
                     <td className="p-4">
                       {/* Action buttons with tooltips */}
                       <div className="flex items-center gap-2">
-                        {/* Preview */}
+                        
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
