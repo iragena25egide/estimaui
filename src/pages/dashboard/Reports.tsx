@@ -503,7 +503,7 @@ const Reports: React.FC = () => {
                       </span>
                     </td>
                     <td className="p-4">
-                      {/* Action buttons with tooltips */}
+                      
                       <div className="flex items-center gap-2">
                         
                         <TooltipProvider>
