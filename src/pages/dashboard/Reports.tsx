@@ -93,7 +93,7 @@ const Reports: React.FC = () => {
       }
     };
     loadProjects();
-  }, []); // empty dependency array = run only once
+  }, []);
 
   // ---------- Load reports whenever selected project changes ----------
   useEffect(() => {
