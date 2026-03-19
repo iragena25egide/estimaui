@@ -379,7 +379,7 @@ const Reports: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Search and sort controls */}
+     
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         
         <div className="relative flex-1 max-w-md">
