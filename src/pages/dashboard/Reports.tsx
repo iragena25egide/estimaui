@@ -42,7 +42,7 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import ReportService from "@/services/reportService";
 
-// URL for a sample report PDF – place a file in public/samples/
+
 const SAMPLE_REPORT_URL = "/samples/report-sample.pdf";
 
 // TypeScript interface for a Report object, matching the backend model
