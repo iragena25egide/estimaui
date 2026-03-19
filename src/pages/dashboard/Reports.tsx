@@ -301,7 +301,7 @@ const Reports: React.FC = () => {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-4">
-            {/* Project selector */}
+            
             <div className="flex-1 relative">
               <FolderOpen className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <Select
@@ -332,7 +332,7 @@ const Reports: React.FC = () => {
               </Select>
             </div>
 
-            {/* Action buttons */}
+           
             <div className="flex flex-wrap gap-2">
               <Button
                 onClick={generateReport}
