@@ -449,7 +449,7 @@ const Reports: React.FC = () => {
             </thead>
             <tbody>
               {loading.reports ? (
-                // Skeleton rows while loading
+                
                 Array.from({ length: 4 }).map((_, i) => (
                   <tr key={i} className="border-b border-gray-100 animate-pulse">
                     <td className="p-4"><div className="h-4 bg-gray-200 rounded w-24"></div></td>
