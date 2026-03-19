@@ -264,7 +264,7 @@ const Reports: React.FC = () => {
         </p>
       </div>
 
-      {/* Summary cards – quick stats */}
+      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="border-gray-200 shadow-sm rounded-2xl">
           <CardContent className="p-6">
