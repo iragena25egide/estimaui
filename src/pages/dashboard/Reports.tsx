@@ -400,7 +400,7 @@ const Reports: React.FC = () => {
           )}
         </div>
 
-        {/* Sorting dropdown and direction toggle */}
+        
         <div className="flex gap-2 items-center">
           <Select value={sortBy} onValueChange={(val: "date" | "version") => setSortBy(val)}>
             <SelectTrigger className="w-32 border-gray-200 rounded-xl">
