@@ -559,7 +559,7 @@ const Reports: React.FC = () => {
                           </Tooltip>
                         </TooltipProvider>
 
-                        {/* Regenerate */}
+                        
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
