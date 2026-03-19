@@ -475,7 +475,7 @@ const Reports: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                // Actual data rows
+               
                 sortedAndFilteredReports.map((report) => (
                   <tr
                     key={report.id}
