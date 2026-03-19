@@ -45,7 +45,7 @@ import ReportService from "@/services/reportService";
 
 const SAMPLE_REPORT_URL = "/samples/report-sample.pdf";
 
-// TypeScript interface for a Report object, matching the backend model
+
 interface Report {
   id: string;
   projectId: string;
