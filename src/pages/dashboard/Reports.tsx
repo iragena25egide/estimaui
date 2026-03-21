@@ -53,7 +53,7 @@ interface Report {
   totalAmount: number;
   status: string;
   filePath?: string;      // optional, may not be available immediately
-  createdAt?: string;     // ISO date string
+  createdAt?: string;    
 }
 
 const Reports: React.FC = () => {
