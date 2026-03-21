@@ -74,14 +74,14 @@ const Reports: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc"); // sort direction
   const [sendModalOpen, setSendModalOpen] = useState(false);          // modal visibility for sending email
   const [selectedReportForSend, setSelectedReportForSend] = useState<Report | null>(null); // report to send
-  const [sendEmail, setSendEmail] = useState("");                    // email address for sending
+  const [sendEmail, setSendEmail] = useState("");                    
 
 
   useEffect(() => {
     const loadProjects = async () => {
       setLoading((prev) => ({ ...prev, projects: true }));
       try {
-        const data = await ReportService.getProjects();   // fetch project list from API
+        const data = await ReportService.getProjects();   
         setProjects(data || []);
         if (data && data.length > 0) {
           setSelectedProject(data[0].id);                
