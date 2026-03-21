@@ -52,7 +52,7 @@ interface Report {
   version: number;
   totalAmount: number;
   status: string;
-  filePath?: string;      // optional, may not be available immediately
+  filePath?: string;      
   createdAt?: string;    
 }
 
