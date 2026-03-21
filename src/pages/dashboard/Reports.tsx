@@ -152,21 +152,7 @@ const Reports: React.FC = () => {
   };
 
   
-  const deleteReport = async (reportId: string) => {
-    if (!confirm("Are you sure you want to delete this report? This action cannot be undone."))
-      return;
-    setLoading((prev) => ({ ...prev, deleting: true }));
-    try {
-      await ReportService.delete(reportId);
-      toast.success("Report deleted");
-      loadReports();
-    } catch (error: any) {
-      const message = error.serverMessage || "Failed to delete report";
-      toast.error(message);
-    } finally {
-      setLoading((prev) => ({ ...prev, deleting: false }));
-    }
-  };
+
 
  
   const openSendModal = (report: Report) => {
