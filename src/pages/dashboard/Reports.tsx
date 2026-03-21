@@ -68,7 +68,7 @@ const Reports: React.FC = () => {
     sending: false,
     deleting: false,
   });
-  const [search, setSearch] = useState("");                     // search input for filtering by status
+  const [search, setSearch] = useState("");                    
   const [previewReport, setPreviewReport] = useState<Report | null>(null); // report being previewed in modal
   const [sortBy, setSortBy] = useState<"date" | "version">("date");   // sort criterion
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc"); // sort direction
