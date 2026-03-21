@@ -161,7 +161,7 @@ const Reports: React.FC = () => {
     setSendModalOpen(true);
   };
 
-  // ---------- Send the selected report to the entered email address ----------
+  
   const handleSendEmail = async () => {
     if (!selectedReportForSend) return;
     if (!sendEmail || !/^\S+@\S+\.\S+$/.test(sendEmail)) {
