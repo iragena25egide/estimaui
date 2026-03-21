@@ -72,7 +72,7 @@ const Reports: React.FC = () => {
   const [previewReport, setPreviewReport] = useState<Report | null>(null); // report being previewed in modal
   const [sortBy, setSortBy] = useState<"date" | "version">("date");   // sort criterion
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc"); // sort direction
-  const [sendModalOpen, setSendModalOpen] = useState(false);          // modal visibility for sending email
+  const [sendModalOpen, setSendModalOpen] = useState(false);          
   const [selectedReportForSend, setSelectedReportForSend] = useState<Report | null>(null); // report to send
   const [sendEmail, setSendEmail] = useState("");                    
 
