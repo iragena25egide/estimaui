@@ -60,7 +60,7 @@ const Reports: React.FC = () => {
  
   const [projects, setProjects] = useState<any[]>([]);          
   const [selectedProject, setSelectedProject] = useState<string>(""); 
-  const [reports, setReports] = useState<Report[]>([]);        // reports for the selected project
+  const [reports, setReports] = useState<Report[]>([]);        
   const [loading, setLoading] = useState({                      // individual loading states
     projects: false,
     reports: false,
