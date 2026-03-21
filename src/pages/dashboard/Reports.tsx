@@ -170,7 +170,7 @@ const Reports: React.FC = () => {
     }
     setLoading((prev) => ({ ...prev, sending: true }));
     try {
-      await ReportService.send(selectedReportForSend.id); // backend may accept email as parameter
+      await ReportService.send(selectedReportForSend.id); 
       toast.success(`Report sent to ${sendEmail}`);
       setSendModalOpen(false);
       setSelectedReportForSend(null);
