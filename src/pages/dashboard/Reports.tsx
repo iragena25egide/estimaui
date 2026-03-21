@@ -69,7 +69,7 @@ const Reports: React.FC = () => {
     deleting: false,
   });
   const [search, setSearch] = useState("");                    
-  const [previewReport, setPreviewReport] = useState<Report | null>(null); // report being previewed in modal
+  const [previewReport, setPreviewReport] = useState<Report | null>(null); 
   const [sortBy, setSortBy] = useState<"date" | "version">("date");   // sort criterion
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc"); // sort direction
   const [sendModalOpen, setSendModalOpen] = useState(false);          
