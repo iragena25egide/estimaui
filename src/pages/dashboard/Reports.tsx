@@ -59,7 +59,7 @@ interface Report {
 const Reports: React.FC = () => {
  
   const [projects, setProjects] = useState<any[]>([]);          
-  const [selectedProject, setSelectedProject] = useState<string>(""); // currently selected project ID
+  const [selectedProject, setSelectedProject] = useState<string>(""); 
   const [reports, setReports] = useState<Report[]>([]);        // reports for the selected project
   const [loading, setLoading] = useState({                      // individual loading states
     projects: false,
