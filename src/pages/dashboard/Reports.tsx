@@ -84,7 +84,7 @@ const Reports: React.FC = () => {
         const data = await ReportService.getProjects();   // fetch project list from API
         setProjects(data || []);
         if (data && data.length > 0) {
-          setSelectedProject(data[0].id);                // auto-select first project
+          setSelectedProject(data[0].id);                
         }
       } catch (error) {
         toast.error("Failed to load projects");
