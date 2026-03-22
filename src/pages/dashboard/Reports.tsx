@@ -71,7 +71,7 @@ const Reports: React.FC = () => {
   const [search, setSearch] = useState("");                    
   const [previewReport, setPreviewReport] = useState<Report | null>(null); 
   const [sortBy, setSortBy] = useState<"date" | "version">("date");   
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc"); // sort direction
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc"); 
   const [sendModalOpen, setSendModalOpen] = useState(false);          
   const [selectedReportForSend, setSelectedReportForSend] = useState<Report | null>(null); 
   const [sendEmail, setSendEmail] = useState("");                    
