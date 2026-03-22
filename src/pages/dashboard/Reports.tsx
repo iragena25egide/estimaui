@@ -561,20 +561,7 @@ const Reports: React.FC = () => {
                         </TooltipProvider>
 
                        
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                onClick={() => deleteReport(report.id)}
-                                disabled={loading.deleting}
-                                className="text-red-600 hover:text-red-800 disabled:opacity-50"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>Delete</TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                        
                       </div>
                     </td>
                   </tr>
