@@ -36,6 +36,9 @@ interface AuthContextType {
   logout: () => void
   isAuthenticated: boolean
   setAuthData: (token: string, user: User) => void
+  isAdmin: boolean
+  isEstimator: boolean
+  isViewer: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -280,6 +283,9 @@ const loginWithGoogle = async (googleToken: string) => {
         loginWithGoogle,
         isAuthenticated: !!token,
         setAuthData,
+        isAdmin: user?.role === "ADMIN",
+        isEstimator: user?.role === "ESTIMATOR",
+        isViewer: user?.role === "VIEWER",
       }}
     >
       {children}
