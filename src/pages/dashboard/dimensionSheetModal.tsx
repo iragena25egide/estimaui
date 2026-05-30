@@ -163,8 +163,8 @@ const DimensionSheetModal: React.FC<DimensionSheetModalProps> = ({
       await DimensionSheetService.delete(id);
       toast.success("Dimension sheet deleted");
       loadSheets();
-    } catch (err) {
-      toast.error("Failed to delete dimension sheet");
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to delete dimension sheet");
     }
   };
 
