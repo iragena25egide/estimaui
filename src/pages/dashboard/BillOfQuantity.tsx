@@ -7,11 +7,13 @@ import {
   X,
   FolderOpen,
   Calculator,
+  FileSpreadsheet,
 } from "lucide-react";
 import BoqService from "@/services/BoqService";
 import DrawingService from "@/services/drawingService";
 import { toast } from "sonner"; 
 import RateLibraryService from "@/services/rateLibraryService";
+import ReportService from "@/services/reportService";
 
 const BoqItems: React.FC = () => {
   const [projects, setProjects] = useState<any[]>([]);
@@ -21,6 +23,27 @@ const BoqItems: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [exportLoading, setExportLoading] = useState(false);
+
+  const handleExportExcel = async () => {
+    if (!selectedProjectId) return;
+    const project = projects.find(p => p.projectId === selectedProjectId);
+    const projectName = project ? project.projectName : "boq-estimate";
+    
+    try {
+      setExportLoading(true);
+      toast?.loading("Generating Excel sheet...");
+      await ReportService.downloadExcel(selectedProjectId, `${projectName}-BOQ.xlsx`);
+      toast?.dismiss();
+      toast?.success("Excel sheet exported successfully!");
+    } catch (error) {
+      console.error("Export Excel error", error);
+      toast?.dismiss();
+      toast?.error("Failed to export Excel sheet");
+    } finally {
+      setExportLoading(false);
+    }
+  };
 
   // Rate Autocomplete states
   const [rateSearchResults, setRateSearchResults] = useState<any[]>([]);
@@ -165,9 +188,9 @@ const BoqItems: React.FC = () => {
       await BoqService.delete(id);
       toast?.success("BOQ item deleted");
       loadItems();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Delete error", error);
-      toast?.error("Delete failed");
+      toast?.error(error.response?.data?.message || "Delete failed");
     }
   };
 
@@ -242,6 +265,19 @@ const BoqItems: React.FC = () => {
               ))}
             </select>
           </div>
+
+          <button
+            onClick={handleExportExcel}
+            disabled={!selectedProjectId || exportLoading}
+            className={`px-5 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 transition-all shadow-sm ${
+              selectedProjectId && !exportLoading
+                ? "bg-emerald-600 hover:bg-emerald-700 text-white hover:shadow-md cursor-pointer"
+                : "bg-gray-100 text-gray-400 cursor-not-allowed"
+            }`}
+          >
+            <FileSpreadsheet className="w-4 h-4" />
+            {exportLoading ? "Exporting..." : "Export Excel"}
+          </button>
 
           <button
             onClick={() => setOpen(true)}
