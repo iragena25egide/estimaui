@@ -3,6 +3,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "sonner"; 
 import TopLoader from "@/loader";
 import PageNotFound from "@/notFound";
+import { useAuth } from "@/context/AuthContext";
+import Preloader from "@/components/ui/Preloader";
 
 const AuthPage = lazy(() => import("@/pages/AuthPage"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
@@ -21,8 +23,15 @@ const Reports = lazy(() => import("@/pages/dashboard/Reports"));
 const Teams = lazy(() => import("@/pages/dashboard/Teams"));
 const SpecificationRegister = lazy(() => import("@/pages/dashboard/SpecificationRegister"));
 const Settings = lazy(() => import("@/pages/dashboard/Settings"));
+const InvitePage = lazy(() => import("@/pages/InvitePage"));
 
 const App: React.FC = () => {
+  const { initialLoading } = useAuth();
+
+  if (initialLoading) {
+    return <Preloader />;
+  }
+
   return (
     <Suspense fallback={null}>
       <TopLoader />
@@ -32,6 +41,7 @@ const App: React.FC = () => {
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
         <Route path="/auth" element={<AuthPage />} />
+        <Route path="/invite" element={<InvitePage />} />
 
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />
