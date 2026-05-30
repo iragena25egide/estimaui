@@ -3,6 +3,7 @@ import ProjectService from "../../services/projectService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { useAuth } from "../../context/AuthContext";
 import {
   Dialog,
   DialogContent,
@@ -118,6 +119,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, la
 };
 
 const Projects: React.FC = () => {
+  const { isViewer } = useAuth();
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -228,13 +230,15 @@ const Projects: React.FC = () => {
             Manage your estimation projects
           </p>
         </div>
-        <Button
-          onClick={() => setOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-sm"
-        >
-          <Plus className="w-4 h-4" />
-          New Project
-        </Button>
+        {!isViewer && (
+          <Button
+            onClick={() => setOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-sm"
+          >
+            <Plus className="w-4 h-4" />
+            New Project
+          </Button>
+        )}
       </div>
 
       
@@ -311,22 +315,26 @@ const Projects: React.FC = () => {
                       </span>
                     </td>
                     <td className="p-4">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => handleEdit(p)}
-                          className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
-                          title="Edit"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(p.id)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete"
-                        >
-                          <Trash className="w-4 h-4" />
-                        </button>
-                      </div>
+                      {isViewer ? (
+                        <span className="text-gray-400 font-medium text-xs bg-gray-50 px-2 py-1 rounded border">Read-only</span>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleEdit(p)}
+                            className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                            title="Edit"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(p.id)}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Delete"
+                          >
+                            <Trash className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))
