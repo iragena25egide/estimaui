@@ -12,6 +12,13 @@ interface DashboardCardProps {
   loading?: boolean;
 }
 
+const colorMap: Record<string, string> = {
+  blue: "bg-blue-50/60 border-blue-100/80 hover:border-blue-200",
+  green: "bg-emerald-50/60 border-emerald-100/80 hover:border-emerald-200",
+  amber: "bg-amber-50/60 border-amber-100/80 hover:border-amber-200",
+  purple: "bg-purple-50/60 border-purple-100/80 hover:border-purple-200",
+};
+
 const DashboardCard: React.FC<DashboardCardProps> = ({
   title,
   value,
@@ -21,9 +28,11 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
   change,
   loading = false,
 }) => {
+  const cardBgClass = colorMap[color] || "bg-white border-slate-100 hover:border-slate-200";
+
   if (loading) {
     return (
-      <div className={`${color} rounded-2xl shadow-sm border border-slate-100 p-4 transition-all hover:shadow-md`}>
+      <div className={`${cardBgClass} rounded-2xl shadow-sm border p-4 transition-all hover:shadow-md`}>
         <div className="flex items-start justify-between mb-3">
           <Skeleton className="w-10 h-10 rounded-xl bg-slate-200" />
           <Skeleton className="w-12 h-4 rounded" />
@@ -35,7 +44,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
   }
 
   return (
-    <div className={`${color} rounded-2xl shadow-sm border border-slate-100 p-6 transition-all hover:shadow-md`}>
+    <div className={`${cardBgClass} rounded-2xl shadow-sm border p-6 transition-all hover:shadow-md`}>
       <div className="flex items-start justify-between mb-4">
         <div className={`${iconColor} p-3 rounded-xl bg-white/50`}>{icon}</div>
         {change && (
