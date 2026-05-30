@@ -170,8 +170,8 @@ const RateAnalysis: React.FC = () => {
       await RateAnalysisService.delete(id);
       toast.success("Record deleted");
       loadItems();
-    } catch (error) {
-      toast.error("Delete failed");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Delete failed");
     }
   };
 
