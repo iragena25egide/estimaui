@@ -139,8 +139,8 @@ const SpecificationRegister: React.FC = () => {
       await SpecificationService.delete(id);
       toast.success("Specification deleted");
       loadSpecs();
-    } catch (error) {
-      toast.error("Delete failed");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Delete failed");
     }
   };
 
