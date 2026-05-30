@@ -28,6 +28,7 @@ interface AuthContextType {
   user: User | null
   token: string | null
   loading: boolean
+  initialLoading: boolean
   error: string | null
   login: (email: string, password: string) => Promise<void>
   startSignup: (data: SignupStep1Data) => Promise<void>
@@ -47,29 +48,47 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 const API_BASE = "http://localhost:3000/api/estimaApp"
 
+const setTokenCookie = (token: string) => {
+  document.cookie = `authToken=${token}; path=/; max-age=${3600 * 24 * 7}; SameSite=Lax; Secure`;
+};
+
+const clearTokenCookie = () => {
+  document.cookie = "authToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+};
+
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [initialLoading, setInitialLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-  const savedToken = localStorage.getItem("authToken")
-  const savedUser = localStorage.getItem("user")
+    const savedToken = localStorage.getItem("authToken")
+    const savedUser = localStorage.getItem("user")
 
-  if (savedToken && savedUser) {
-    try {
-      const parsedUser = JSON.parse(savedUser)
-      setToken(savedToken)
-      setUser(parsedUser)
-    } catch {
-      localStorage.removeItem("user")
-      localStorage.removeItem("authToken")
+    if (savedToken && savedUser) {
+      try {
+        const parsedUser = JSON.parse(savedUser)
+        setToken(savedToken)
+        setUser(parsedUser)
+        // Sync cookie just in case it got cleared
+        setTokenCookie(savedToken)
+      } catch {
+        localStorage.removeItem("user")
+        localStorage.removeItem("authToken")
+        clearTokenCookie()
+      }
     }
-  }
-}, [])
+    
+    // Smooth premium preloader reveal delay of 1200ms
+    const timer = setTimeout(() => {
+      setInitialLoading(false)
+    }, 1200)
+    return () => clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     if (token && user) {
@@ -96,7 +115,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, [user, token]);
 
-  
   const login = async (email: string, password: string) => {
     setLoading(true)
     setError(null)
@@ -110,12 +128,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
       const data = await res.json()
       if (!res.ok) throw new Error(data.message)
-
-      // setToken(data.access_token)
-      // setUser(data.user)
-
-      // localStorage.setItem("authToken", data.access_token)
-      // localStorage.setItem("user", JSON.stringify(data.user))
     } catch (err: any) {
       setError(err.message)
       throw err
@@ -124,38 +136,31 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   }
 
-
   const verifyLoginOtp = async (email: string, otp: string) => {
-  setLoading(true)
-  setError(null)
+    setLoading(true)
+    setError(null)
 
-  try {
-    const res = await fetch(`${API_BASE}/auth/verify-otp`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, otp }),
-    })
+    try {
+      const res = await fetch(`${API_BASE}/auth/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
+      })
 
-    const data = await res.json()
-    if (!res.ok) throw new Error(data.message)
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message)
 
-    
-    setToken(data.token)
-    
-
-    localStorage.setItem("authToken", data.token)
-    
-
-  } catch (err: any) {``
-    setError(err.message)
-    throw err
-  } finally {
-    setLoading(false)
+      setToken(data.token)
+      localStorage.setItem("authToken", data.token)
+      setTokenCookie(data.token)
+    } catch (err: any) {
+      setError(err.message)
+      throw err
+    } finally {
+      setLoading(false)
+    }
   }
-}
 
-
-  
   const startSignup = async (data: SignupStep1Data) => {
     setLoading(true)
     setError(null)
@@ -179,7 +184,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   }
 
-  
   const verifyOtp = async (email: string, otp: string) => {
     setLoading(true)
     setError(null)
@@ -201,90 +205,57 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   }
 
-  // ================= STEP 3: COMPLETE SIGNUP =================
-  // const completeSignup = async (email: string, password: string) => {
-  //   setLoading(true)
-  //   setError(null)
-
-  //   try {
-  //     const res = await fetch(`${API_BASE}/users/complete-signup`, {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ email, password }),
-  //     })
-
-  //     const result = await res.json()
-  //     if (!res.ok) throw new Error(result.message)
-
-  //     setToken(result.access_token)
-  //     setUser(result.user)
-
-  //     localStorage.setItem("authToken", result.access_token)
-  //     localStorage.setItem("user", JSON.stringify(result.user))
-  //     localStorage.removeItem("pendingEmail")
-  //   } catch (err: any) {
-  //     setError(err.message)
-  //     throw err
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
-
-
   const completeSignup = async (email: string, password: string) => {
-  setLoading(true)
-  setError(null)
+    setLoading(true)
+    setError(null)
 
-  try {
-    const res = await fetch(`${API_BASE}/users/complete-signup`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    })
+    try {
+      const res = await fetch(`${API_BASE}/users/complete-signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      })
 
-    const result = await res.json()
-    if (!res.ok) throw new Error(result.message)
-
-   
-  } catch (err: any) {
-    setError(err.message || "Signup failed. Please try again.")
-  } finally {
-    setLoading(false)
+      const result = await res.json()
+      if (!res.ok) throw new Error(result.message)
+    } catch (err: any) {
+      setError(err.message || "Signup failed. Please try again.")
+    } finally {
+      setLoading(false)
+    }
   }
-}
 
+  const loginWithGoogle = async (googleToken: string) => {
+    setLoading(true)
+    setError(null)
 
-const loginWithGoogle = async (googleToken: string) => {
-  setLoading(true)
-  setError(null)
+    try {
+      const res = await fetch(`${API_BASE}/auth/google`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: googleToken }),
+      })
 
-  try {
-    const res = await fetch(`${API_BASE}/auth/google`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: googleToken }),
-    })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message)
 
-    const data = await res.json()
-    if (!res.ok) throw new Error(data.message)
-
-    setToken(data.token)
-    
-
-    localStorage.setItem("authToken", data.token)
-    
-  } catch (err: any) {
-    setError(err.message || "Google login failed")
-    throw err
-  } finally {
-    setLoading(false)
+      setToken(data.token)
+      localStorage.setItem("authToken", data.token)
+      setTokenCookie(data.token)
+    } catch (err: any) {
+      setError(err.message || "Google login failed")
+      throw err
+    } finally {
+      setLoading(false)
+    }
   }
-}
+
   const logout = () => {
     setUser(null)
     setToken(null)
     setError(null)
     localStorage.clear()
+    clearTokenCookie()
   }
 
   const setAuthData = (token: string, user: User) => {
@@ -292,6 +263,7 @@ const loginWithGoogle = async (googleToken: string) => {
     setUser(user)
     localStorage.setItem("authToken", token)
     localStorage.setItem("user", JSON.stringify(user))
+    setTokenCookie(token)
   }
 
   return (
@@ -300,6 +272,7 @@ const loginWithGoogle = async (googleToken: string) => {
         user,
         token,
         loading,
+        initialLoading,
         error,
         login,
         startSignup,
