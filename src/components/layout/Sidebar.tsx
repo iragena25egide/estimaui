@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Home, FileText, ClipboardList, Users, Settings, Box, MapPin, Layers, Archive, Grid, Truck, Hammer, FilePlus, File, X } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 const NavItem: React.FC<{ to: string; icon: React.ReactNode; label: string }> = ({ to, icon, label }) => {
   const location = useLocation();
@@ -19,6 +20,7 @@ const NavItem: React.FC<{ to: string; icon: React.ReactNode; label: string }> = 
 };
 
 const Sidebar: React.FC<{ mobileOpen?: boolean; onClose?: () => void }> = ({ mobileOpen = false, onClose }) => {
+  const { isViewer } = useAuth();
   return (
     <>
      
@@ -44,7 +46,7 @@ const Sidebar: React.FC<{ mobileOpen?: boolean; onClose?: () => void }> = ({ mob
         <NavItem to="/dashboard/material-takeoff" icon={<Archive className="w-5 h-5" />} label="Material Take Off" />
         <NavItem to="/dashboard/rate-analysis" icon={<Grid className="w-5 h-5" />} label="Rate Analysis" />
         <NavItem to="/dashboard/reports" icon={<File className="w-5 h-5" />} label="Reports" />
-        <NavItem to="/dashboard/teams" icon={<Users className="w-5 h-5" />} label="Teams" />
+        {!isViewer && <NavItem to="/dashboard/teams" icon={<Users className="w-5 h-5" />} label="Teams" />}
         <NavItem to="/dashboard/specification-register" icon={<FilePlus className="w-5 h-5" />} label="Specification Register" />
         <NavItem to="/dashboard/settings" icon={<Settings className="w-5 h-5" />} label="Settings" />
       </nav>
@@ -83,7 +85,7 @@ const Sidebar: React.FC<{ mobileOpen?: boolean; onClose?: () => void }> = ({ mob
               <NavItem to="/dashboard/material-takeoff" icon={<Archive className="w-5 h-5" />} label="Material Take Off" />
               <NavItem to="/dashboard/rate-analysis" icon={<Grid className="w-5 h-5" />} label="Rate Analysis" />
               <NavItem to="/dashboard/reports" icon={<File className="w-5 h-5" />} label="Reports" />
-              <NavItem to="/dashboard/teams" icon={<Users className="w-5 h-5" />} label="Teams" />
+              {!isViewer && <NavItem to="/dashboard/teams" icon={<Users className="w-5 h-5" />} label="Teams" />}
               <NavItem to="/dashboard/specification-register" icon={<FilePlus className="w-5 h-5" />} label="Specification Register" />
               <NavItem to="/dashboard/settings" icon={<Settings className="w-5 h-5" />} label="Settings" />
             </nav>
