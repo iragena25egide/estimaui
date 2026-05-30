@@ -131,8 +131,8 @@ const MaterialTakeOff: React.FC = () => {
       await MaterialTakeOffService.delete(id);
       toast.success("Material deleted");
       loadItems();
-    } catch (error) {
-      toast.error("Delete failed");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Delete failed");
     }
   };
 
