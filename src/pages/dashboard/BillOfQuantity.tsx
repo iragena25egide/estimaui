@@ -11,6 +11,7 @@ import {
 import BoqService from "@/services/BoqService";
 import DrawingService from "@/services/drawingService";
 import { toast } from "sonner"; 
+import RateLibraryService from "@/services/rateLibraryService";
 
 const BoqItems: React.FC = () => {
   const [projects, setProjects] = useState<any[]>([]);
@@ -20,6 +21,42 @@ const BoqItems: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+
+  // Rate Autocomplete states
+  const [rateSearchResults, setRateSearchResults] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [lookupLoading, setLookupLoading] = useState(false);
+
+  const handleDescriptionChange = async (val: string) => {
+    setForm(prev => ({ ...prev, description: val }));
+    if (val.length > 2) {
+      try {
+        setLookupLoading(true);
+        const res = await RateLibraryService.lookup(val);
+        setRateSearchResults(res || []);
+        setShowSuggestions(true);
+      } catch (err) {
+        console.error("Lookup rate item error:", err);
+      } finally {
+        setLookupLoading(false);
+      }
+    } else {
+      setRateSearchResults([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSelectRateItem = (item: any) => {
+    setForm(prev => ({
+      ...prev,
+      description: item.description,
+      unit: item.unit,
+      materialRate: item.rate?.toString() || "0",
+      itemNo: prev.itemNo || item.code,
+    }));
+    setRateSearchResults([]);
+    setShowSuggestions(false);
+  };
 
   const [form, setForm] = useState({
     itemNo: "",
@@ -381,17 +418,38 @@ const BoqItems: React.FC = () => {
                   />
                 </div>
 
-                <div className="md:col-span-2">
+                <div className="md:col-span-2 relative">
                   <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                    Description
+                    Description / Search booklet *
                   </label>
                   <input
                     type="text"
                     value={form.description}
-                    onChange={(e) => setForm({ ...form, description: e.target.value })}
-                    placeholder="Detailed description"
+                    onChange={(e) => handleDescriptionChange(e.target.value)}
+                    onFocus={() => { if (form.description.length > 2) setShowSuggestions(true); }}
+                    onBlur={() => { setTimeout(() => setShowSuggestions(false), 200); }}
+                    placeholder="Type to search rate booklet (e.g. Concrete, plaster, brick)"
                     className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
+                  {showSuggestions && rateSearchResults.length > 0 && (
+                    <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-xl z-50 max-h-48 overflow-y-auto divide-y divide-gray-100">
+                      {rateSearchResults.map((item) => (
+                        <div
+                          key={item.id}
+                          onClick={() => handleSelectRateItem(item)}
+                          className="p-3 hover:bg-blue-50 cursor-pointer transition-colors text-left flex justify-between items-center text-sm"
+                        >
+                          <div>
+                            <span className="font-semibold text-blue-600 block text-xs">{item.code}</span>
+                            <span className="text-gray-800 font-medium">{item.description}</span>
+                          </div>
+                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded border">
+                            ${item.rate}/{item.unit}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div>
