@@ -70,6 +70,40 @@ const Reports: React.FC = () => {
   });
   const [search, setSearch] = useState("");                    
   const [previewReport, setPreviewReport] = useState<Report | null>(null); 
+  const [previewUrl, setPreviewUrl] = useState<string>("");
+  const [loadingPreview, setLoadingPreview] = useState(false);
+
+  const handlePreview = async (report: Report) => {
+    setPreviewReport(report);
+    setPreviewUrl("");
+    setLoadingPreview(true);
+    try {
+      const token = localStorage.getItem("authToken");
+      const res = await fetch(`http://localhost:3000/api/estimaApp/reports/download/${report.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (!res.ok) throw new Error("Failed to load PDF");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      setPreviewUrl(url);
+    } catch (error) {
+      toast.error("Failed to load PDF preview");
+      setPreviewReport(null);
+    } finally {
+      setLoadingPreview(false);
+    }
+  };
+
+  const closePreview = () => {
+    if (previewUrl) {
+      window.URL.revokeObjectURL(previewUrl);
+    }
+    setPreviewReport(null);
+    setPreviewUrl("");
+  };
+
   const [sortBy, setSortBy] = useState<"date" | "version">("date");   
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc"); 
   const [sendModalOpen, setSendModalOpen] = useState(false);          
@@ -494,40 +528,38 @@ const Reports: React.FC = () => {
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <button
-                                onClick={() => setPreviewReport(report)}
-                                className="text-blue-600 hover:text-blue-800 disabled:opacity-50"
-                                disabled={!report.filePath}
-                              >
-                                <Eye className="w-4 h-4" />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>Preview</TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-
-                       
-                        {report.filePath ? (
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <a
-                                  href={report.filePath}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-blue-600 hover:text-blue-800"
+                                <button
+                                  onClick={() => handlePreview(report)}
+                                  className="text-blue-600 hover:text-blue-800 disabled:opacity-50"
+                                  disabled={!report.filePath}
                                 >
-                                  <Download className="w-4 h-4" />
-                                </a>
+                                  <Eye className="w-4 h-4" />
+                                </button>
                               </TooltipTrigger>
-                              <TooltipContent>Download</TooltipContent>
+                              <TooltipContent>Preview</TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
-                        ) : (
-                          <span className="text-gray-300">
-                            <Download className="w-4 h-4" />
-                          </span>
-                        )}
+
+                         
+                          {report.filePath ? (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <button
+                                    onClick={() => ReportService.download(report.id, `report-${getProjectName(report.projectId)}-v${report.version}.pdf`)}
+                                    className="text-blue-600 hover:text-blue-800"
+                                  >
+                                    <Download className="w-4 h-4" />
+                                  </button>
+                                </TooltipTrigger>
+                                <TooltipContent>Download</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          ) : (
+                            <span className="text-gray-300">
+                              <Download className="w-4 h-4" />
+                            </span>
+                          )}
 
                         
                         <TooltipProvider>
@@ -572,9 +604,8 @@ const Reports: React.FC = () => {
         </div>
       </div>
 
-      
-      <Dialog open={!!previewReport} onOpenChange={() => setPreviewReport(null)}>
-        <DialogContent className="sm:max-w-4xl p-0 gap-0 rounded-2xl overflow-hidden h-[80vh]">
+      <Dialog open={!!previewReport} onOpenChange={(open) => { if (!open) closePreview(); }}>
+        <DialogContent className="sm:max-w-4xl p-0 gap-0 rounded-2xl overflow-hidden h-[80vh] flex flex-col">
           <DialogHeader className="p-6 border-b border-gray-200 flex flex-row items-center justify-between">
             <DialogTitle className="text-xl font-bold text-gray-900">
               Report Preview - {previewReport ? `v${previewReport.version}` : ""}
@@ -582,23 +613,27 @@ const Reports: React.FC = () => {
             <Button
               size="icon"
               variant="ghost"
-              onClick={() => setPreviewReport(null)}
+              onClick={closePreview}
               className="rounded-full"
             >
               <X className="w-5 h-5" />
             </Button>
           </DialogHeader>
-          <div className="flex-1 bg-gray-100 p-4 overflow-auto">
-            {previewReport?.filePath ? (
+          <div className="flex-1 bg-gray-100 p-4 overflow-auto min-h-[60vh] flex flex-col">
+            {loadingPreview ? (
+              <div className="flex items-center justify-center flex-1">
+                <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+              </div>
+            ) : previewUrl ? (
               <iframe
-                src={previewReport.filePath}
+                src={previewUrl}
                 title="Report Preview"
-                className="w-full h-full rounded-lg border border-gray-200"
+                className="w-full h-full min-h-[60vh] rounded-lg border border-gray-200"
               />
             ) : (
               <div className="flex items-center justify-center h-full text-gray-500">
                 <FileText className="w-12 h-12 mr-2" />
-                <span>No preview available. The file may not be generated yet.</span>
+                <span>No preview available.</span>
               </div>
             )}
           </div>

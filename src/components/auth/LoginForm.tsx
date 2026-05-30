@@ -15,7 +15,7 @@ type LoginStep = "credentials" | "otp"
 const LoginForm: React.FC<LoginFormProps> = ({ switchToSignup }) => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const { login: login,  loading: authLoading, error: authError,verifyLoginOtp,loginWithGoogle } = useAuth()
+  const { login: login,  loading: authLoading, error: authError,verifyLoginOtp,loginWithGoogle,setAuthData } = useAuth()
   
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -36,14 +36,8 @@ useEffect(() => {
     try {
       const parsedUser = JSON.parse(decodeURIComponent(user))
 
-      
-      setToken(token)
-      setUser(parsedUser)
+      setAuthData(token, parsedUser)
 
-      localStorage.setItem("authToken", token)
-      localStorage.setItem("user", JSON.stringify(parsedUser))
-
-      
       window.history.replaceState({}, document.title, "/auth")
 
       navigate("/dashboard", { replace: true })
@@ -51,7 +45,7 @@ useEffect(() => {
       setError("Google login failed")
     }
   }
-}, [searchParams, navigate])
+}, [searchParams, navigate, setAuthData])
   
 
   const handleVerifyOTP = async () => {
@@ -360,11 +354,4 @@ useEffect(() => {
 }
 
 export default LoginForm
-function setToken(token: string) {
-  throw new Error("Function not implemented.")
-}
-
-function setUser(parsedUser: any) {
-  throw new Error("Function not implemented.")
-}
 

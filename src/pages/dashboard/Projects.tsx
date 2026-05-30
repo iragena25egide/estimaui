@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ProjectService from "../../services/projectService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +18,104 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus, Trash, Edit, Search, X, FolderOpen } from "lucide-react";
+
+interface CustomDatePickerProps {
+  value: string;
+  onChange: (value: string) => void;
+  label: string;
+}
+
+const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, label }) => {
+  const parsedDate = value ? new Date(value) : null;
+  const currentDay = parsedDate && !isNaN(parsedDate.getTime()) ? parsedDate.getDate().toString() : "";
+  const currentMonth = parsedDate && !isNaN(parsedDate.getTime()) ? (parsedDate.getMonth() + 1).toString() : "";
+  const currentYear = parsedDate && !isNaN(parsedDate.getTime()) ? parsedDate.getFullYear().toString() : "";
+
+  const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
+  const months = [
+    { label: "January", value: "1" },
+    { label: "February", value: "2" },
+    { label: "March", value: "3" },
+    { label: "April", value: "4" },
+    { label: "May", value: "5" },
+    { label: "June", value: "6" },
+    { label: "July", value: "7" },
+    { label: "August", value: "8" },
+    { label: "September", value: "9" },
+    { label: "October", value: "10" },
+    { label: "November", value: "11" },
+    { label: "December", value: "12" }
+  ];
+  const currentYr = new Date().getFullYear();
+  const years = Array.from({ length: 30 }, (_, i) => (currentYr - 5 + i).toString());
+
+  const handleDateChange = (d: string, m: string, y: string) => {
+    if (d && m && y) {
+      const paddedDay = d.padStart(2, '0');
+      const paddedMonth = m.padStart(2, '0');
+      onChange(`${y}-${paddedMonth}-${paddedDay}`);
+    } else {
+      onChange("");
+    }
+  };
+
+  return (
+    <div className="space-y-1">
+      <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">
+        {label}
+      </label>
+      <div className="grid grid-cols-3 gap-2">
+        <Select
+          value={currentDay}
+          onValueChange={(val) => handleDateChange(val, currentMonth, currentYear)}
+        >
+          <SelectTrigger className="border-gray-200 rounded-lg">
+            <SelectValue placeholder="Day" />
+          </SelectTrigger>
+          <SelectContent>
+            {days.map((d) => (
+              <SelectItem key={d} value={d}>
+                {d}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={currentMonth}
+          onValueChange={(val) => handleDateChange(currentDay, val, currentYear)}
+        >
+          <SelectTrigger className="border-gray-200 rounded-lg">
+            <SelectValue placeholder="Month" />
+          </SelectTrigger>
+          <SelectContent>
+            {months.map((m) => (
+              <SelectItem key={m.value} value={m.value}>
+                {m.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={currentYear}
+          onValueChange={(val) => handleDateChange(currentDay, currentMonth, val)}
+        >
+          <SelectTrigger className="border-gray-200 rounded-lg">
+            <SelectValue placeholder="Year" />
+          </SelectTrigger>
+          <SelectContent>
+            {years.map((y) => (
+              <SelectItem key={y} value={y}>
+                {y}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+  );
+};
 
 const Projects: React.FC = () => {
   const [projects, setProjects] = useState<any[]>([]);
@@ -55,13 +154,15 @@ const Projects: React.FC = () => {
     try {
       if (editingId) {
         await ProjectService.updateProject(editingId, form);
+        toast.success("Project updated successfully!");
       } else {
         await ProjectService.createProject(form);
+        toast.success("Project created successfully!");
       }
       resetForm();
       loadProjects();
-    } catch (error) {
-      console.error("Save error", error);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to save project. Please try again.");
     }
   };
 
@@ -69,9 +170,10 @@ const Projects: React.FC = () => {
     if (!confirm("Delete project?")) return;
     try {
       await ProjectService.deleteProject(id);
+      toast.success("Project deleted successfully!");
       loadProjects();
-    } catch (error) {
-      console.error("Delete error", error);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to delete project.");
     }
   };
 
@@ -318,29 +420,17 @@ const Projects: React.FC = () => {
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                  Start Date
-                </label>
-                <Input
-                  type="date"
-                  value={form.startDate}
-                  onChange={(e) => setForm({ ...form, startDate: e.target.value })}
-                  className="border-gray-200 rounded-lg"
-                />
-              </div>
+              <CustomDatePicker
+                label="Start Date"
+                value={form.startDate}
+                onChange={(val) => setForm({ ...form, startDate: val })}
+              />
 
-              <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                  Completion Date
-                </label>
-                <Input
-                  type="date"
-                  value={form.completionDate}
-                  onChange={(e) => setForm({ ...form, completionDate: e.target.value })}
-                  className="border-gray-200 rounded-lg"
-                />
-              </div>
+              <CustomDatePicker
+                label="Completion Date"
+                value={form.completionDate}
+                onChange={(val) => setForm({ ...form, completionDate: val })}
+              />
 
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">

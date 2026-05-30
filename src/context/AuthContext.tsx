@@ -35,6 +35,7 @@ interface AuthContextType {
   verifyLoginOtp: (email: string, otp: string) => Promise<void>
   logout: () => void
   isAuthenticated: boolean
+  setAuthData: (token: string, user: User) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -256,6 +257,13 @@ const loginWithGoogle = async (googleToken: string) => {
     localStorage.clear()
   }
 
+  const setAuthData = (token: string, user: User) => {
+    setToken(token)
+    setUser(user)
+    localStorage.setItem("authToken", token)
+    localStorage.setItem("user", JSON.stringify(user))
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -271,6 +279,7 @@ const loginWithGoogle = async (googleToken: string) => {
         logout,
         loginWithGoogle,
         isAuthenticated: !!token,
+        setAuthData,
       }}
     >
       {children}

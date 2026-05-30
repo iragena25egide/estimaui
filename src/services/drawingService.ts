@@ -153,11 +153,11 @@ class DrawingService {
 }
 
 static async delete(id: string) {
-  return API.delete(`/drawings/${id}`);
+  return API.delete(`/drawing/${id}`);
 }
 
 static async update(id: string, data: any) {
-  return API.patch(`/drawings/${id}`, data);
+  return API.patch(`/drawing/${id}`, data);
 }
 
 }
