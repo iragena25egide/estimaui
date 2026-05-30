@@ -43,11 +43,21 @@ const CostBreakdownChart: React.FC<CostBreakdownChartProps> = ({ data }) => {
           },
           generateLabels: (chart: any) => {
             const data = chart.data;
-            return data.labels.map((label: string, index: number) => ({
-              text: `${label}: ${data.datasets[0].data[index]}%`,
-              fillStyle: data.datasets[0].backgroundColor[index],
-              index,
-            }));
+            const total = data.datasets[0].data.reduce((sum: number, val: number) => sum + val, 0);
+            return data.labels.map((label: string, index: number) => {
+              const val = data.datasets[0].data[index] || 0;
+              const percentage = total > 0 ? ((val / total) * 100).toFixed(1) : "0.0";
+              const formattedVal = val.toLocaleString(undefined, {
+                style: "currency",
+                currency: "USD",
+                maximumFractionDigits: 0,
+              });
+              return {
+                text: `${label}: ${formattedVal} (${percentage}%)`,
+                fillStyle: data.datasets[0].backgroundColor[index],
+                index,
+              };
+            });
           },
         },
       },
