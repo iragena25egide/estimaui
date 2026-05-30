@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/select";
 import DrawingService from "@/services/drawingService";
 import DimensionSheetModal from "./dimensionSheetModal";
+import { useAuth } from "../../context/AuthContext";
 
 interface CustomDatePickerProps {
   value: string;
@@ -158,6 +159,7 @@ const getFileTypeFromFile = (file: File): string => {
 };
 
 const Drawings: React.FC = () => {
+  const { isViewer } = useAuth();
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   const [drawings, setDrawings] = useState<any[]>([]);
@@ -294,13 +296,15 @@ const Drawings: React.FC = () => {
             Manage project drawings and IFC files
           </p>
         </div>
-        <Button
-          onClick={() => setOpenForm(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-sm"
-        >
-          <Plus className="w-4 h-4" />
-          Add Drawing
-        </Button>
+        {!isViewer && (
+          <Button
+            onClick={() => setOpenForm(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-sm"
+          >
+            <Plus className="w-4 h-4" />
+            Add Drawing
+          </Button>
+        )}
       </div>
 
       
@@ -343,12 +347,14 @@ const Drawings: React.FC = () => {
                 <tr>
                   <td colSpan={8} className="text-center py-12 text-gray-500">
                     No drawings found.{" "}
-                    <button
-                      onClick={() => setOpenForm(true)}
-                      className="text-blue-600 hover:underline font-medium"
-                    >
-                      Add your first drawing
-                    </button>
+                    {!isViewer && (
+                      <button
+                        onClick={() => setOpenForm(true)}
+                        className="text-blue-600 hover:underline font-medium"
+                      >
+                        Add your first drawing
+                      </button>
+                    )}
                   </td>
                 </tr>
               ) : (
@@ -401,24 +407,30 @@ const Drawings: React.FC = () => {
                         >
                           <Eye className="w-4 h-4" />
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleEdit(d)}
-                          className="text-amber-600 hover:bg-amber-50 rounded-lg"
-                          title="Edit"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleDelete(d.id)}
-                          className="text-red-600 hover:bg-red-50 rounded-lg"
-                          title="Delete"
-                        >
-                          <Trash className="w-4 h-4" />
-                        </Button>
+                        {!isViewer ? (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleEdit(d)}
+                              className="text-amber-600 hover:bg-amber-50 rounded-lg"
+                              title="Edit"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleDelete(d.id)}
+                              className="text-red-600 hover:bg-red-50 rounded-lg"
+                              title="Delete"
+                            >
+                              <Trash className="w-4 h-4" />
+                            </Button>
+                          </>
+                        ) : (
+                          <span className="text-gray-400 font-medium text-xs bg-gray-50 px-2 py-1 rounded border">Read-only</span>
+                        )}
                       </div>
                     </td>
                   </tr>
