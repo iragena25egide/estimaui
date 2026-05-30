@@ -106,8 +106,9 @@ const EquipmentCosts: React.FC = () => {
 
       resetForm();
       loadItems();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Save error", error);
+      toast.error(error.response?.data?.message || "Failed to save equipment cost");
     }
   };
 
