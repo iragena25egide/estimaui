@@ -176,9 +176,9 @@ const BoqItems: React.FC = () => {
 
       resetForm();
       loadItems();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Save error", error);
-      toast?.error("Save failed");
+      toast?.error(error.response?.data?.message || "Save failed");
     }
   };
 
