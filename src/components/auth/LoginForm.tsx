@@ -40,7 +40,13 @@ useEffect(() => {
 
       window.history.replaceState({}, document.title, "/auth")
 
-      navigate("/dashboard", { replace: true })
+      const pendingInviteToken = sessionStorage.getItem("pendingInviteToken")
+      if (pendingInviteToken) {
+        sessionStorage.removeItem("pendingInviteToken")
+        navigate(`/invite?token=${pendingInviteToken}`, { replace: true })
+      } else {
+        navigate("/dashboard", { replace: true })
+      }
     } catch (err: any) {
       setError("Google login failed")
     }
@@ -49,22 +55,26 @@ useEffect(() => {
   
 
   const handleVerifyOTP = async () => {
-  setError(null)
+    setError(null)
 
-  try {
-    if (!verificationCode || verificationCode.length !== 6) {
-      throw new Error("Please enter a valid 6-digit code")
+    try {
+      if (!verificationCode || verificationCode.length !== 6) {
+        throw new Error("Please enter a valid 6-digit code")
+      }
+
+      await verifyLoginOtp(email, verificationCode)
+
+      const pendingInviteToken = sessionStorage.getItem("pendingInviteToken")
+      if (pendingInviteToken) {
+        sessionStorage.removeItem("pendingInviteToken")
+        navigate(`/invite?token=${pendingInviteToken}`, { replace: true })
+      } else {
+        navigate("/dashboard")
+      }
+    } catch (err: any) {
+      setError(err.message || "OTP verification failed")
     }
-
-    await verifyLoginOtp(email, verificationCode)
-
-   
-    navigate("/dashboard")
-
-  } catch (err: any) {
-    setError(err.message || "OTP verification failed")
   }
-}
 
 
   const handleCredentialsSubmit = async (
