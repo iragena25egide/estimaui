@@ -41,6 +41,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import ReportService from "@/services/reportService";
+import { useAuth } from "../../context/AuthContext";
 
 
 const SAMPLE_REPORT_URL = "/samples/report-sample.pdf";
@@ -57,7 +58,7 @@ interface Report {
 }
 
 const Reports: React.FC = () => {
- 
+  const { isViewer } = useAuth();
   const [projects, setProjects] = useState<any[]>([]);          
   const [selectedProject, setSelectedProject] = useState<string>(""); 
   const [reports, setReports] = useState<Report[]>([]);        
@@ -309,94 +310,96 @@ const Reports: React.FC = () => {
       </div>
 
       
-      <Card className="border-gray-200 shadow-sm rounded-2xl">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-semibold flex items-center gap-2">
-            <FileText className="w-5 h-5 text-blue-600" />
-            Generate New Report
-          </CardTitle>
-          <CardDescription>
-            Select a project and click generate
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col sm:flex-row gap-4">
-            
-            <div className="flex-1 relative">
-              <FolderOpen className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <Select
-                value={selectedProject}
-                onValueChange={setSelectedProject}
-                disabled={loading.projects}
-              >
-                <SelectTrigger className="w-full pl-10 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20">
-                  <SelectValue placeholder="Choose a project" />
-                </SelectTrigger>
-                <SelectContent>
-                  {loading.projects ? (
-                    <SelectItem value="loading" disabled>
-                      Loading projects...
-                    </SelectItem>
-                  ) : projects.length === 0 ? (
-                    <SelectItem value="none" disabled>
-                      No projects available
-                    </SelectItem>
-                  ) : (
-                    projects.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        {p.name}
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-
-           
-            <div className="flex flex-wrap gap-2">
-              <Button
-                onClick={generateReport}
-                disabled={loading.generating || !selectedProject}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-sm"
-              >
-                {loading.generating ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <PlusCircle className="w-4 h-4" />
-                )}
-                {loading.generating ? "Generating..." : "Generate Report"}
-              </Button>
-
-              <Button
-                variant="outline"
-                onClick={() => window.open(SAMPLE_REPORT_URL, '_blank')}
-                className="px-6 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 border-gray-200"
-                title="View a sample report template"
-              >
-                <FileText className="w-4 h-4" />
-                Sample Report
-              </Button>
-
+      {!isViewer && (
+        <Card className="border-gray-200 shadow-sm rounded-2xl">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg font-semibold flex items-center gap-2">
+              <FileText className="w-5 h-5 text-blue-600" />
+              Generate New Report
+            </CardTitle>
+            <CardDescription>
+              Select a project and click generate
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col sm:flex-row gap-4">
               
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      onClick={loadReports}
-                      disabled={loading.reports}
-                      className="px-4 py-2.5 rounded-xl border-gray-200"
-                    >
-                      <RefreshCw className={`w-4 h-4 ${loading.reports ? 'animate-spin' : ''}`} />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Refresh reports</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <div className="flex-1 relative">
+                <FolderOpen className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Select
+                  value={selectedProject}
+                  onValueChange={setSelectedProject}
+                  disabled={loading.projects}
+                >
+                  <SelectTrigger className="w-full pl-10 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20">
+                    <SelectValue placeholder="Choose a project" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {loading.projects ? (
+                      <SelectItem value="loading" disabled>
+                        Loading projects...
+                      </SelectItem>
+                    ) : projects.length === 0 ? (
+                      <SelectItem value="none" disabled>
+                        No projects available
+                      </SelectItem>
+                    ) : (
+                      projects.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.name}
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+
+             
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  onClick={generateReport}
+                  disabled={loading.generating || !selectedProject}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shadow-sm"
+                >
+                  {loading.generating ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <PlusCircle className="w-4 h-4" />
+                  )}
+                  {loading.generating ? "Generating..." : "Generate Report"}
+                </Button>
+
+                <Button
+                  variant="outline"
+                  onClick={() => window.open(SAMPLE_REPORT_URL, '_blank')}
+                  className="px-6 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 border-gray-200"
+                  title="View a sample report template"
+                >
+                  <FileText className="w-4 h-4" />
+                  Sample Report
+                </Button>
+
+                
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        onClick={loadReports}
+                        disabled={loading.reports}
+                        className="px-4 py-2.5 rounded-xl border-gray-200"
+                      >
+                        <RefreshCw className={`w-4 h-4 ${loading.reports ? 'animate-spin' : ''}`} />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Refresh reports</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
      
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
@@ -562,35 +565,39 @@ const Reports: React.FC = () => {
                           )}
 
                         
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                onClick={() => openSendModal(report)}
-                                className="text-green-600 hover:text-green-800"
-                              >
-                                <Send className="w-4 h-4" />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>Send via email</TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                        {!isViewer && (
+                          <>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <button
+                                    onClick={() => openSendModal(report)}
+                                    className="text-green-600 hover:text-green-800"
+                                  >
+                                    <Send className="w-4 h-4" />
+                                  </button>
+                                </TooltipTrigger>
+                                <TooltipContent>Send via email</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
 
-                        
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                onClick={() => regenerateReport(report.id)}
-                                disabled={loading.generating}
-                                className="text-amber-600 hover:text-amber-800 disabled:opacity-50"
-                              >
-                                <RotateCcw className="w-4 h-4" />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>Regenerate</TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                            
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <button
+                                    onClick={() => regenerateReport(report.id)}
+                                    disabled={loading.generating}
+                                    className="text-amber-600 hover:text-amber-800 disabled:opacity-50"
+                                  >
+                                    <RotateCcw className="w-4 h-4" />
+                                  </button>
+                                </TooltipTrigger>
+                                <TooltipContent>Regenerate</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </>
+                        )}
 
                        
                         
