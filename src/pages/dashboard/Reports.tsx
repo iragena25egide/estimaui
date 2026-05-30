@@ -15,6 +15,7 @@ import {
   RotateCcw,
   ChevronDown,
   ChevronUp,
+  FileSpreadsheet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -69,7 +70,32 @@ const Reports: React.FC = () => {
     sending: false,
     deleting: false,
   });
-  const [search, setSearch] = useState("");                    
+  const [search, setSearch] = useState("");
+  const [exportLoading, setExportLoading] = useState(false);
+
+  const handleExportExcel = async () => {
+    if (!selectedProject) {
+      toast.warning("Please select a project first");
+      return;
+    }
+    const project = projects.find(p => p.id === selectedProject);
+    const projectName = project ? project.name : "boq-estimate";
+    
+    try {
+      setExportLoading(true);
+      toast.loading("Generating Excel sheet...");
+      await ReportService.downloadExcel(selectedProject, `${projectName}-BOQ.xlsx`);
+      toast.dismiss();
+      toast.success("Excel sheet exported successfully!");
+    } catch (error) {
+      console.error("Export Excel error", error);
+      toast.dismiss();
+      toast.error("Failed to export Excel sheet");
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
   const [previewReport, setPreviewReport] = useState<Report | null>(null); 
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [loadingPreview, setLoadingPreview] = useState(false);
@@ -451,6 +477,17 @@ const Reports: React.FC = () => {
           >
             <Download className="w-4 h-4 mr-2" />
             Export
+          </Button>
+
+          <Button
+            variant="outline"
+            onClick={handleExportExcel}
+            disabled={!selectedProject || exportLoading}
+            className="px-4 py-2.5 rounded-xl border-gray-200 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50 cursor-pointer"
+            title="Export to Excel"
+          >
+            <FileSpreadsheet className="w-4 h-4 mr-2 text-emerald-600" />
+            {exportLoading ? "Exporting..." : "Export Excel"}
           </Button>
         </div>
       </div>
