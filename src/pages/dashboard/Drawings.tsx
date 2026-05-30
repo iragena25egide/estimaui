@@ -228,8 +228,8 @@ const Drawings: React.FC = () => {
       await DrawingService.delete(id);
       toast.success("Drawing deleted");
       loadDrawings();
-    } catch (error) {
-      toast.error("Delete failed");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Delete failed");
     }
   };
 
