@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import DashboardCard from "@/components/dashboard/DashboardCard";
 import RecentProjects from "@/components/dashboard/RecentProjects";
 import ProjectService from "@/services/projectService";
+import CostBreakdownChart from "@/components/dashboard/CostBreakdownChart";
 
 interface DashboardStats {
   totalProjects: number;
@@ -135,12 +136,36 @@ const Dashboard: React.FC = () => {
       </div>
 
       
-      <RecentProjects  />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <RecentProjects />
+        </div>
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 flex flex-col justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Cost Valuation Breakdown
+            </h3>
+            <div className="flex items-center justify-center p-2 min-h-[220px]">
+              {loading ? (
+                <div className="w-10 h-10 rounded-full border-4 border-gray-100 border-t-blue-500 animate-spin" />
+              ) : stats.costBreakdown && stats.costBreakdown.length > 0 && stats.costBreakdown.some(c => c.value > 0) ? (
+                <div className="w-full max-w-[220px]">
+                  <CostBreakdownChart data={stats.costBreakdown} />
+                </div>
+              ) : (
+                <div className="text-center text-gray-500 py-8 text-sm">
+                  No estimation data available. Add items to a project BOQ to populate breakdown.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
 
-     
+      
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Team & Reports
+          Team & Reports Overview
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
