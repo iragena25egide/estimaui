@@ -115,9 +115,11 @@ const EquipmentCosts: React.FC = () => {
     if (!confirm("Delete this equipment cost entry?")) return;
     try {
       await EquipmentCostService.delete(id);
+      toast.success("Equipment cost deleted successfully");
       loadItems();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Delete error", error);
+      toast.error(error.response?.data?.message || "Delete failed");
     }
   };
 
