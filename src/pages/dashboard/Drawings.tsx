@@ -217,8 +217,8 @@ const Drawings: React.FC = () => {
       }
       resetForm();
       loadDrawings();
-    } catch (error) {
-      toast.error("Save failed");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Save failed");
     }
   };
 
