@@ -5,6 +5,8 @@ import React, {
   useEffect,
   ReactNode,
 } from "react"
+import { io } from "socket.io-client"
+import { toast } from "sonner"
 
 interface User {
   id: string
@@ -68,6 +70,31 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   }
 }, [])
+
+  useEffect(() => {
+    if (token && user) {
+      const socket = io("http://localhost:3000", {
+        query: { role: user.role },
+      });
+
+      socket.on("connect", () => {
+        console.log("🔌 Connected to live notifications server");
+      });
+
+      if (user.role === "ADMIN") {
+        socket.on("admin_activity_notification", (payload: any) => {
+          toast.info(`${payload.actorName} ${payload.actionDescription}`, {
+            icon: "🔔",
+            duration: 6000,
+          });
+        });
+      }
+
+      return () => {
+        socket.disconnect();
+      };
+    }
+  }, [user, token]);
 
   
   const login = async (email: string, password: string) => {
