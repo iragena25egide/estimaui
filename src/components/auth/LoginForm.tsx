@@ -276,73 +276,63 @@ useEffect(() => {
 
         
         {currentStep === "otp" && (
-          <form className="space-y-5">
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <p className="text-sm text-blue-900">
-                A verification code has been sent to <br />
-                <span className="font-semibold">{email}</span>
-              </p>
-            </div>
-
-            
-            <div className="space-y-3">
-              <Label className="text-slate-700 font-medium">
-                Verification Code *
-              </Label>
-              <div className="flex gap-2 justify-between">
-                {[0, 1, 2, 3, 4, 5].map((index) => (
-                  <input
-                    key={index}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    value={verificationCode[index] || ""}
-                    onChange={(e) => {
-                      const newCode = verificationCode.split("")
-                      newCode[index] = e.target.value.replace(/\D/g, "")
-                      const code = newCode.join("").slice(0, 6)
-                      setVerificationCode(code)
-                      
-                     
-                      if (e.target.value && index < 5) {
-                        const nextInput = document.getElementById(`otp-${index + 1}`) as HTMLInputElement
-                        nextInput?.focus()
-                      }
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Backspace" && !verificationCode[index] && index > 0) {
-                        const prevInput = document.getElementById(`otp-${index - 1}`) as HTMLInputElement
-                        prevInput?.focus()
-                      }
-                    }}
-                    id={`otp-${index}`}
-                    className={`w-12 h-12 rounded-lg border-2 text-center text-xl font-bold transition-all focus:outline-none ${
-                      verificationCode[index]
-                        ? "border-slate-900 bg-slate-50"
-                        : error
-                        ? "border-red-500"
-                        : "border-slate-200 hover:border-slate-300"
-                    } focus:border-slate-900 focus:ring-2 focus:ring-slate-900/20`}
-                  />
-                ))}
+          <form className="space-y-6">
+            <div className="flex justify-center mb-2">
+              <div className="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center">
+                <svg className="w-6 h-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
               </div>
-              {error && (
-                <p className="text-xs text-red-600 text-center">{error}</p>
-              )}
+            </div>
+            <div className="text-center space-y-1">
+              <p className="text-slate-600 text-sm">Please enter the code sent to</p>
+              <p className="font-semibold text-slate-900">{email}</p>
             </div>
 
-            
-            
+            <div className="flex gap-2 justify-center">
+              {[0, 1, 2, 3, 4, 5].map((index) => (
+                <input
+                  key={index}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={verificationCode[index] || ""}
+                  onChange={(e) => {
+                    const newCode = verificationCode.split("")
+                    newCode[index] = e.target.value.replace(/\D/g, "")
+                    const code = newCode.join("").slice(0, 6)
+                    setVerificationCode(code)
+                    
+                    if (e.target.value && index < 5) {
+                      const nextInput = document.getElementById(`otp-${index + 1}`) as HTMLInputElement
+                      nextInput?.focus()
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Backspace" && !verificationCode[index] && index > 0) {
+                      const prevInput = document.getElementById(`otp-${index - 1}`) as HTMLInputElement
+                      prevInput?.focus()
+                    }
+                  }}
+                  id={`otp-${index}`}
+                  className={`w-11 h-12 rounded-lg border text-center text-lg font-semibold transition-all focus:outline-none bg-white ${
+                    error
+                      ? "border-red-500"
+                      : "border-slate-200 hover:border-slate-300"
+                  } focus:border-purple-500 focus:ring-[3px] focus:ring-purple-500/20`}
+                />
+              ))}
+            </div>
+            {error && (
+              <p className="text-xs text-red-600 text-center">{error}</p>
+            )}
 
-           
-            <Button
-              type="button"
-              variant="outline"
-              
-              className="w-full border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg transition-all text-sm"
-            >
-              Resend Code
-            </Button>
+            <div className="pt-4 flex justify-center opacity-60 pointer-events-none">
+              <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L3 7v10l9 5 9-5V7l-9-5zm0 2.3l6.5 3.6-6.5 3.6L5.5 7.9 12 4.3z"/></svg>
+                Secured By Magic
+              </div>
+            </div>
           </form>
         )}
 
