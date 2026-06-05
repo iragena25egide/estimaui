@@ -127,7 +127,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       })
 
       const data = await res.json()
-      if (!res.ok) throw new Error(data.message)
+      if (!res.ok) {
+        throw new Error(
+          data.message ||
+            (res.status === 401
+              ? "Invalid email or password."
+              : "Login failed. Please try again."),
+        )
+      }
+      // Server responds with { message: 'OTP sent to your email' }
+      // Caller should advance to the OTP step
+      return data
     } catch (err: any) {
       setError(err.message)
       throw err
@@ -141,6 +151,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     setError(null)
 
     try {
+      // Step 1: verify OTP → get token
       const res = await fetch(`${API_BASE}/auth/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -148,11 +159,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       })
 
       const data = await res.json()
-      if (!res.ok) throw new Error(data.message)
+      if (!res.ok) throw new Error(data.message || "Invalid or expired OTP")
 
-      setToken(data.token)
-      localStorage.setItem("authToken", data.token)
-      setTokenCookie(data.token)
+      const { token } = data
+
+      // Step 2: fetch the user profile with the new token
+      const meRes = await fetch(`${API_BASE}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const meData = await meRes.json()
+      if (!meRes.ok) throw new Error(meData.message || "Failed to load user profile")
+
+      // Step 3: persist everything
+      setToken(token)
+      setUser(meData)
+      localStorage.setItem("authToken", token)
+      localStorage.setItem("user", JSON.stringify(meData))
+      setTokenCookie(token)
     } catch (err: any) {
       setError(err.message)
       throw err
@@ -217,9 +240,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       })
 
       const result = await res.json()
-      if (!res.ok) throw new Error(result.message)
+      if (!res.ok) throw new Error(result.message || "Signup failed. Please try again.")
     } catch (err: any) {
-      setError(err.message || "Signup failed. Please try again.")
+      const message = err.message || "Signup failed. Please try again."
+      setError(message)
+      throw new Error(message) // ← must re-throw so the form's catch block fires
     } finally {
       setLoading(false)
     }
