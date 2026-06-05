@@ -9,14 +9,7 @@ import {
   Menu,
 } from "lucide-react";
 import API from "@/context/axios";
-
-type Notification = {
-  id: string;
-  title: string;
-  description?: string;
-  unread?: boolean;
-  timestamp?: string;
-};
+import { useNotifications } from "@/context/NotificationContext";
 
 type UserType = {
   id: string;
@@ -35,12 +28,9 @@ const TopHeader: React.FC<{
   const [user, setUser] = useState<UserType | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
 
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
 
   const profileRef = useRef<HTMLDivElement | null>(null);
-  const notifRef = useRef<HTMLDivElement | null>(null);
-
-  const unreadCount = notifications.filter((n) => n.unread).length;
 
   
   useEffect(() => {
@@ -113,32 +103,80 @@ const TopHeader: React.FC<{
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => setNotifOpen(!notifOpen)}
-            className="relative"
+            className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
           >
-            <Bell className="w-5 h-5" />
+            <Bell className="w-5 h-5 text-gray-600" />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">
+              <span className="absolute top-1.5 right-1.5 bg-purple-600 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border-2 border-white shadow-sm">
                 {unreadCount}
               </span>
             )}
           </button>
 
           {notifOpen && (
-            <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg border">
-              <div className="p-3 font-medium border-b">
-                Notifications
+            <div className="absolute right-0 mt-3 w-80 bg-white/80 backdrop-blur-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.12)] rounded-2xl border border-white/50 overflow-hidden transform origin-top-right transition-all animate-in fade-in zoom-in-95 duration-200">
+              <div className="p-4 border-b border-gray-100/50 flex justify-between items-center bg-white/50">
+                <h3 className="font-semibold text-gray-800">Notifications</h3>
+                {unreadCount > 0 && (
+                  <button 
+                    onClick={markAllAsRead}
+                    className="text-xs text-purple-600 font-medium hover:text-purple-700 transition-colors"
+                  >
+                    Mark all as read
+                  </button>
+                )}
               </div>
-              {notifications.length === 0 ? (
-                <div className="p-3 text-sm text-gray-500">
-                  No notifications
-                </div>
-              ) : (
-                notifications.map((n) => (
-                  <div key={n.id} className="p-3 text-sm border-b">
-                    {n.title}
+              <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
+                {notifications.length === 0 ? (
+                  <div className="p-8 text-center flex flex-col items-center justify-center">
+                    <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mb-3">
+                      <Bell className="w-6 h-6 text-gray-300" />
+                    </div>
+                    <p className="text-sm font-medium text-gray-600">No new notifications</p>
+                    <p className="text-xs text-gray-400 mt-1">You're all caught up!</p>
                   </div>
-                ))
-              )}
+                ) : (
+                  <div className="flex flex-col">
+                    {notifications.map((n) => (
+                      <button 
+                        key={n.id} 
+                        onClick={() => !n.isRead && markAsRead(n.id)}
+                        className={`p-4 text-left border-b border-gray-50 hover:bg-gray-50/80 transition-colors relative ${!n.isRead ? 'bg-purple-50/30' : ''}`}
+                      >
+                        {!n.isRead && (
+                          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 bg-purple-500 rounded-r-full" style={{ height: 'calc(100% - 16px)' }} />
+                        )}
+                        <div className="flex gap-3">
+                          <div className={`mt-0.5 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${!n.isRead ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-500'}`}>
+                            <Bell className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <p className={`text-sm ${!n.isRead ? 'font-medium text-gray-900' : 'text-gray-600'}`}>
+                              {n.type === 'admin_activity_notification' 
+                                ? <span className="font-semibold">{n.payload?.actorName}</span> 
+                                : n.type === 'QS_REGISTERED'
+                                ? <span>New QS Registration</span>
+                                : 'Notification'
+                              }
+                            </p>
+                            <p className={`text-xs mt-1 ${!n.isRead ? 'text-gray-700' : 'text-gray-500'}`}>
+                              {n.type === 'admin_activity_notification' 
+                                ? n.payload?.actionDescription
+                                : n.type === 'QS_REGISTERED'
+                                ? `${n.payload?.name} has joined as QS.`
+                                : JSON.stringify(n.payload)
+                              }
+                            </p>
+                            <p className="text-[10px] text-gray-400 mt-2 font-medium">
+                              {n.createdAt ? new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now'}
+                            </p>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
