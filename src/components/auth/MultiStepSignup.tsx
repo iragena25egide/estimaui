@@ -1,5 +1,6 @@
 import React, { useState,useContext } from "react"
 import { useNavigate } from "react-router-dom"
+import { toast } from "sonner"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -456,10 +457,18 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
 
   try {
     await completeSignup(formData.email, formData.password)
-    console.log("Account created successfully!");
-    handleResetForm() 
+    handleResetForm()
+    toast.success("Account created successfully! 🎉", {
+      description: "Welcome aboard! Please log in to continue.",
+      duration: 4000,
+    })
+    switchToLogin()
   } catch (err: any) {
     console.error("Error creating account:", err)
+    toast.error("Signup failed", {
+      description: err?.message || "Something went wrong. Please try again.",
+      duration: 5000,
+    })
   }
 }
 
@@ -831,53 +840,46 @@ React.useEffect(() => {
 
           
           {currentStep === 3 && (
-            <form className="space-y-5">
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                <p className="text-sm text-blue-900">
-                  A verification code has been sent to <br />
-                  <span className="font-semibold">{formData.email}</span>
-                </p>
-              </div>
-
-              
-              <div className="space-y-3">
-                <Label className="text-slate-700 font-medium">
-                  Verification Code *
-                </Label>
-                <div className="flex gap-2 justify-between">
-                  {[0, 1, 2, 3, 4, 5].map((index) => (
-                    <input
-                      key={index}
-                      id={`otp-${index}`}
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={1}
-                      value={verificationCode[index] || ""}
-                      onChange={(e) => handleOTPChange(index, e.target.value)}
-                      onKeyDown={(e) => handleOTPKeyDown(index, e)}
-                      className={`w-12 h-12 rounded-lg border-2 text-center text-xl font-bold transition-all focus:outline-none ${
-                        verificationCode[index]
-                          ? "border-slate-900 bg-slate-50"
-                          : codeError
-                          ? "border-red-500"
-                          : "border-slate-200 hover:border-slate-300"
-                      } focus:border-slate-900 focus:ring-2 focus:ring-slate-900/20`}
-                    />
-                  ))}
+            <form className="space-y-6">
+              <div className="flex justify-center mb-2">
+                <div className="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
                 </div>
-                {codeError && (
-                  <p className="text-xs text-red-600 text-center">{codeError}</p>
-                )}
+              </div>
+              <div className="text-center space-y-1">
+                <p className="text-slate-600 text-sm">Please enter the code sent to</p>
+                <p className="font-semibold text-slate-900">{formData.email}</p>
               </div>
 
-              
-              {verificationCode.length === 6 && !isEmailVerified && (
-                <p className="text-xs text-blue-600 text-center">Verifying code...</p>
+              <div className="flex gap-2 justify-center">
+                {[0, 1, 2, 3, 4, 5].map((index) => (
+                  <input
+                    key={index}
+                    id={`otp-${index}`}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    value={verificationCode[index] || ""}
+                    onChange={(e) => handleOTPChange(index, e.target.value)}
+                    onKeyDown={(e) => handleOTPKeyDown(index, e)}
+                    className={`w-11 h-12 rounded-lg border text-center text-lg font-semibold transition-all focus:outline-none bg-white ${
+                      codeError
+                        ? "border-red-500"
+                        : "border-slate-200 hover:border-slate-300"
+                    } focus:border-purple-500 focus:ring-[3px] focus:ring-purple-500/20`}
+                  />
+                ))}
+              </div>
+              {codeError && (
+                <p className="text-xs text-red-600 text-center">{codeError}</p>
               )}
 
-              
+              {verificationCode.length === 6 && !isEmailVerified && (
+                <p className="text-xs text-purple-600 text-center font-medium">Verifying code...</p>
+              )}
 
-              
               <div className="flex gap-3 pt-2">
                 <Button
                   type="button"
