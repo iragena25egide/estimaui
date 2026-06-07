@@ -7,12 +7,11 @@ const DashboardLayout: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      
+    <div className="min-h-screen bg-slate-50 font-sans">
       <Sidebar mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
-      <TopBar projectName="EstimaPro Projects" onOpenSidebar={() => setMobileOpen(true)} />
+      <TopBar projectName="Dashboard" onOpenSidebar={() => setMobileOpen(true)} />
 
-      <main className="md:ml-64 ml-0 mt-16 p-6 min-h-[calc(100vh-64px)]">
+      <main className="md:ml-[260px] ml-0 mt-[72px] p-6 min-h-[calc(100vh-72px)] overflow-x-hidden">
         <div className="max-w-7xl mx-auto">
           <Outlet />
         </div>

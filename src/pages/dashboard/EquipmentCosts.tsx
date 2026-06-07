@@ -12,6 +12,7 @@ import {
 import DrawingService from "@/services/drawingService";
 import EquipmentCostService from "@/services/equipmentService";
 import { toast } from "sonner"; 
+import ConfirmModal from "../../components/ui/ConfirmModal";
 
 const EquipmentCosts: React.FC = () => {
   const [projects, setProjects] = useState<any[]>([]);
@@ -24,6 +25,7 @@ const EquipmentCosts: React.FC = () => {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     equipmentName: "",
@@ -112,16 +114,21 @@ const EquipmentCosts: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this equipment cost entry?")) return;
+  const confirmDelete = async () => {
+    if (!deleteId) return;
     try {
-      await EquipmentCostService.delete(id);
+      await EquipmentCostService.delete(deleteId);
       toast.success("Equipment cost deleted successfully");
       loadItems();
+      setDeleteId(null);
     } catch (error: any) {
       console.error("Delete error", error);
       toast.error(error.response?.data?.message || "Delete failed");
     }
+  };
+
+  const handleDelete = (id: string) => {
+    setDeleteId(id);
   };
 
   const handleEdit = (item: any) => {
@@ -459,6 +466,14 @@ const EquipmentCosts: React.FC = () => {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!deleteId}
+        title="Delete Equipment Cost"
+        message="Are you sure you want to delete this equipment cost entry? This action cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteId(null)}
+      />
     </div>
   );
 };

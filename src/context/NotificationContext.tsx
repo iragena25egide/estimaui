@@ -41,7 +41,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
       fetchNotifications();
 
       // 2. Initialize Socket.io connection for real-time alerts
-      const newSocket = io("http://localhost:3000", {
+      const newSocket = io(import.meta.env.VITE_SOCKET_URL || "https://estimapp-1.onrender.com", {
         query: { role: user.role },
       });
 

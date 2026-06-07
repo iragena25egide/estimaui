@@ -28,6 +28,7 @@ import {
 import { toast } from "sonner";
 import DrawingService from "@/services/drawingService";
 import SpecificationService from "@/services/specificationService";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 
 interface Spec {
   id: string;
@@ -50,6 +51,7 @@ const SpecificationRegister: React.FC = () => {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     specSection: "",
@@ -133,15 +135,20 @@ const SpecificationRegister: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this specification?")) return;
+  const confirmDelete = async () => {
+    if (!deleteId) return;
     try {
-      await SpecificationService.delete(id);
+      await SpecificationService.delete(deleteId);
       toast.success("Specification deleted");
       loadSpecs();
+      setDeleteId(null);
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Delete failed");
     }
+  };
+
+  const handleDelete = (id: string) => {
+    setDeleteId(id);
   };
 
   const handleEdit = (spec: Spec) => {
@@ -259,6 +266,14 @@ const SpecificationRegister: React.FC = () => {
           </button>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={!!deleteId}
+        title="Delete Specification"
+        message="Are you sure you want to delete this specification? This action cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteId(null)}
+      />
 
       
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">

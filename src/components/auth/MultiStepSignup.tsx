@@ -6,7 +6,21 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { useAuth } from "../../context/AuthContext"
-
+import { Check, ChevronsUpDown } from "lucide-react"
+import { cn } from "@/lib/utils"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 
 
@@ -276,11 +290,12 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
   const [sentCode, setSentCode] = useState("")
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [codeError, setCodeError] = useState("")
+  const [openCountryCode, setOpenCountryCode] = useState(false)
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
     email: "",
-    countryCode: "+1",
+    countryCode: "+250",
     phone: "",
     password: "",
     confirmPassword: "",
@@ -394,7 +409,7 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
       firstName: "",
       lastName: "",
       email: "",
-      countryCode: "+1",
+      countryCode: "+250",
       phone: "",
       password: "",
       confirmPassword: "",
@@ -477,7 +492,7 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
 
 
 React.useEffect(() => {
-  if (verificationCode.length === 6) {
+  if (verificationCode.length === 6 && !isEmailVerified) {
     const verifyOTPAsync = async () => {
       try {
         await verifyOtp(formData.email, verificationCode)
@@ -491,7 +506,7 @@ React.useEffect(() => {
     }
     verifyOTPAsync()
   }
-}, [verificationCode, formData.email, verifyOtp])
+}, [verificationCode, formData.email, verifyOtp, isEmailVerified])
 
   return (
     <div className="relative">
@@ -780,22 +795,56 @@ React.useEffect(() => {
                 </Label>
                 <div className="flex gap-2">
                  
-                  <select
-                    value={formData.countryCode}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        countryCode: e.target.value,
-                      }))
-                    }
-                    className="h-10 px-2 rounded-lg border border-slate-200 bg-white hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent cursor-pointer text-sm font-medium text-slate-700"
-                  >
-                    {COUNTRY_CODES.map((cc, idx) => (
-                      <option key={idx} value={cc.code}>
-                        {cc.flag} {cc.code}
-                      </option>
-                    ))}
-                  </select>
+                  <Popover open={openCountryCode} onOpenChange={setOpenCountryCode}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={openCountryCode}
+                        className="w-[110px] justify-between h-10 border-slate-200 bg-white hover:bg-slate-50 font-normal px-3"
+                      >
+                        <span className="truncate">
+                          {formData.countryCode
+                            ? `${COUNTRY_CODES.find((c) => c.code === formData.countryCode)?.flag} ${formData.countryCode}`
+                            : "Code"}
+                        </span>
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[280px] p-0" align="start">
+                      <Command>
+                        <CommandInput placeholder="Search country..." className="h-9" />
+                        <CommandList>
+                          <CommandEmpty>No country found.</CommandEmpty>
+                          <CommandGroup>
+                            {COUNTRY_CODES.map((country) => (
+                              <CommandItem
+                                key={country.country}
+                                value={`${country.country} ${country.code}`}
+                                onSelect={() => {
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    countryCode: country.code,
+                                  }))
+                                  setOpenCountryCode(false)
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    formData.countryCode === country.code ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                                <span className="mr-2 text-lg leading-none">{country.flag}</span>
+                                <span className="flex-1 truncate">{country.country}</span>
+                                <span className="text-slate-500 ml-2">{country.code}</span>
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
 
                   
                   <Input

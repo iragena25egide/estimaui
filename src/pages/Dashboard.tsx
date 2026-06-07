@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 import { DollarSign, FileText, Users, Briefcase, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DashboardCard from "@/components/dashboard/DashboardCard";
@@ -20,6 +21,7 @@ interface DashboardStats {
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<DashboardStats>({
@@ -66,18 +68,18 @@ const Dashboard: React.FC = () => {
   const formatCurrency = (n: number) =>
     n.toLocaleString(undefined, {
       style: "currency",
-      currency: "USD",
+      currency: "RWF",
       maximumFractionDigits: 0,
     });
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
      
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Overview of your projects and estimates
+          <h1 className="text-2xl font-bold text-slate-900">Hello, {user?.firstName || "System Admin"} 👋</h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Here's what's happening with your projects today.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -104,34 +106,38 @@ const Dashboard: React.FC = () => {
         <DashboardCard
           title="Total Projects"
           value={stats.totalProjects}
-          icon={<Briefcase className="w-6 h-6" />}
+          icon={<Briefcase className="w-5 h-5" />}
           loading={loading}
           color="blue"
-          iconColor="text-blue-600"
+          iconColor="text-[#10b981]"
+          change="+12%"
         />
         <DashboardCard
           title="Active Projects"
           value={stats.activeProjects}
-          icon={<Users className="w-6 h-6" />}
+          icon={<Users className="w-5 h-5" />}
           loading={loading}
           color="green"
-          iconColor="text-green-600"
+          iconColor="text-[#10b981]"
+          change="+5%"
         />
         <DashboardCard
-          title="Estimations"
+          title="Total Estimations"
           value={stats.totalEstimations}
-          icon={<FileText className="w-6 h-6" />}
+          icon={<FileText className="w-5 h-5" />}
           loading={loading}
           color="amber"
-          iconColor="text-amber-600"
+          iconColor="text-[#10b981]"
+          change="+8%"
         />
         <DashboardCard
           title="Project Value"
           value={formatCurrency(stats.totalProjectValue)}
-          icon={<DollarSign className="w-6 h-6" />}
+          icon={<DollarSign className="w-5 h-5" />}
           loading={loading}
           color="purple"
-          iconColor="text-purple-600"
+          iconColor="text-[#10b981]"
+          change="+15%"
         />
       </div>
 
@@ -140,20 +146,20 @@ const Dashboard: React.FC = () => {
         <div className="lg:col-span-2">
           <RecentProjects />
         </div>
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 flex flex-col justify-between">
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 flex flex-col justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">
               Cost Valuation Breakdown
             </h3>
             <div className="flex items-center justify-center p-2 min-h-[220px]">
               {loading ? (
-                <div className="w-10 h-10 rounded-full border-4 border-gray-100 border-t-blue-500 animate-spin" />
+                <div className="w-10 h-10 rounded-full border-4 border-slate-100 border-t-[#10b981] animate-spin" />
               ) : stats.costBreakdown && stats.costBreakdown.length > 0 && stats.costBreakdown.some(c => c.value > 0) ? (
                 <div className="w-full max-w-[220px]">
                   <CostBreakdownChart data={stats.costBreakdown} />
                 </div>
               ) : (
-                <div className="text-center text-gray-500 py-8 text-sm">
+                <div className="text-center text-slate-500 py-8 text-sm">
                   No estimation data available. Add items to a project BOQ to populate breakdown.
                 </div>
               )}
@@ -163,30 +169,30 @@ const Dashboard: React.FC = () => {
       </div>
 
       
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+        <h3 className="text-lg font-semibold text-slate-900 mb-4">
           Team & Reports Overview
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <div className="text-xs text-gray-500 uppercase tracking-wider">
+          <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <div className="text-xs text-slate-500 uppercase tracking-wider font-semibold">
               Team Members
             </div>
-            <div className="text-2xl font-bold text-gray-900 mt-1">
+            <div className="text-2xl font-bold text-slate-900 mt-2">
               {loading ? (
-                <div className="h-8 w-16 bg-gray-200 animate-pulse rounded" />
+                <div className="h-8 w-16 bg-slate-200 animate-pulse rounded" />
               ) : (
                 stats.teamMembers
               )}
             </div>
           </div>
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-            <div className="text-xs text-gray-500 uppercase tracking-wider">
+          <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <div className="text-xs text-slate-500 uppercase tracking-wider font-semibold">
               Reports Generated
             </div>
-            <div className="text-2xl font-bold text-gray-900 mt-1">
+            <div className="text-2xl font-bold text-slate-900 mt-2">
               {loading ? (
-                <div className="h-8 w-16 bg-gray-200 animate-pulse rounded" />
+                <div className="h-8 w-16 bg-slate-200 animate-pulse rounded" />
               ) : (
                 stats.reportsGenerated
               )}

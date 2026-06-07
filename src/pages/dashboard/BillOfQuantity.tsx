@@ -14,6 +14,7 @@ import DrawingService from "@/services/drawingService";
 import { toast } from "sonner"; 
 import RateLibraryService from "@/services/rateLibraryService";
 import ReportService from "@/services/reportService";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 
 const BoqItems: React.FC = () => {
   const [projects, setProjects] = useState<any[]>([]);
@@ -22,6 +23,7 @@ const BoqItems: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [exportLoading, setExportLoading] = useState(false);
 
@@ -182,16 +184,21 @@ const BoqItems: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this BOQ item?")) return;
+  const confirmDelete = async () => {
+    if (!deleteId) return;
     try {
-      await BoqService.delete(id);
+      await BoqService.delete(deleteId);
       toast?.success("BOQ item deleted");
       loadItems();
+      setDeleteId(null);
     } catch (error: any) {
       console.error("Delete error", error);
       toast?.error(error.response?.data?.message || "Delete failed");
     }
+  };
+
+  const handleDelete = (id: string) => {
+    setDeleteId(id);
   };
 
   const handleEdit = (item: any) => {
@@ -600,6 +607,14 @@ const BoqItems: React.FC = () => {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!deleteId}
+        title="Delete BOQ Item"
+        message="Are you sure you want to delete this BOQ item? This action cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteId(null)}
+      />
     </div>
   );
 };

@@ -3,6 +3,7 @@ import ProjectService from "../../services/projectService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 import { useAuth } from "../../context/AuthContext";
 import {
   Dialog,
@@ -19,6 +20,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus, Trash, Edit, Search, X, FolderOpen } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface CustomDatePickerProps {
   value: string;
@@ -125,6 +134,8 @@ const Projects: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [error, setError] = useState<string>("");
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const [form, setForm] = useState<any>({
     name: "",
@@ -168,15 +179,21 @@ const Projects: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete project?")) return;
+  const confirmDelete = async () => {
+    if (!deleteId) return;
     try {
-      await ProjectService.deleteProject(id);
+      await ProjectService.deleteProject(deleteId);
+      setProjects((prev) => prev.filter((p) => p.id !== deleteId));
+      setDeleteId(null);
       toast.success("Project deleted successfully!");
-      loadProjects();
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to delete project.");
+    } catch (err: any) {
+      setError(err.message || "Failed to delete project");
+      toast.error("Failed to delete project.");
     }
+  };
+
+  const handleDelete = (id: string) => {
+    setDeleteId(id);
   };
 
   const handleEdit = (p: any) => {
@@ -263,49 +280,49 @@ const Projects: React.FC = () => {
       
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="p-4 text-left font-semibold text-gray-600">Project</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Client</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Location</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Type</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Status</th>
-                <th className="p-4 text-left font-semibold text-gray-600">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table>
+            <TableHeader className="bg-gray-50 border-b border-gray-200">
+              <TableRow>
+                <TableHead className="font-semibold text-gray-600">Project</TableHead>
+                <TableHead className="font-semibold text-gray-600">Client</TableHead>
+                <TableHead className="font-semibold text-gray-600">Location</TableHead>
+                <TableHead className="font-semibold text-gray-600">Type</TableHead>
+                <TableHead className="font-semibold text-gray-600">Status</TableHead>
+                <TableHead className="font-semibold text-gray-600">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {loading ? (
                 // Skeleton rows
                 Array.from({ length: 4 }).map((_, i) => (
-                  <tr key={i} className="border-b border-gray-100 animate-pulse">
-                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-24"></div></td>
-                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
-                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
-                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
-                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
-                    <td className="p-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
-                  </tr>
+                  <TableRow key={i} className="animate-pulse">
+                    <TableCell><div className="h-4 bg-gray-200 rounded w-24"></div></TableCell>
+                    <TableCell><div className="h-4 bg-gray-200 rounded w-20"></div></TableCell>
+                    <TableCell><div className="h-4 bg-gray-200 rounded w-20"></div></TableCell>
+                    <TableCell><div className="h-4 bg-gray-200 rounded w-16"></div></TableCell>
+                    <TableCell><div className="h-4 bg-gray-200 rounded w-16"></div></TableCell>
+                    <TableCell><div className="h-4 bg-gray-200 rounded w-20"></div></TableCell>
+                  </TableRow>
                 ))
               ) : filteredProjects.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="text-center py-12 text-gray-500">
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-12 text-gray-500">
                     {search
                       ? "No projects match your search."
                       : "No projects found. Click 'New Project' to create one."}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ) : (
                 filteredProjects.map((p) => (
-                  <tr
+                  <TableRow
                     key={p.id}
-                    className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                    className="hover:bg-gray-50 transition-colors"
                   >
-                    <td className="p-4 font-medium text-gray-900">{p.name}</td>
-                    <td className="p-4 text-gray-700">{p.client}</td>
-                    <td className="p-4 text-gray-700">{p.location}</td>
-                    <td className="p-4 text-gray-700">{p.projectType}</td>
-                    <td className="p-4">
+                    <TableCell className="font-medium text-gray-900">{p.name}</TableCell>
+                    <TableCell className="text-gray-700">{p.client}</TableCell>
+                    <TableCell className="text-gray-700">{p.location}</TableCell>
+                    <TableCell className="text-gray-700">{p.projectType}</TableCell>
+                    <TableCell>
                       <span
                         className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusStyle(
                           p.status
@@ -313,8 +330,8 @@ const Projects: React.FC = () => {
                       >
                         {p.status || "Planning"}
                       </span>
-                    </td>
-                    <td className="p-4">
+                    </TableCell>
+                    <TableCell>
                       {isViewer ? (
                         <span className="text-gray-400 font-medium text-xs bg-gray-50 px-2 py-1 rounded border">Read-only</span>
                       ) : (
@@ -335,12 +352,12 @@ const Projects: React.FC = () => {
                           </button>
                         </div>
                       )}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </div>
 
@@ -481,6 +498,14 @@ const Projects: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ConfirmModal
+        isOpen={!!deleteId}
+        title="Delete Project"
+        message="Are you sure you want to delete this project? This action cannot be undone and will delete all associated estimations and costs."
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteId(null)}
+      />
     </div>
   );
 };

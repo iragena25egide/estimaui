@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-	baseURL: "http://localhost:3000/api/estimaApp", 
+	baseURL: import.meta.env.VITE_API_URL || "https://estimapp-1.onrender.com/api/estimaApp", 
 });
 
 API.interceptors.request.use((config) => {

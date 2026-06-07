@@ -12,6 +12,7 @@ import {
 import DrawingService from "@/services/drawingService";
 import MaterialTakeOffService from "@/services/materialService"; 
 import { toast } from "sonner";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 
 const MaterialTakeOff: React.FC = () => {
   const [projects, setProjects] = useState<any[]>([]);
@@ -24,6 +25,7 @@ const MaterialTakeOff: React.FC = () => {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     materialName: "",
@@ -125,15 +127,20 @@ const MaterialTakeOff: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this material record?")) return;
+  const confirmDelete = async () => {
+    if (!deleteId) return;
     try {
-      await MaterialTakeOffService.delete(id);
+      await MaterialTakeOffService.delete(deleteId);
       toast.success("Material deleted");
       loadItems();
+      setDeleteId(null);
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Delete failed");
     }
+  };
+
+  const handleDelete = (id: string) => {
+    setDeleteId(id);
   };
 
   const handleEdit = (item: any) => {
@@ -440,6 +447,14 @@ const MaterialTakeOff: React.FC = () => {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={!!deleteId}
+        title="Delete Material"
+        message="Are you sure you want to delete this material take-off record? This action cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteId(null)}
+      />
     </div>
   );
 };

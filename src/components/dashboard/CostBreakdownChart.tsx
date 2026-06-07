@@ -49,7 +49,7 @@ const CostBreakdownChart: React.FC<CostBreakdownChartProps> = ({ data }) => {
               const percentage = total > 0 ? ((val / total) * 100).toFixed(1) : "0.0";
               const formattedVal = val.toLocaleString(undefined, {
                 style: "currency",
-                currency: "USD",
+                currency: "RWF",
                 maximumFractionDigits: 0,
               });
               return {

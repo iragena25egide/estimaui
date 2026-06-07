@@ -35,8 +35,9 @@ const Settings: React.FC = () => {
     companyName: "EstimaApp Ltd",
     address: "",
     taxId: "",
-    currency: "USD",
+    currency: "RWF",
     language: "English",
+    dateFormat: "MM/DD/YYYY",
     vatPercent: 15,
     overheadPercent: 10,
     defaultProfit: 12,
@@ -157,10 +158,10 @@ const Settings: React.FC = () => {
                   onChange={(e) => update("currency", e.target.value)}
                   className="w-full border border-gray-200 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 >
+                  <option value="RWF">RWF (FRw)</option>
                   <option value="USD">USD ($)</option>
                   <option value="EUR">EUR (€)</option>
                   <option value="GBP">GBP (£)</option>
-                  <option value="INR">INR ()</option>
                 </select>
               </div>
               <div>

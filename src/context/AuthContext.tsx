@@ -46,7 +46,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-const API_BASE = "http://localhost:3000/api/estimaApp"
+const API_BASE = import.meta.env.VITE_API_URL || "https://estimapp-1.onrender.com/api/estimaApp"
 
 const setTokenCookie = (token: string) => {
   document.cookie = `authToken=${token}; path=/; max-age=${3600 * 24 * 7}; SameSite=Lax; Secure`;

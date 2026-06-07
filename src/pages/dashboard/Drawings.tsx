@@ -40,6 +40,7 @@ import {
 import DrawingService from "@/services/drawingService";
 import DimensionSheetModal from "./dimensionSheetModal";
 import { useAuth } from "../../context/AuthContext";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 
 interface CustomDatePickerProps {
   value: string;
@@ -170,6 +171,7 @@ const Drawings: React.FC = () => {
   const [previewDrawing, setPreviewDrawing] = useState<any | null>(null);
   const [selectedDrawingId, setSelectedDrawingId] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const [form, setForm] = useState<any>({
     drawingNo: "",
@@ -222,15 +224,20 @@ const Drawings: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete drawing?")) return;
+  const confirmDelete = async () => {
+    if (!deleteId) return;
     try {
-      await DrawingService.delete(id);
+      await DrawingService.delete(deleteId);
       toast.success("Drawing deleted");
       loadDrawings();
+      setDeleteId(null);
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Delete failed");
     }
+  };
+
+  const handleDelete = (id: string) => {
+    setDeleteId(id);
   };
 
   const handleEdit = (d: any) => {
@@ -649,6 +656,14 @@ const Drawings: React.FC = () => {
           setModalOpen(false);
           setSelectedDrawingId(null);
         }}
+      />
+
+      <ConfirmModal
+        isOpen={!!deleteId}
+        title="Delete Drawing"
+        message="Are you sure you want to delete this drawing? This action cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteId(null)}
       />
     </div>
   );

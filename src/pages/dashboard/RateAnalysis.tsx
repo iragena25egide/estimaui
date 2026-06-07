@@ -28,6 +28,7 @@ import {
 import { toast } from "sonner";
 import DrawingService from "@/services/drawingService";
 import RateAnalysisService from "@/services/analysisService";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 
 const RateAnalysis: React.FC = () => {
   const [projects, setProjects] = useState<any[]>([]);
@@ -40,6 +41,7 @@ const RateAnalysis: React.FC = () => {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     boqItemNo: "",
@@ -164,15 +166,20 @@ const RateAnalysis: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this rate analysis record?")) return;
+  const confirmDelete = async () => {
+    if (!deleteId) return;
     try {
-      await RateAnalysisService.delete(id);
+      await RateAnalysisService.delete(deleteId);
       toast.success("Record deleted");
       loadItems();
+      setDeleteId(null);
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Delete failed");
     }
+  };
+
+  const handleDelete = (id: string) => {
+    setDeleteId(id);
   };
 
   const handleEdit = (item: any) => {
@@ -556,6 +563,14 @@ const RateAnalysis: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ConfirmModal
+        isOpen={!!deleteId}
+        title="Delete Rate Analysis"
+        message="Are you sure you want to delete this rate analysis record? This action cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteId(null)}
+      />
     </div>
   );
 };

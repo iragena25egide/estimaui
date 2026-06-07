@@ -12,11 +12,18 @@ interface DashboardCardProps {
   loading?: boolean;
 }
 
-const colorMap: Record<string, string> = {
-  blue: "bg-blue-50/60 border-blue-100/80 hover:border-blue-200",
-  green: "bg-emerald-50/60 border-emerald-100/80 hover:border-emerald-200",
-  amber: "bg-amber-50/60 border-amber-100/80 hover:border-amber-200",
-  purple: "bg-purple-50/60 border-purple-100/80 hover:border-purple-200",
+const bgMap: Record<string, string> = {
+  blue: "bg-blue-50",
+  green: "bg-emerald-50",
+  amber: "bg-amber-50",
+  purple: "bg-purple-50",
+};
+
+const textMap: Record<string, string> = {
+  blue: "text-blue-600",
+  green: "text-emerald-600",
+  amber: "text-amber-600",
+  purple: "text-purple-600",
 };
 
 const DashboardCard: React.FC<DashboardCardProps> = ({
@@ -24,38 +31,44 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
   value,
   icon,
   color,
-  iconColor,
+  iconColor, // Not used strictly now since we use textMap[color]
   change,
   loading = false,
 }) => {
-  const cardBgClass = colorMap[color] || "bg-white border-slate-100 hover:border-slate-200";
-
   if (loading) {
     return (
-      <div className={`${cardBgClass} rounded-2xl shadow-sm border p-4 transition-all hover:shadow-md`}>
-        <div className="flex items-start justify-between mb-3">
-          <Skeleton className="w-10 h-10 rounded-xl bg-slate-200" />
-          <Skeleton className="w-12 h-4 rounded" />
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 transition-all hover:shadow-md">
+        <div className="flex items-start justify-between mb-4">
+          <Skeleton className="w-12 h-12 rounded-full bg-slate-100" />
+          <Skeleton className="w-24 h-6 rounded-full" />
         </div>
-        <Skeleton className="w-3/4 h-3 rounded mb-2" />
-        <Skeleton className="w-1/2 h-8 rounded" />
+        <Skeleton className="w-1/2 h-8 rounded mb-2" />
+        <Skeleton className="w-3/4 h-4 rounded" />
       </div>
     );
   }
 
+  const isPositive = change?.startsWith("+");
+  const changeBg = isPositive ? "bg-emerald-50" : change?.startsWith("-") ? "bg-red-50" : "bg-slate-50";
+  const changeText = isPositive ? "text-emerald-600" : change?.startsWith("-") ? "text-red-600" : "text-slate-600";
+
   return (
-    <div className={`${cardBgClass} rounded-2xl shadow-sm border p-6 transition-all hover:shadow-md`}>
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 transition-all hover:shadow-md">
       <div className="flex items-start justify-between mb-4">
-        <div className={`${iconColor} p-3 rounded-xl bg-white/50`}>{icon}</div>
+        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${bgMap[color] || "bg-slate-50"} ${textMap[color] || "text-slate-600"}`}>
+          {icon}
+        </div>
         {change && (
-          <div className="flex items-center gap-1 text-green-600 text-sm font-semibold">
-            <TrendingUp className="w-4 h-4" />
-            {change}
+          <div className={`flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full ${changeBg} ${changeText}`}>
+            {isPositive || change?.startsWith("-") ? (
+              <TrendingUp className={`w-3 h-3 ${!isPositive ? "rotate-180" : ""}`} />
+            ) : null}
+            {change} <span className="text-slate-500 font-normal hidden xl:inline">from last month</span>
           </div>
         )}
       </div>
-      <h3 className="text-slate-600 text-sm font-medium mb-1">{title}</h3>
-      <p className="text-3xl font-bold text-slate-900">{value}</p>
+      <p className="text-3xl font-bold text-slate-900 mb-1">{value}</p>
+      <h3 className="text-slate-500 text-sm font-medium">{title}</h3>
     </div>
   );
 };
