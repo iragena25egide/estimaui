@@ -9,6 +9,7 @@ interface SettingsData {
   taxId: string;
   currency: string;
   language: string;
+  dateFormat: string;
 
   
   vatPercent: number;
