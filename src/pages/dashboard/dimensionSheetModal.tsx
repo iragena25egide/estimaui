@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import DimensionSheetService from "@/services/dimensionSheetService";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "sonner";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 
 interface DimensionSheetModalProps {
   drawingId: string;
@@ -30,6 +31,7 @@ const DimensionSheetModal: React.FC<DimensionSheetModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     code: "",
@@ -157,15 +159,20 @@ const DimensionSheetModal: React.FC<DimensionSheetModalProps> = ({
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this dimension sheet?")) return;
+  const confirmDelete = async () => {
+    if (!deleteId) return;
     try {
-      await DimensionSheetService.delete(id);
+      await DimensionSheetService.delete(deleteId);
       toast.success("Dimension sheet deleted");
       loadSheets();
+      setDeleteId(null);
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Failed to delete dimension sheet");
     }
+  };
+
+  const handleDelete = (id: string) => {
+    setDeleteId(id);
   };
 
   return (
@@ -438,6 +445,14 @@ const DimensionSheetModal: React.FC<DimensionSheetModalProps> = ({
           </Button>
         </div>
       </DialogContent>
+
+      <ConfirmModal
+        isOpen={!!deleteId}
+        title="Delete Dimension Sheet"
+        message="Are you sure you want to delete this dimension sheet entry? This action cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteId(null)}
+      />
     </Dialog>
   );
 };
