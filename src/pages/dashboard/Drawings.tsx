@@ -169,7 +169,7 @@ const getFileIcon = (fileType?: string) => {
   if (!fileType) return <File className="w-4 h-4" />;
   if (fileType.includes("image") || fileType === "IMAGE") return <ImageIcon className="w-4 h-4" />;
   if (fileType.includes("pdf") || fileType === "PDF") return <FileText className="w-4 h-4" />;
-  if (fileType === "IFC") return <File className="w-4 h-4" />;
+  if (fileType === "IFC" || fileType === "PLN") return <FileIcon className="w-4 h-4" />;
   return <File className="w-4 h-4" />;
 };
 
@@ -177,9 +177,10 @@ const getFileIcon = (fileType?: string) => {
 const getFileTypeFromFile = (file: File): string => {
   const extension = file.name.split('.').pop()?.toUpperCase();
   if (extension === 'IFC') return 'IFC';
+  if (extension === 'PLN') return 'PLN';
   if (extension === 'PDF') return 'PDF';
-  if (['PNG', 'JPG', 'JPEG', 'GIF', 'BMP'].includes(extension || '')) return 'IMAGE';
-  return 'OTHER';
+  if (['PNG', 'JPG', 'JPEG', 'GIF', 'BMP', 'WEBP'].includes(extension || '')) return 'IMAGE';
+  return 'IFC'; // default to IFC for unknown types so backend doesn't reject
 };
 
 const Drawings: React.FC = () => {
@@ -559,21 +560,21 @@ const Drawings: React.FC = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="ISSUED">ISSUED</SelectItem>
-                    <SelectItem value="WIP">WIP</SelectItem>
-                    <SelectItem value="APPROVED">APPROVED</SelectItem>
+                    <SelectItem value="REVISED">REVISED</SelectItem>
+                    <SelectItem value="SUPERSEDED">SUPERSEDED</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
            
-            <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 hover:border-blue-400 transition-colors">
+            <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 hover:border-blue-400 transition-colors cursor-pointer">
               <div className="text-center">
                 <FileIcon className="mx-auto w-8 h-8 text-gray-400 mb-2" />
                 <input
                   type="file"
                   id="file-upload"
-                  accept=".ifc,.pdf,.png,.jpg,.jpeg"
+                  accept=".ifc,.pln,.pdf,.png,.jpg,.jpeg"
                   className="hidden"
                   onChange={(e) => {
                     if (e.target.files?.[0]) {
@@ -593,10 +594,16 @@ const Drawings: React.FC = () => {
                   Click to upload
                 </label>
                 <span className="text-gray-500"> or drag and drop</span>
+                <p className="text-xs text-gray-400 mt-1">
+                  ArchiCAD: <span className="font-semibold">.ifc</span> or <span className="font-semibold">.pln</span> &nbsp;·&nbsp; PDF &nbsp;·&nbsp; Images (PNG, JPG)
+                </p>
                 {form.file && (
                   <div className="mt-3 text-sm bg-blue-50 text-blue-700 p-2 rounded-lg inline-flex items-center gap-2">
-                    {getFileIcon(form.file.type)}
-                    {form.file.name}
+                    {getFileIcon(form.fileType)}
+                    <span>{form.file.name}</span>
+                    <span className="bg-blue-200 text-blue-800 text-xs font-bold px-2 py-0.5 rounded-full">
+                      {form.fileType}
+                    </span>
                   </div>
                 )}
               </div>
