@@ -49,19 +49,116 @@ interface CustomDatePickerProps {
 }
 
 const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, label }) => {
-  const formattedValue = value ? value.split('T')[0] : "";
+  const [day, setDay] = useState<string>("");
+  const [month, setMonth] = useState<string>("");
+  const [year, setYear] = useState<string>("");
+
+  useEffect(() => {
+    if (value) {
+      const parts = value.split('T')[0].split('-');
+      if (parts.length === 3) {
+        setYear(parts[0]);
+        setMonth(parseInt(parts[1], 10).toString());
+        setDay(parseInt(parts[2], 10).toString());
+      }
+    } else {
+      setDay("");
+      setMonth("");
+      setYear("");
+    }
+  }, [value]);
+
+  const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
+  const months = [
+    { label: "January", value: "1" },
+    { label: "February", value: "2" },
+    { label: "March", value: "3" },
+    { label: "April", value: "4" },
+    { label: "May", value: "5" },
+    { label: "June", value: "6" },
+    { label: "July", value: "7" },
+    { label: "August", value: "8" },
+    { label: "September", value: "9" },
+    { label: "October", value: "10" },
+    { label: "November", value: "11" },
+    { label: "December", value: "12" }
+  ];
+  const currentYr = new Date().getFullYear();
+  const years = Array.from({ length: 30 }, (_, i) => (currentYr - 5 + i).toString());
+
+  const handleDateChange = (d: string, m: string, y: string) => {
+    if (d && m && y) {
+      const paddedDay = d.padStart(2, '0');
+      const paddedMonth = m.padStart(2, '0');
+      onChange(`${y}-${paddedMonth}-${paddedDay}`);
+    } else {
+      onChange("");
+    }
+  };
 
   return (
-    <div className="space-y-1">
-      <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">
+    <div className="space-y-1.5">
+      <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider">
         {label}
       </label>
-      <Input
-        type="date"
-        value={formattedValue}
-        onChange={(e) => onChange(e.target.value)}
-        className="border-gray-200 rounded-lg w-full"
-      />
+      <div className="grid grid-cols-3 gap-3">
+        <Select
+          value={day}
+          onValueChange={(val) => {
+            setDay(val);
+            handleDateChange(val, month, year);
+          }}
+        >
+          <SelectTrigger className="bg-white border-gray-200 rounded-xl h-11 text-gray-700 shadow-sm hover:border-gray-300 focus:ring-2 focus:ring-blue-500/20 transition-all">
+            <SelectValue placeholder="Day" />
+          </SelectTrigger>
+          <SelectContent>
+            {days.map((d) => (
+              <SelectItem key={d} value={d}>
+                {d}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={month}
+          onValueChange={(val) => {
+            setMonth(val);
+            handleDateChange(day, val, year);
+          }}
+        >
+          <SelectTrigger className="bg-white border-gray-200 rounded-xl h-11 text-gray-700 shadow-sm hover:border-gray-300 focus:ring-2 focus:ring-blue-500/20 transition-all">
+            <SelectValue placeholder="Month" />
+          </SelectTrigger>
+          <SelectContent>
+            {months.map((m) => (
+              <SelectItem key={m.value} value={m.value}>
+                {m.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={year}
+          onValueChange={(val) => {
+            setYear(val);
+            handleDateChange(day, month, val);
+          }}
+        >
+          <SelectTrigger className="bg-white border-gray-200 rounded-xl h-11 text-gray-700 shadow-sm hover:border-gray-300 focus:ring-2 focus:ring-blue-500/20 transition-all">
+            <SelectValue placeholder="Year" />
+          </SelectTrigger>
+          <SelectContent>
+            {years.map((y) => (
+              <SelectItem key={y} value={y}>
+                {y}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
     </div>
   );
 };
