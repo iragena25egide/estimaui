@@ -562,6 +562,7 @@ const Drawings: React.FC = () => {
                     <SelectItem value="ISSUED">ISSUED</SelectItem>
                     <SelectItem value="REVISED">REVISED</SelectItem>
                     <SelectItem value="SUPERSEDED">SUPERSEDED</SelectItem>
+                    <SelectItem value="WIP">WIP</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
