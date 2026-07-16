@@ -321,8 +321,8 @@ const Reports: React.FC = () => {
         </Card>
         <Card className="border-gray-200 shadow-sm rounded-2xl">
           <CardContent className="p-6">
-            <p className="text-sm text-gray-500">Cumulative Amount</p>
-            <p className="text-2xl font-bold text-gray-900">₹{totalAmount.toLocaleString()}</p>
+            <p className="text-sm text-gray-500">Cumulative Amount (RWF)</p>
+            <p className="text-2xl font-bold text-gray-900">RWF {totalAmount.toLocaleString()}</p>
           </CardContent>
         </Card>
         <Card className="border-gray-200 shadow-sm rounded-2xl">
@@ -550,7 +550,7 @@ const Reports: React.FC = () => {
                         : "—"}
                     </td>
                     <td className="p-4 font-semibold text-blue-600">
-                      ₹{report.totalAmount?.toLocaleString() ?? 0}
+                      RWF {report.totalAmount?.toLocaleString() ?? 0}
                     </td>
                     <td className="p-4">
                       <span
