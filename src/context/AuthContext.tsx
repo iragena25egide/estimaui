@@ -30,7 +30,7 @@ interface AuthContextType {
   loading: boolean
   initialLoading: boolean
   error: string | null
-  login: (email: string, password: string) => Promise<void>
+  login: (email: string, password: string) => Promise<any>
   startSignup: (data: SignupStep1Data) => Promise<void>
   loginWithGoogle: (googleToken: string) => Promise<void>
   verifyOtp: (email: string, otp: string) => Promise<void>
