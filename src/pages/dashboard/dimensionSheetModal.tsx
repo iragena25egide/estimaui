@@ -284,7 +284,7 @@ const DimensionSheetModal: React.FC<DimensionSheetModalProps> = ({
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs text-gray-500 uppercase tracking-wider">Unit Rate ($) *</Label>
+                    <Label className="text-xs text-gray-500 uppercase tracking-wider">Unit Rate (RWF) *</Label>
                     <Input
                       type="number"
                       placeholder="e.g. 150"
@@ -330,7 +330,7 @@ const DimensionSheetModal: React.FC<DimensionSheetModalProps> = ({
                   {preview.valid && (
                     <div className="text-right">
                       <span className="text-[10px] uppercase font-semibold tracking-wider text-blue-200 block">Estimated Cost</span>
-                      <span className="text-xl font-extrabold">${preview.total.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                      <span className="text-xl font-extrabold">RWF {preview.total.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
                     </div>
                   )}
                 </div>
@@ -417,7 +417,7 @@ const DimensionSheetModal: React.FC<DimensionSheetModalProps> = ({
                       </div>
                       <div>
                         <p className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold">Unit Rate</p>
-                        <p className="font-medium text-gray-700">${Number(sheet.rate).toLocaleString()}</p>
+                        <p className="font-medium text-gray-700">RWF {Number(sheet.rate).toLocaleString()}</p>
                       </div>
                       {sheet.formula && (
                         <div className="col-span-2">
@@ -429,7 +429,7 @@ const DimensionSheetModal: React.FC<DimensionSheetModalProps> = ({
                       )}
                       <div>
                         <p className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold">Total Cost</p>
-                        <p className="font-extrabold text-blue-600 text-lg">${Number(sheet.total).toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>
+                        <p className="font-extrabold text-blue-600 text-lg">RWF {Number(sheet.total).toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>
                       </div>
                     </div>
                   </CardContent>

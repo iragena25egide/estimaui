@@ -487,7 +487,7 @@ const BoqItems: React.FC = () => {
                             <span className="text-gray-800 font-medium">{item.description}</span>
                           </div>
                           <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded border">
-                            ${item.rate}/{item.unit}
+                            RWF {item.rate}/{item.unit}
                           </span>
                         </div>
                       ))}
