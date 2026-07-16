@@ -112,8 +112,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
               : "Login failed. Please try again."),
         )
       }
-      // Server responds with { message: 'OTP sent to your email' }
-      // Caller should advance to the OTP step
+
+      // ── OTP DISABLED (testing mode) ──────────────────────────────────────
+      // Backend now returns { token } directly. Fetch user profile and persist.
+      if (data.token) {
+        const meRes = await fetch(`${API_BASE}/auth/me`, {
+          headers: { Authorization: `Bearer ${data.token}` },
+        })
+        const meData = await meRes.json()
+        if (!meRes.ok) throw new Error(meData.message || "Failed to load user profile")
+
+        setToken(data.token)
+        setUser(meData)
+        localStorage.setItem("authToken", data.token)
+        localStorage.setItem("user", JSON.stringify(meData))
+        setTokenCookie(data.token)
+        return { token: data.token } // signal to LoginForm: go straight to dashboard
+      }
+      // ── OTP ENABLED (production) ─────────────────────────────────────────
+      // Backend returns { message: 'OTP sent...' } — caller advances to OTP step
       return data
     } catch (err: any) {
       setError(err.message)

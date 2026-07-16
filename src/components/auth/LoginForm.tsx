@@ -87,8 +87,21 @@ useEffect(() => {
     if (!email || !password) {
       throw new Error("Please fill in all fields")
     }
-    await login(email, password)
-    
+    const result = await login(email, password)
+
+    // OTP DISABLED (testing): login() returns { token } and persists session
+    if (result?.token) {
+      const pendingInviteToken = sessionStorage.getItem("pendingInviteToken")
+      if (pendingInviteToken) {
+        sessionStorage.removeItem("pendingInviteToken")
+        navigate(`/invite?token=${pendingInviteToken}`, { replace: true })
+      } else {
+        navigate("/dashboard", { replace: true })
+      }
+      return
+    }
+
+    // OTP ENABLED (production): advance to OTP step
     setCurrentStep("otp")
   } catch (err: any) {
     setError(err.message || "Login failed. Please try again.")
