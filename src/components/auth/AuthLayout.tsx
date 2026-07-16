@@ -36,8 +36,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
         }}
       >
         {/* Dark overlay for readability */}
-        <div className="absolute inset-0 bg-slate-900/60 z-0 backdrop-blur-[2px]"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/80 to-transparent z-0"></div>
+        <div className="absolute inset-0 bg-slate-900/80 z-0 backdrop-blur-[2px]"></div>
         
         {/* Top Branding */}
         <div className="relative z-10">
