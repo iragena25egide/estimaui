@@ -372,6 +372,18 @@ const MultiStepSignup: React.FC<MultiStepSignupProps> = ({
     }
   }
 
+  const handleOTPPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (pastedData) {
+      setVerificationCode(pastedData);
+      setCodeError("");
+      const nextIndex = Math.min(pastedData.length, 5);
+      const nextInput = document.getElementById(`otp-${nextIndex}`) as HTMLInputElement;
+      nextInput?.focus();
+    }
+  }
+
   const handleNextStep = async () => {
   if (validateStep(currentStep)) {
     if (currentStep < 4) {
@@ -562,7 +574,7 @@ React.useEffect(() => {
                 <div
                   className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-500 ${
                     currentStep >= 1
-                      ? "bg-gradient-to-br from-slate-900 to-black text-white step-active"
+                      ? "bg-slate-900 text-white step-active"
                       : "bg-slate-100 text-slate-600 border-2 border-slate-200"
                   }`}
                 >
@@ -584,7 +596,7 @@ React.useEffect(() => {
                 <div
                   className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-500 ${
                     currentStep >= 2
-                      ? "bg-gradient-to-br from-slate-900 to-black text-white step-active"
+                      ? "bg-slate-900 text-white step-active"
                       : "bg-slate-100 text-slate-600 border-2 border-slate-200"
                   }`}
                 >
@@ -606,7 +618,7 @@ React.useEffect(() => {
                 <div
                   className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-500 ${
                     currentStep >= 3
-                      ? "bg-gradient-to-br from-slate-900 to-black text-white step-active"
+                      ? "bg-slate-900 text-white step-active"
                       : "bg-slate-100 text-slate-600 border-2 border-slate-200"
                   }`}
                 >
@@ -628,7 +640,7 @@ React.useEffect(() => {
                 <div
                   className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-500 ${
                     currentStep >= 4
-                      ? "bg-gradient-to-br from-slate-900 to-black text-white step-active"
+                      ? "bg-slate-900 text-white step-active"
                       : "bg-slate-100 text-slate-600 border-2 border-slate-200"
                   }`}
                 >
@@ -707,7 +719,7 @@ React.useEffect(() => {
               <Button
                 onClick={handleNextStep}
                 disabled={!role}
-                className="w-full mt-6 bg-gradient-to-br from-slate-900 to-black hover:from-black hover:to-slate-900 text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full mt-6 bg-slate-900 hover:bg-black text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next
               </Button>
@@ -879,7 +891,7 @@ React.useEffect(() => {
                 <Button
                   type="button"
                   onClick={handleNextStep}
-                  className="flex-1 bg-gradient-to-br from-slate-900 to-black hover:from-black hover:to-slate-900 text-white font-semibold rounded-lg transition-all duration-200"
+                  className="flex-1 bg-slate-900 hover:bg-black text-white font-semibold rounded-lg transition-all duration-200"
                 >
                   Next
                 </Button>
@@ -913,6 +925,7 @@ React.useEffect(() => {
                     value={verificationCode[index] || ""}
                     onChange={(e) => handleOTPChange(index, e.target.value)}
                     onKeyDown={(e) => handleOTPKeyDown(index, e)}
+                    onPaste={handleOTPPaste}
                     className={`w-11 h-12 rounded-lg border text-center text-lg font-semibold transition-all focus:outline-none bg-white ${
                       codeError
                         ? "border-red-500"
