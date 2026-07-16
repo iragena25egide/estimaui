@@ -36,10 +36,10 @@ interface CustomDatePickerProps {
 }
 
 const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ value, onChange, label }) => {
-  const parsedDate = value ? new Date(value) : null;
-  const currentDay = parsedDate && !isNaN(parsedDate.getTime()) ? parsedDate.getDate().toString() : "";
-  const currentMonth = parsedDate && !isNaN(parsedDate.getTime()) ? (parsedDate.getMonth() + 1).toString() : "";
-  const currentYear = parsedDate && !isNaN(parsedDate.getTime()) ? parsedDate.getFullYear().toString() : "";
+  const dateParts = value ? value.split('T')[0].split('-') : [];
+  const currentYear = dateParts.length === 3 ? dateParts[0] : "";
+  const currentMonth = dateParts.length === 3 ? parseInt(dateParts[1], 10).toString() : "";
+  const currentDay = dateParts.length === 3 ? parseInt(dateParts[2], 10).toString() : "";
 
   const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
   const months = [
@@ -425,12 +425,19 @@ const Projects: React.FC = () => {
                 <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
                   Contract Type
                 </label>
-                <Input
+                <Select
                   value={form.contractType}
-                  onChange={(e) => setForm({ ...form, contractType: e.target.value })}
-                  placeholder="e.g., Fixed Price"
-                  className="border-gray-200 rounded-lg"
-                />
+                  onValueChange={(value) => setForm({ ...form, contractType: value })}
+                >
+                  <SelectTrigger className="border-gray-200 rounded-lg">
+                    <SelectValue placeholder="Select Contract Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="LUMP_SUM">Lump Sum</SelectItem>
+                    <SelectItem value="BOQ">BOQ (Bill of Quantities)</SelectItem>
+                    <SelectItem value="COST_PLUS">Cost Plus</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
