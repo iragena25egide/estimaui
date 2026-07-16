@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Trash, Edit, Search, X, FolderOpen } from "lucide-react";
+import { Plus, Trash, Edit, Search, X, FolderOpen, Eye } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -136,6 +136,8 @@ const Projects: React.FC = () => {
   const [search, setSearch] = useState("");
   const [error, setError] = useState<string>("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [viewOpen, setViewOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
 
   const [form, setForm] = useState<any>({
     name: "",
@@ -200,6 +202,11 @@ const Projects: React.FC = () => {
     setEditingId(p.id);
     setForm(p);
     setOpen(true);
+  };
+
+  const handleView = (p: any) => {
+    setSelectedProject(p);
+    setViewOpen(true);
   };
 
   const resetForm = () => {
@@ -332,26 +339,33 @@ const Projects: React.FC = () => {
                       </span>
                     </TableCell>
                     <TableCell>
-                      {isViewer ? (
-                        <span className="text-gray-400 font-medium text-xs bg-gray-50 px-2 py-1 rounded border">Read-only</span>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => handleEdit(p)}
-                            className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
-                            title="Edit"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(p.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Delete"
-                          >
-                            <Trash className="w-4 h-4" />
-                          </button>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleView(p)}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="View"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        {!isViewer && (
+                          <>
+                            <button
+                              onClick={() => handleEdit(p)}
+                              className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                              title="Edit"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(p.id)}
+                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              title="Delete"
+                            >
+                              <Trash className="w-4 h-4" />
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
@@ -502,6 +516,64 @@ const Projects: React.FC = () => {
                 {editingId ? "Update" : "Create"} Project
               </Button>
             </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={viewOpen} onOpenChange={setViewOpen}>
+        <DialogContent className="sm:max-w-xl p-0 gap-0 rounded-2xl overflow-hidden">
+          <DialogHeader className="p-6 border-b border-gray-200">
+            <DialogTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <Eye className="w-5 h-5 text-blue-600" />
+              Project Details
+            </DialogTitle>
+          </DialogHeader>
+          {selectedProject && (
+            <div className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase">Project Name</p>
+                  <p className="font-semibold text-gray-900">{selectedProject.name}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase">Client</p>
+                  <p className="font-semibold text-gray-900">{selectedProject.client}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase">Location</p>
+                  <p className="text-gray-900">{selectedProject.location || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase">Project Type</p>
+                  <p className="text-gray-900">{selectedProject.projectType || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase">Contract Type</p>
+                  <p className="text-gray-900">{selectedProject.contractType || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase">Estimator</p>
+                  <p className="text-gray-900">{selectedProject.estimatorName || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase">Start Date</p>
+                  <p className="text-gray-900">{selectedProject.startDate ? new Date(selectedProject.startDate).toLocaleDateString() : "N/A"}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase">Completion Date</p>
+                  <p className="text-gray-900">{selectedProject.completionDate ? new Date(selectedProject.completionDate).toLocaleDateString() : "N/A"}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase">Status</p>
+                  <span className={`px-2 py-1 mt-1 inline-block rounded-full text-xs font-medium ${getStatusStyle(selectedProject.status)}`}>
+                    {selectedProject.status || "Planning"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter className="p-6 border-t border-gray-200 bg-gray-50">
+            <Button onClick={() => setViewOpen(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg">Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
