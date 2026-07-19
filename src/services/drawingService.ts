@@ -32,12 +32,7 @@ class DrawingService {
     try {
       const res = await API.post(
         "/drawing/upload",  
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        formData
       );
 
       return res.data;
@@ -100,12 +95,7 @@ class DrawingService {
 
       const res = await API.put(
         `/projects/${projectId}/drawings/${id}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
-        }
+        formData
       );
 
       return res.data;
