@@ -23,7 +23,7 @@ const NavItem: React.FC<{ to: string; icon: React.ReactNode; label: string; exac
       to={to}
       className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
         active 
-          ? "bg-[#10b981] text-white font-medium shadow-sm" 
+          ? "bg-blue-600 text-white font-medium shadow-sm" 
           : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
       }`}
     >
@@ -42,7 +42,7 @@ const Sidebar: React.FC<{ mobileOpen?: boolean; onClose?: () => void }> = ({ mob
       <aside className="hidden md:flex flex-col fixed top-0 left-0 w-[260px] h-screen bg-white border-r border-slate-200 z-30">
         <div className="p-5 border-b border-slate-200">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-8 h-8 rounded-lg bg-[#10b981] flex items-center justify-center shadow-sm">
+            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-sm">
               <span className="text-white font-bold text-xl leading-none">E</span>
             </div>
             <div className="text-xl font-bold text-slate-900 tracking-tight">Estimator</div>
@@ -53,12 +53,12 @@ const Sidebar: React.FC<{ mobileOpen?: boolean; onClose?: () => void }> = ({ mob
               <div className="flex items-center justify-between p-2 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-colors">
                 <div className="flex items-center gap-3">
                   <Avatar className="w-9 h-9 rounded-md border border-slate-200">
-                    <AvatarImage src={`https://ui-avatars.com/api/?name=${user?.firstName}+${user?.lastName}&background=10b981&color=fff`} />
+                    <AvatarImage src={`https://ui-avatars.com/api/?name=${user?.firstName}+${user?.lastName}&background=2563eb&color=fff`} />
                     <AvatarFallback className="rounded-md bg-slate-100 text-slate-600">{user?.firstName?.[0]}</AvatarFallback>
                   </Avatar>
                   <div className="text-left flex flex-col">
                     <span className="text-sm font-semibold text-slate-900 truncate w-28">{user?.firstName} {user?.lastName}</span>
-                    <span className="text-[10px] text-[#10b981] font-medium tracking-wide">{user?.role || "System Admin"}</span>
+                    <span className="text-[10px] text-blue-600 font-medium tracking-wide">{user?.role || "System Admin"}</span>
                   </div>
                 </div>
                 <ChevronDown className="w-4 h-4 text-slate-500" />
@@ -112,7 +112,7 @@ const Sidebar: React.FC<{ mobileOpen?: boolean; onClose?: () => void }> = ({ mob
           <aside className="absolute left-0 top-0 w-[260px] h-full bg-white flex flex-col shadow-2xl">
             <div className="p-5 border-b border-slate-200 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-[#10b981] flex items-center justify-center shadow-sm">
+                <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-sm">
                   <span className="text-white font-bold text-xl leading-none">E</span>
                 </div>
                 <div className="text-xl font-bold text-slate-900 tracking-tight">Estimator</div>
@@ -123,12 +123,12 @@ const Sidebar: React.FC<{ mobileOpen?: boolean; onClose?: () => void }> = ({ mob
             <div className="p-4 border-b border-slate-200">
               <div className="flex items-center gap-3 p-2 bg-slate-50 rounded-lg border border-slate-200">
                 <Avatar className="w-10 h-10 rounded-md border border-slate-200">
-                  <AvatarImage src={`https://ui-avatars.com/api/?name=${user?.firstName}+${user?.lastName}&background=10b981&color=fff`} />
+                  <AvatarImage src={`https://ui-avatars.com/api/?name=${user?.firstName}+${user?.lastName}&background=2563eb&color=fff`} />
                   <AvatarFallback className="rounded-md bg-slate-100 text-slate-600">{user?.firstName?.[0]}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
                   <span className="text-sm font-semibold text-slate-900">{user?.firstName} {user?.lastName}</span>
-                  <span className="text-[10px] text-[#10b981] font-medium tracking-wide">{user?.role || "System Admin"}</span>
+                  <span className="text-[10px] text-blue-600 font-medium tracking-wide">{user?.role || "System Admin"}</span>
                 </div>
               </div>
             </div>

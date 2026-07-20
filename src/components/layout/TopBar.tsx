@@ -97,7 +97,7 @@ const TopHeader: React.FC<{
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             placeholder="Search projects, estimates, staff..."
-            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[#10b981]/20 focus:border-[#10b981] transition-all placeholder-slate-400"
+            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all placeholder-slate-400"
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
             <kbd className="hidden lg:inline-flex items-center justify-center h-5 px-1.5 text-[10px] font-medium text-slate-400 bg-white border border-slate-200 rounded">⌘</kbd>
@@ -138,7 +138,7 @@ const TopHeader: React.FC<{
                 {unreadCount > 0 && (
                   <button 
                     onClick={markAllAsRead}
-                    className="text-xs text-[#10b981] font-medium hover:text-[#059669] transition-colors"
+                    className="text-xs text-blue-600 font-medium hover:text-blue-700 transition-colors"
                   >
                     Mark all as read
                   </button>
@@ -158,13 +158,13 @@ const TopHeader: React.FC<{
                       <button 
                         key={n.id} 
                         onClick={() => !n.isRead && markAsRead(n.id)}
-                        className={`p-4 text-left border-b border-slate-50 hover:bg-slate-50 transition-colors relative ${!n.isRead ? 'bg-[#10b981]/5' : ''}`}
+                        className={`p-4 text-left border-b border-slate-50 hover:bg-slate-50 transition-colors relative ${!n.isRead ? 'bg-blue-600/5' : ''}`}
                       >
                         {!n.isRead && (
-                          <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#10b981]" />
+                          <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-600" />
                         )}
                         <div className="flex gap-3">
-                          <div className={`mt-0.5 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${!n.isRead ? 'bg-[#10b981]/20 text-[#10b981]' : 'bg-slate-100 text-slate-500'}`}>
+                          <div className={`mt-0.5 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${!n.isRead ? 'bg-blue-600/20 text-blue-600' : 'bg-slate-100 text-slate-500'}`}>
                             <Bell className="w-4 h-4" />
                           </div>
                           <div>
@@ -204,7 +204,7 @@ const TopHeader: React.FC<{
             className="flex items-center gap-3 pl-2 pr-1 py-1 rounded-full border border-slate-200 hover:bg-slate-50 transition-all"
           >
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-[#10b981]/20 text-[#10b981] font-bold text-xs flex items-center justify-center">
+              <div className="w-7 h-7 rounded-full bg-blue-600/20 text-blue-600 font-bold text-xs flex items-center justify-center">
                 {user?.name?.[0] || user?.firstName?.[0] || "U"}
               </div>
               <div className="hidden md:flex flex-col text-left mr-1">
