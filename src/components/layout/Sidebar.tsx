@@ -12,9 +12,12 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-const NavItem: React.FC<{ to: string; icon: React.ReactNode; label: string }> = ({ to, icon, label }) => {
+const NavItem: React.FC<{ to: string; icon: React.ReactNode; label: string; exact?: boolean }> = ({ to, icon, label, exact = false }) => {
   const location = useLocation();
-  const active = location.pathname.startsWith(to);
+  const active = exact 
+    ? location.pathname === to 
+    : location.pathname.startsWith(to);
+  
   return (
     <Link
       to={to}
@@ -71,7 +74,7 @@ const Sidebar: React.FC<{ mobileOpen?: boolean; onClose?: () => void }> = ({ mob
         </div>
 
         <nav className="flex-1 overflow-y-auto p-4 space-y-1 scrollbar-hide">
-          <NavItem to="/dashboard" icon={<Home />} label="Overview" />
+          <NavItem to="/dashboard" icon={<Home />} label="Overview" exact />
           <NavItem to="/dashboard/projects" icon={<ClipboardList />} label="Projects" />
           <NavItem to="/dashboard/drawings" icon={<MapPin />} label="Drawings" />
           <NavItem to="/dashboard/boq" icon={<FileText />} label="Bill of Quantity" />
@@ -131,7 +134,7 @@ const Sidebar: React.FC<{ mobileOpen?: boolean; onClose?: () => void }> = ({ mob
             </div>
 
             <nav className="flex-1 overflow-y-auto p-4 space-y-1">
-              <NavItem to="/dashboard" icon={<Home />} label="Overview" />
+              <NavItem to="/dashboard" icon={<Home />} label="Overview" exact />
               <NavItem to="/dashboard/projects" icon={<ClipboardList />} label="Projects" />
               <NavItem to="/dashboard/drawings" icon={<MapPin />} label="Drawings" />
               <NavItem to="/dashboard/boq" icon={<FileText />} label="Bill of Quantity" />

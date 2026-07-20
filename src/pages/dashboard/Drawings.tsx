@@ -569,7 +569,7 @@ const Drawings: React.FC = () => {
             </div>
 
            
-            <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 hover:border-blue-400 transition-colors cursor-pointer">
+            <label htmlFor="file-upload" className="block border-2 border-dashed border-gray-200 rounded-xl p-6 hover:border-blue-400 transition-colors cursor-pointer">
               <div className="text-center">
                 <FileIcon className="mx-auto w-8 h-8 text-gray-400 mb-2" />
                 <input
@@ -588,12 +588,9 @@ const Drawings: React.FC = () => {
                     }
                   }}
                 />
-                <label
-                  htmlFor="file-upload"
-                  className="cursor-pointer text-blue-600 hover:text-blue-700 font-medium"
-                >
+                <span className="cursor-pointer text-blue-600 hover:text-blue-700 font-medium">
                   Click to upload
-                </label>
+                </span>
                 <span className="text-gray-500"> or drag and drop</span>
                 <p className="text-xs text-gray-400 mt-1">
                   ArchiCAD: <span className="font-semibold">.ifc</span> or <span className="font-semibold">.pln</span> &nbsp;·&nbsp; PDF &nbsp;·&nbsp; Images (PNG, JPG)
@@ -608,7 +605,7 @@ const Drawings: React.FC = () => {
                   </div>
                 )}
               </div>
-            </div>
+            </label>
           </div>
 
           <DialogFooter className="p-6 border-t border-gray-200 bg-gray-50">
