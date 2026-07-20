@@ -24,10 +24,10 @@ const NavItem: React.FC<{ to: string; icon: React.ReactNode; label: string; exac
       className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
         active 
           ? "bg-[#10b981] text-white font-medium shadow-sm" 
-          : "text-slate-400 hover:bg-slate-800 hover:text-slate-100"
+          : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
       }`}
     >
-      <div className={`w-5 h-5 ${active ? "text-white" : "text-slate-400"}`}>{icon}</div>
+      <div className={`w-5 h-5 ${active ? "text-white" : "text-slate-500"}`}>{icon}</div>
       <span className="text-sm">{label}</span>
     </Link>
   );
@@ -39,25 +39,25 @@ const Sidebar: React.FC<{ mobileOpen?: boolean; onClose?: () => void }> = ({ mob
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col fixed top-0 left-0 w-[260px] h-screen bg-[#1e293b] border-r border-slate-800 z-30">
-        <div className="p-5 border-b border-slate-800">
+      <aside className="hidden md:flex flex-col fixed top-0 left-0 w-[260px] h-screen bg-white border-r border-slate-200 z-30">
+        <div className="p-5 border-b border-slate-200">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-8 h-8 rounded-lg bg-[#10b981] flex items-center justify-center shadow-sm">
               <span className="text-white font-bold text-xl leading-none">E</span>
             </div>
-            <div className="text-xl font-bold text-white tracking-tight">Estimator</div>
+            <div className="text-xl font-bold text-slate-900 tracking-tight">Estimator</div>
           </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger className="w-full outline-none">
-              <div className="flex items-center justify-between p-2 rounded-lg border border-slate-700 bg-slate-800/50 hover:bg-slate-800 transition-colors">
+              <div className="flex items-center justify-between p-2 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-colors">
                 <div className="flex items-center gap-3">
-                  <Avatar className="w-9 h-9 rounded-md border border-slate-700">
+                  <Avatar className="w-9 h-9 rounded-md border border-slate-200">
                     <AvatarImage src={`https://ui-avatars.com/api/?name=${user?.firstName}+${user?.lastName}&background=10b981&color=fff`} />
-                    <AvatarFallback className="rounded-md bg-slate-700 text-slate-300">{user?.firstName?.[0]}</AvatarFallback>
+                    <AvatarFallback className="rounded-md bg-slate-100 text-slate-600">{user?.firstName?.[0]}</AvatarFallback>
                   </Avatar>
                   <div className="text-left flex flex-col">
-                    <span className="text-sm font-semibold text-slate-100 truncate w-28">{user?.firstName} {user?.lastName}</span>
+                    <span className="text-sm font-semibold text-slate-900 truncate w-28">{user?.firstName} {user?.lastName}</span>
                     <span className="text-[10px] text-[#10b981] font-medium tracking-wide">{user?.role || "System Admin"}</span>
                   </div>
                 </div>
@@ -97,8 +97,8 @@ const Sidebar: React.FC<{ mobileOpen?: boolean; onClose?: () => void }> = ({ mob
           <NavItem to="/dashboard/approvals" icon={<CheckSquare />} label="Approvals" />
         </nav>
 
-        <div className="p-4 border-t border-slate-800">
-          <button onClick={logout} className="flex items-center gap-3 px-4 py-2 w-full rounded-lg text-slate-400 hover:bg-slate-800 hover:text-red-400 transition-colors">
+        <div className="p-4 border-t border-slate-200">
+          <button onClick={logout} className="flex items-center gap-3 px-4 py-2 w-full rounded-lg text-slate-500 hover:bg-slate-100 hover:text-red-600 transition-colors">
             <LogOut className="w-5 h-5" />
             <span className="text-sm font-medium">Logout</span>
           </button>
@@ -109,25 +109,25 @@ const Sidebar: React.FC<{ mobileOpen?: boolean; onClose?: () => void }> = ({ mob
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-40">
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
-          <aside className="absolute left-0 top-0 w-[260px] h-full bg-[#1e293b] flex flex-col shadow-2xl">
-            <div className="p-5 border-b border-slate-800 flex items-center justify-between">
+          <aside className="absolute left-0 top-0 w-[260px] h-full bg-white flex flex-col shadow-2xl">
+            <div className="p-5 border-b border-slate-200 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-[#10b981] flex items-center justify-center shadow-sm">
                   <span className="text-white font-bold text-xl leading-none">E</span>
                 </div>
-                <div className="text-xl font-bold text-white tracking-tight">Estimator</div>
+                <div className="text-xl font-bold text-slate-900 tracking-tight">Estimator</div>
               </div>
-              <button onClick={onClose} className="p-1 rounded-md text-slate-400 hover:bg-slate-800"><X className="w-5 h-5" /></button>
+              <button onClick={onClose} className="p-1 rounded-md text-slate-500 hover:bg-slate-100"><X className="w-5 h-5" /></button>
             </div>
             
-            <div className="p-4 border-b border-slate-800">
-              <div className="flex items-center gap-3 p-2 bg-slate-800/50 rounded-lg border border-slate-700">
-                <Avatar className="w-10 h-10 rounded-md border border-slate-700">
+            <div className="p-4 border-b border-slate-200">
+              <div className="flex items-center gap-3 p-2 bg-slate-50 rounded-lg border border-slate-200">
+                <Avatar className="w-10 h-10 rounded-md border border-slate-200">
                   <AvatarImage src={`https://ui-avatars.com/api/?name=${user?.firstName}+${user?.lastName}&background=10b981&color=fff`} />
-                  <AvatarFallback className="rounded-md bg-slate-700 text-slate-300">{user?.firstName?.[0]}</AvatarFallback>
+                  <AvatarFallback className="rounded-md bg-slate-100 text-slate-600">{user?.firstName?.[0]}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-slate-100">{user?.firstName} {user?.lastName}</span>
+                  <span className="text-sm font-semibold text-slate-900">{user?.firstName} {user?.lastName}</span>
                   <span className="text-[10px] text-[#10b981] font-medium tracking-wide">{user?.role || "System Admin"}</span>
                 </div>
               </div>
@@ -155,8 +155,8 @@ const Sidebar: React.FC<{ mobileOpen?: boolean; onClose?: () => void }> = ({ mob
               {!isViewer && <NavItem to="/dashboard/teams" icon={<Users />} label="Teams" />}
               <NavItem to="/dashboard/specification-register" icon={<FilePlus />} label="Specification" />
             </nav>
-            <div className="p-4 border-t border-slate-800">
-              <button onClick={logout} className="flex items-center gap-3 px-4 py-2 w-full rounded-lg text-slate-400 hover:bg-slate-800 hover:text-red-400 transition-colors">
+            <div className="p-4 border-t border-slate-200">
+              <button onClick={logout} className="flex items-center gap-3 px-4 py-2 w-full rounded-lg text-slate-500 hover:bg-slate-100 hover:text-red-600 transition-colors">
                 <LogOut className="w-5 h-5" />
                 <span className="text-sm font-medium">Logout</span>
               </button>
