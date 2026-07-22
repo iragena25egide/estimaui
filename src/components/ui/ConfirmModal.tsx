@@ -1,3 +1,4 @@
+// @ui-component
 import React from 'react';
 
 interface ConfirmModalProps {
