@@ -1,3 +1,4 @@
+// @ui-component
 "use client"
 
 import * as React from "react"
