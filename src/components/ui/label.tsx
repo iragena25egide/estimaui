@@ -1,4 +1,3 @@
-// @ui-component
 import * as React from "react"
 import { Label as LabelPrimitive } from "radix-ui"
 
