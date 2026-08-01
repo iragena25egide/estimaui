@@ -1,4 +1,3 @@
-// @ui-component
 import React from "react";
 
 const Preloader: React.FC = () => {
