@@ -1,4 +1,3 @@
-// @ui-component
 import * as React from "react"
 import { Separator as SeparatorPrimitive } from "radix-ui"
 
