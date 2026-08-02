@@ -62,7 +62,6 @@ const SpecificationRegister: React.FC = () => {
     projectId: "",
   });
 
-  // Load projects on mount
   useEffect(() => {
     const loadProjects = async () => {
       setLoading((prev) => ({ ...prev, projects: true }));
